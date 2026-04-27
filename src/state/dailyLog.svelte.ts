@@ -76,6 +76,15 @@ export function itemTotal(id: string, cat: CategoryKey): number {
   return sum;
 }
 
+/** Number of distinct items logged today. */
+export function itemCount(): number {
+  // Plain map (not Set) to avoid svelte/prefer-svelte-reactivity in
+  // .svelte.ts modules — this Set would be discarded immediately.
+  const seen: Record<string, true> = {};
+  for (const e of dailyLog.entries) seen[`${e.cat}/${e.id}`] = true;
+  return Object.keys(seen).length;
+}
+
 /**
  * Returns the per-category sum of consumed % for the current day.
  * Reactive because it reads `dailyLog.entries` (a $state-backed getter) —
