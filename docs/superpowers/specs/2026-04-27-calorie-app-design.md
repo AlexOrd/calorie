@@ -38,7 +38,7 @@ PWA support, GitHub Pages deploy.
   animations on important moments. No other animation libraries.
 - **Storage:** `localforage` (IndexedDB wrapper) + `window.Telegram.WebApp.CloudStorage`.
 - **PWA:** `vite-plugin-pwa` with `generateSW` + `autoUpdate`.
-- **Deploy:** GitHub Actions → GitHub Pages (`https://alexord.github.io/calorie/`).
+- **Deploy:** GitHub Actions → GitHub Pages with custom domain `https://calorie.ordynski.com/` (CNAME in `public/`).
 - **Lint:** ESLint v9 (flat config) + `typescript-eslint` + `eslint-plugin-svelte`
   (Svelte 5 aware) + `eslint-config-prettier` (disables stylistic rules that
   fight Prettier).
@@ -55,7 +55,7 @@ PWA support, GitHub Pages deploy.
 ```
 calorie/
 ├─ index.html                # includes Telegram WebApp script tag
-├─ vite.config.ts            # base: '/calorie/', VitePWA plugin
+├─ vite.config.ts            # base: '/' (custom domain), VitePWA plugin
 ├─ tailwind.config.ts
 ├─ tsconfig.json
 ├─ eslint.config.js          # flat config; TS + Svelte + Prettier
@@ -67,6 +67,7 @@ calorie/
 ├─ .husky/
 │  └─ pre-commit             # runs lint-staged + svelte-check
 ├─ public/
+│  ├─ CNAME                  # custom domain: calorie.ordynski.com
 │  └─ icons/                 # PWA icons 192/512
 ├─ src/
 │  ├─ app.css                # Tailwind directives + Telegram theme vars
@@ -488,7 +489,7 @@ the visual vocabulary consistent and the dependency surface tiny.
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: '/calorie/',
+  base: '/',
   plugins: [
     svelte(),
     VitePWA({
@@ -500,8 +501,8 @@ export default defineConfig({
         theme_color: '#4CAF50',
         background_color: '#0f1115',
         display: 'standalone',
-        start_url: '/calorie/',
-        scope: '/calorie/',
+        start_url: '/',
+        scope: '/',
         icons: [
           { src: 'icons/192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
