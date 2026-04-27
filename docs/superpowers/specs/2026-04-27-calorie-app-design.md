@@ -39,6 +39,14 @@ PWA support, GitHub Pages deploy.
 - **Storage:** `localforage` (IndexedDB wrapper) + `window.Telegram.WebApp.CloudStorage`.
 - **PWA:** `vite-plugin-pwa` with `generateSW` + `autoUpdate`.
 - **Deploy:** GitHub Actions → GitHub Pages (`https://alexord.github.io/calorie/`).
+- **Lint:** ESLint v9 (flat config) + `typescript-eslint` + `eslint-plugin-svelte`
+  (Svelte 5 aware) + `eslint-config-prettier` (disables stylistic rules that
+  fight Prettier).
+- **Format:** Prettier + `prettier-plugin-svelte` + `prettier-plugin-tailwindcss`
+  (auto-sorts class lists).
+- **Type check:** `svelte-check` over the whole project (catches errors that
+  span files, not just staged ones).
+- **Git hooks:** `husky` v9 + `lint-staged` v15 — see §13.
 - **No tests in v1.** TypeScript + `svelte-check` cover correctness; visual
   verification covers the rest. Vitest can be added later if state modules grow.
 
@@ -50,8 +58,14 @@ calorie/
 ├─ vite.config.ts            # base: '/calorie/', VitePWA plugin
 ├─ tailwind.config.ts
 ├─ tsconfig.json
-├─ package.json
+├─ eslint.config.js          # flat config; TS + Svelte + Prettier
+├─ .prettierrc               # Prettier + plugins
+├─ .prettierignore
+├─ .editorconfig
+├─ package.json              # scripts + lint-staged config
 ├─ pnpm-lock.yaml
+├─ .husky/
+│  └─ pre-commit             # runs lint-staged + svelte-check
 ├─ public/
 │  └─ icons/                 # PWA icons 192/512
 ├─ src/
@@ -538,6 +552,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      - run: pnpm lint              # parity with pre-commit; fail loud if hooks were skipped
+      - run: pnpm format:check
+      - run: pnpm check
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
@@ -558,10 +575,18 @@ jobs:
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   }
 }
 ```
+
+`prepare` runs automatically after `pnpm install`, so cloning the repo + one
+install bootstraps the husky hooks. No separate setup step.
 
 ### 10.5 Telegram bot
 
@@ -594,3 +619,203 @@ already wired.
 | Tab swap mechanism | `display:none` toggle, not mount/unmount | Preserves chart state + scroll position. |
 | Animation library | Svelte built-ins + `motion` (Motion One, ~5KB) | Tiny footprint, covers all "important moment" cases. |
 | Mobile vs desktop | Mobile-first; desktop adapts at Tailwind `md` (768px) and `lg` (1024px) — sidebar nav, 4-column dashboard grid, side-by-side charts, hover-delete in journal, centered-modal entry sheet | One DOM tree, just Tailwind responsive classes; no separate desktop codepath. |
+| Lint / format / type check tooling | ESLint v9 flat + `typescript-eslint` + `eslint-plugin-svelte` + Prettier (with svelte + tailwindcss plugins) + `svelte-check` | Modern Svelte/TS canonical stack; ESLint flat config is the v9 default; Prettier owns formatting so ESLint stays focused on correctness. |
+| Pre-commit hook runner | husky v9 + lint-staged v15 | De-facto standard, auto-bootstrapped via `prepare` script; no extra setup for new clones. |
+| Pre-commit scope | `lint-staged` (eslint+prettier on staged files) → `pnpm check` (full project) | Per-file lint/format keeps hooks fast; full-project type check catches cross-file errors that staged-only would miss. |
+| Strict TS settings | `strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true` | Catches the bugs you'd otherwise hit at runtime in a data-shape-heavy app. |
+
+## 13. Code quality (lint, format, type check, hooks)
+
+The pipeline:
+
+```
+git commit ─┐
+            ▼
+        .husky/pre-commit
+            ▼
+        lint-staged ──► eslint --fix  ──► prettier --write   (only staged files)
+            ▼
+        pnpm check  (svelte-check over the whole project)
+            ▼
+        commit succeeds (or aborts on any non-zero exit)
+```
+
+CI (`.github/workflows/deploy.yml`) re-runs `pnpm lint`, `pnpm format:check`,
+and `pnpm check` on the full project before `pnpm build`, as a safety net in
+case hooks were skipped locally (e.g. `--no-verify`).
+
+### 13.1 TypeScript config (`tsconfig.json`)
+
+```jsonc
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
+    "types": ["svelte", "vite/client", "vite-plugin-pwa/client"],
+    "paths": {
+      "$lib/*": ["./src/lib/*"],
+      "$state/*": ["./src/state/*"],
+      "$types/*": ["./src/types/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts"]
+}
+```
+
+Why these specific flags:
+
+- `noUncheckedIndexedAccess` — catches `entries[0]` returning `T | undefined`
+  rather than `T`. Important because `dailyLog.entries` is read by index in
+  the journal/heatmap.
+- `exactOptionalPropertyTypes` — `unit?: string` truly means "may be absent",
+  not "may be `undefined`". Avoids subtle drift on the food DB.
+- `verbatimModuleSyntax` — forces `import type` for type-only imports; helps
+  the bundler dead-code-eliminate.
+
+### 13.2 ESLint config (`eslint.config.js`)
+
+Flat config (ESLint v9 default). Shape:
+
+```js
+import js from '@eslint/js';
+import ts from 'typescript-eslint';
+import svelte from 'eslint-plugin-svelte';
+import prettier from 'eslint-config-prettier';
+import globals from 'globals';
+import svelteParser from 'svelte-eslint-parser';
+
+export default [
+  { ignores: ['dist', 'dev-dist', 'node_modules', '.svelte-kit', 'pnpm-lock.yaml'] },
+  js.configs.recommended,
+  ...ts.configs.recommendedTypeChecked,
+  ...svelte.configs['flat/recommended'],
+  {
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.es2022 },
+      parserOptions: {
+        project: './tsconfig.json',
+        extraFileExtensions: ['.svelte'],
+      },
+    },
+  },
+  {
+    files: ['**/*.svelte', '**/*.svelte.ts'],
+    languageOptions: {
+      parser: svelteParser,
+      parserOptions: { parser: ts.parser },
+    },
+  },
+  // Project-specific tweaks
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/consistent-type-imports': 'error',
+      'svelte/no-at-html-tags': 'error',
+      'svelte/valid-compile': 'error',
+    },
+  },
+  prettier, // must come last — disables stylistic rules that fight Prettier
+];
+```
+
+Notes:
+
+- `recommendedTypeChecked` (rather than plain `recommended`) enables
+  type-aware lint rules; needs the `project` parserOption.
+- `flat/recommended` from `eslint-plugin-svelte` understands runes (`$state`,
+  `$derived`, etc.) and `.svelte.ts` modules.
+- `eslint-config-prettier` is **last** so it can disable the stylistic rules
+  Prettier owns.
+
+### 13.3 Prettier config (`.prettierrc`)
+
+```json
+{
+  "useTabs": false,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
+}
+```
+
+`prettier-plugin-tailwindcss` must be **last** in the `plugins` array so it
+runs after `prettier-plugin-svelte`'s parser hand-off — otherwise class lists
+inside `.svelte` files don't get sorted.
+
+`.prettierignore`:
+
+```
+dist
+dev-dist
+node_modules
+pnpm-lock.yaml
+public/icons
+```
+
+### 13.4 Husky + lint-staged
+
+`.husky/pre-commit`:
+
+```sh
+pnpm lint-staged
+pnpm check
+```
+
+`lint-staged` config in `package.json`:
+
+```json
+{
+  "lint-staged": {
+    "*.{ts,svelte,svelte.ts}": ["eslint --fix", "prettier --write"],
+    "*.{js,cjs,mjs,json,jsonc,css,md,yml,yaml,html}": ["prettier --write"]
+  }
+}
+```
+
+Order matters within the array: ESLint runs first (may rewrite imports, fix
+violations), Prettier runs after (final formatting pass). Both are run only
+against staged files — fast even on large projects.
+
+`pnpm check` runs `svelte-check` over the entire project after lint-staged
+finishes; it's not file-scoped because TS errors can cross files (a wrong
+import in one file surfaces as an error in its dependents).
+
+### 13.5 Editor consistency (`.editorconfig`)
+
+```ini
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+```
+
+Keeps editors aligned with Prettier so file diffs aren't churn.
+
+### 13.6 Bypass policy
+
+Pre-commit hooks should not be bypassed. If a real reason to skip them comes
+up (rare), use `git commit --no-verify` and fix the issue immediately after —
+CI re-runs all three checks (`pnpm lint`, `pnpm format:check`, `pnpm check`)
+on every push, so anything skipped locally fails the deploy job.
