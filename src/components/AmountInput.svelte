@@ -36,27 +36,19 @@
   }
 </script>
 
-<div class="flex flex-col gap-3">
-  <input
-    type="range"
-    min="0"
-    max="150"
-    step="1"
-    bind:value={pct}
-    oninput={onPctInput}
-    class="w-full"
-  />
+<div class="flex flex-col gap-5">
+  <input type="range" min="0" max="150" step="1" bind:value={pct} oninput={onPctInput} />
 
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-3">
     <input
       type="number"
       min="0"
       {step}
       bind:value={amount}
       oninput={onAmountInput}
-      class="w-24 rounded-md border border-white/10 bg-transparent px-2 py-1"
+      class="w-32 rounded-lg border border-white/10 bg-transparent px-4 py-3 text-lg"
     />
-    <span class="text-muted text-sm">{unit}</span>
-    <span class="ml-auto text-sm tabular-nums">{Math.round(pct)}%</span>
+    <span class="text-muted text-lg">{unit}</span>
+    <span class="text-accent ml-auto text-2xl font-bold tabular-nums">{Math.round(pct)}%</span>
   </div>
 </div>

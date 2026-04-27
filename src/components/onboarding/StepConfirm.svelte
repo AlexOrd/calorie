@@ -28,12 +28,16 @@
     Приклад: {sample}
   </p>
   <div class="flex justify-between gap-3">
-    <button type="button" class="rounded-md border border-white/10 px-4 py-2" onclick={onBack}>
+    <button
+      type="button"
+      class="min-h-14 rounded-lg border border-white/10 px-6 py-4 text-base"
+      onclick={onBack}
+    >
       Назад
     </button>
     <button
       type="button"
-      class="bg-accent flex-1 rounded-md px-4 py-2 text-white"
+      class="bg-accent min-h-14 flex-1 rounded-lg px-6 py-4 text-lg font-semibold text-white shadow-md shadow-black/20"
       onclick={onConfirm}
     >
       Готово

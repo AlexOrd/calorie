@@ -50,7 +50,31 @@ export const dailyLog = {
     checkQuota();
     persist();
   },
+
+  /**
+   * Replace all entries for a given item with a single new entry at `pct`.
+   * Used by the entry sheet's prefilled-then-edited flow so the journal stays
+   * consistent with what the user sees in the slider.
+   */
+  setItem(this: void, id: string, cat: CategoryKey, pct: number): void {
+    const filtered = _entries.filter((e) => !(e.id === id && e.cat === cat));
+    _entries = [...filtered, { id, cat, pct, ts: Date.now() }];
+    checkQuota();
+    persist();
+  },
 };
+
+/**
+ * Sum of % already logged for a specific item on the current day.
+ * Reactive — reads dailyLog.entries inside.
+ */
+export function itemTotal(id: string, cat: CategoryKey): number {
+  let sum = 0;
+  for (const e of dailyLog.entries) {
+    if (e.id === id && e.cat === cat) sum += e.pct;
+  }
+  return sum;
+}
 
 /**
  * Returns the per-category sum of consumed % for the current day.

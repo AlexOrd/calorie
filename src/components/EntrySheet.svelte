@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createDialog, melt } from '@melt-ui/svelte';
   import { fly, scale } from 'svelte/transition';
-  import { dailyLog } from '$state/dailyLog.svelte';
+  import { dailyLog, itemTotal } from '$state/dailyLog.svelte';
   import { personalizedDb } from '$state/personalizedDb';
   import { pulseSuccess } from '$lib/anim';
   import AmountInput from './AmountInput.svelte';
@@ -33,13 +33,22 @@
   let cardElById = $state<Record<string, HTMLLIElement | undefined>>({});
 
   function expand(itemId: string): void {
-    expandedItem = expandedItem === itemId ? null : itemId;
-    pct = 0;
+    if (!categoryKey) return;
+    if (expandedItem === itemId) {
+      expandedItem = null;
+      pct = 0;
+      return;
+    }
+    expandedItem = itemId;
+    // Prefill the slider with whatever's already logged for this item today.
+    pct = Math.round(itemTotal(itemId, categoryKey));
   }
 
   function commit(itemId: string): void {
     if (!categoryKey || pct <= 0) return;
-    dailyLog.add({ id: itemId, cat: categoryKey, pct: Math.round(pct) });
+    // setItem replaces existing entries for this item with the new value, so
+    // the slider's prefilled total stays consistent with the journal.
+    dailyLog.setItem(itemId, categoryKey, Math.round(pct));
     const el = cardElById[itemId];
     if (el) pulseSuccess(el);
     expandedItem = null;
@@ -64,34 +73,44 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h2 class="text-lg font-semibold">{categoryKey} — {category.title}</h2>
-        <button type="button" use:melt={$close} class="text-muted" aria-label="Закрити"> ✕ </button>
+        <button
+          type="button"
+          use:melt={$close}
+          class="text-muted px-2 py-1 text-lg"
+          aria-label="Закрити"
+        >
+          ✕
+        </button>
       </div>
 
       <ul class="flex flex-col gap-2">
         {#each Object.entries(category.items) as [id, item] (id)}
-          <li bind:this={cardElById[id]} class="rounded-md border border-white/10 p-3">
+          {@const existing = categoryKey ? itemTotal(id, categoryKey) : 0}
+          <li bind:this={cardElById[id]} class="rounded-md border border-white/10 p-4">
             <button
               type="button"
               class="flex w-full items-center justify-between text-left"
               onclick={() => expand(id)}
             >
-              <span>{item.name}</span>
-              <span class="text-muted text-xs">
-                100% = {item.max_g}
-                {item.unit ?? 'г'}
+              <span class="text-base">{item.name}</span>
+              <span class="text-muted flex flex-col items-end text-xs">
+                {#if existing > 0}
+                  <span class="text-accent text-sm font-semibold">{Math.round(existing)}%</span>
+                {/if}
+                <span>100% = {item.max_g} {item.unit ?? 'г'}</span>
               </span>
             </button>
 
             {#if expandedItem === id}
-              <div class="mt-3 flex flex-col gap-3" transition:fly={{ y: -8, duration: 150 }}>
+              <div class="mt-5 flex flex-col gap-5" transition:fly={{ y: -8, duration: 150 }}>
                 <AmountInput {item} bind:pct />
                 <button
                   type="button"
-                  class="bg-accent self-end rounded-md px-3 py-1 text-sm text-white disabled:opacity-50"
+                  class="bg-accent min-h-14 w-full rounded-lg px-6 py-4 text-lg font-semibold text-white shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
                   disabled={pct <= 0}
                   onclick={() => commit(id)}
                 >
-                  Додати
+                  {existing > 0 ? 'Зберегти' : 'Додати'}
                 </button>
               </div>
             {/if}

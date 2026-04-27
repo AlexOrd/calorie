@@ -9,6 +9,7 @@
   import Dashboard from './routes/Dashboard.svelte';
   import Journal from './routes/Journal.svelte';
   import Stats from './routes/Stats.svelte';
+  import Profile from './routes/Profile.svelte';
   import Onboarding from './routes/Onboarding.svelte';
   import type { TabKey } from '$lib/nav';
 
@@ -40,6 +41,7 @@
         <div class:hidden={currentTab !== 'dashboard'}><Dashboard /></div>
         <div class:hidden={currentTab !== 'journal'}><Journal /></div>
         <div class:hidden={currentTab !== 'stats'}><Stats /></div>
+        <div class:hidden={currentTab !== 'profile'}><Profile /></div>
       </main>
     </div>
     <BottomNav bind:current={currentTab} />

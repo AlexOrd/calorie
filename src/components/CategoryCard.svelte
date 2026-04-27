@@ -38,20 +38,20 @@
 <button
   bind:this={cardEl}
   type="button"
-  class="flex w-full flex-col items-start gap-2 rounded-lg border border-white/10 bg-white/2 p-4 text-left transition-colors hover:bg-white/5"
+  class="flex min-h-20 w-full flex-col items-start justify-center gap-2.5 rounded-xl border border-white/10 bg-white/2 p-5 text-left transition-colors hover:bg-white/5 active:bg-white/10"
   onclick={() => onClick(categoryKey)}
 >
-  <div class="flex w-full items-center justify-between">
-    <span class="text-base font-semibold">{categoryKey} — {title}</span>
-    <span class="text-muted text-xs">
-      {#if over}<span class="text-danger">+{overshoot}%</span>
+  <div class="flex w-full items-center justify-between gap-2">
+    <span class="text-lg font-semibold">{categoryKey} — {title}</span>
+    <span class="text-muted text-sm whitespace-nowrap">
+      {#if over}<span class="text-danger font-semibold">+{overshoot}%</span>
       {:else}{remaining}% залишилось{/if}
     </span>
   </div>
 
-  <div class="h-2 w-full overflow-hidden rounded-full bg-white/10">
+  <div class="h-3 w-full overflow-hidden rounded-full bg-white/10">
     <div
-      class="h-full rounded-full"
+      class="h-full rounded-full transition-[background] duration-200"
       style="width: {Math.min(displayPct, 100)}%; background: {over
         ? 'var(--color-danger)'
         : color};"

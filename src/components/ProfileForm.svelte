@@ -1,0 +1,125 @@
+<script lang="ts">
+  import { untrack } from 'svelte';
+  import type { ProfileInput, ActivityLevel } from '$types/profile';
+
+  interface Props {
+    initial?: ProfileInput | null;
+    submitLabel: string;
+    onSubmit: (input: ProfileInput) => void;
+  }
+  let { initial = null, submitLabel, onSubmit }: Props = $props();
+
+  // Seed the form from `initial` once on mount; subsequent prop updates
+  // shouldn't clobber the user's in-progress edits. untrack() makes that
+  // intent explicit and silences svelte/valid-compile.
+  let height = $state(untrack(() => initial?.height ?? 168));
+  let weight = $state(untrack(() => initial?.weight ?? 74));
+  let age = $state(untrack(() => initial?.age ?? 30));
+  let gender = $state<'male' | 'female'>(untrack(() => initial?.gender ?? 'female'));
+  let activity = $state<ActivityLevel>(untrack(() => initial?.activity ?? 1.2));
+
+  const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
+    { value: 1.2, label: 'Сидячий' },
+    { value: 1.375, label: 'Легка активність' },
+    { value: 1.55, label: 'Помірна активність' },
+    { value: 1.725, label: 'Висока активність' },
+  ];
+
+  let valid = $derived(
+    height >= 120 && height <= 230 && weight >= 30 && weight <= 250 && age >= 12 && age <= 100,
+  );
+
+  function submit(): void {
+    if (!valid) return;
+    onSubmit({ height, weight, gender, age, activity });
+  }
+</script>
+
+<form
+  class="flex flex-col gap-5"
+  onsubmit={(e) => {
+    e.preventDefault();
+    submit();
+  }}
+>
+  <label class="text-muted flex flex-col gap-2 text-sm">
+    Зріст, см
+    <input
+      type="number"
+      class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
+      min="120"
+      max="230"
+      bind:value={height}
+    />
+  </label>
+
+  <label class="text-muted flex flex-col gap-2 text-sm">
+    Вага, кг
+    <input
+      type="number"
+      class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
+      min="30"
+      max="250"
+      step="0.1"
+      bind:value={weight}
+    />
+  </label>
+
+  <label class="text-muted flex flex-col gap-2 text-sm">
+    Вік
+    <input
+      type="number"
+      class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
+      min="12"
+      max="100"
+      bind:value={age}
+    />
+  </label>
+
+  <fieldset class="flex flex-col gap-2.5 text-sm">
+    <legend class="text-muted">Стать</legend>
+    <div class="flex gap-2">
+      <label
+        class={[
+          'flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border border-white/10 px-4 py-4 text-lg transition-colors',
+          gender === 'female' && 'bg-accent border-accent text-white',
+        ]}
+      >
+        <input type="radio" class="sr-only" bind:group={gender} value="female" /> Жін
+      </label>
+      <label
+        class={[
+          'flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border border-white/10 px-4 py-4 text-lg transition-colors',
+          gender === 'male' && 'bg-accent border-accent text-white',
+        ]}
+      >
+        <input type="radio" class="sr-only" bind:group={gender} value="male" /> Чол
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset class="flex flex-col gap-2.5 text-sm">
+    <legend class="text-muted">Рівень активності</legend>
+    <div class="grid grid-cols-2 gap-2">
+      {#each ACTIVITY_OPTIONS as opt (opt.value)}
+        <label
+          class={[
+            'flex min-h-14 cursor-pointer items-center justify-center rounded-lg border border-white/10 px-3 py-4 text-center text-base transition-colors',
+            activity === opt.value && 'bg-accent border-accent text-white',
+          ]}
+        >
+          <input type="radio" class="sr-only" bind:group={activity} value={opt.value} />
+          {opt.label}
+        </label>
+      {/each}
+    </div>
+  </fieldset>
+
+  <button
+    type="submit"
+    class="bg-accent mt-4 min-h-14 rounded-lg px-6 py-4 text-lg font-semibold text-white shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
+    disabled={!valid}
+  >
+    {submitLabel}
+  </button>
+</form>
