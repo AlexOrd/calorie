@@ -1,7 +1,8 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { preprocessMeltUI, sequence } from '@melt-ui/pp';
 
 export default {
-  preprocess: vitePreprocess(),
+  preprocess: sequence([vitePreprocess(), preprocessMeltUI()]),
   compilerOptions: {
     runes: true,
   },

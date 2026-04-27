@@ -29,19 +29,23 @@ export const dailyLog = {
     return _quotaWarning;
   },
 
-  async load(date: string): Promise<void> {
+  // `this: void` — these methods don't use `this`; they read/write
+  // module-level closures. Marking them lets consumers pass them as
+  // references (e.g. `onDelete={dailyLog.remove}`) without ESLint's
+  // unbound-method warning.
+  async load(this: void, date: string): Promise<void> {
     _date = date;
     _entries = await storage.load<LogEntry[]>(`log_${date}`, []);
     checkQuota();
   },
 
-  add(entry: Omit<LogEntry, 'ts'>): void {
+  add(this: void, entry: Omit<LogEntry, 'ts'>): void {
     _entries = [..._entries, { ...entry, ts: Date.now() }];
     checkQuota();
     persist();
   },
 
-  remove(ts: number): void {
+  remove(this: void, ts: number): void {
     _entries = _entries.filter((e) => e.ts !== ts);
     checkQuota();
     persist();

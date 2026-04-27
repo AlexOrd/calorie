@@ -24,6 +24,9 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.2.1(jiti@2.6.1))
+      '@melt-ui/pp':
+        specifier: ^0.3.2
+        version: 0.3.2(@melt-ui/svelte@0.86.6(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.0.0
         version: 7.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))(vite@8.0.10(@types/node@25.6.0)(jiti@2.6.1)(yaml@2.8.3))
@@ -187,6 +190,12 @@ packages:
     resolution: {integrity: sha512-4I9b+RuxIf8OkGG883bIYDIXjqVOH0ClgrB0j+jI6CrzEziroEwxiubQwW2xKT3esdJcRVTtW9RtCQM9D+r+ew==}
     peerDependencies:
       svelte: ^5
+
+  '@melt-ui/pp@0.3.2':
+    resolution: {integrity: sha512-xKkPvaIAFinklLXcQOpwZ8YSpqAFxykjWf8Y/fSJQwsixV/0rcFs07hJ49hJjPy5vItvw5Qa0uOjzFUbXzBypQ==}
+    peerDependencies:
+      '@melt-ui/svelte': '>= 0.29.0'
+      svelte: ^3.55.0 || ^4.0.0 || ^5.0.0-next.1
 
   '@melt-ui/svelte@0.86.6':
     resolution: {integrity: sha512-Jer+M7DgIwT5IHfTayb4Iw/fkkxWNmC/mqn/nMh9JrbPbkxmyabfLQnhJ+JDn5HK77f84j34lubO3iqFtYAfMg==}
@@ -676,6 +685,9 @@ packages:
   estraverse@5.3.0:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
+
+  estree-walker@3.0.3:
+    resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
@@ -1438,6 +1450,13 @@ snapshots:
     dependencies:
       svelte: 5.55.5(@typescript-eslint/types@8.59.1)
 
+  '@melt-ui/pp@0.3.2(@melt-ui/svelte@0.86.6(svelte@5.55.5(@typescript-eslint/types@8.59.1)))(svelte@5.55.5(@typescript-eslint/types@8.59.1))':
+    dependencies:
+      '@melt-ui/svelte': 0.86.6(svelte@5.55.5(@typescript-eslint/types@8.59.1))
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+      svelte: 5.55.5(@typescript-eslint/types@8.59.1)
+
   '@melt-ui/svelte@0.86.6(svelte@5.55.5(@typescript-eslint/types@8.59.1))':
     dependencies:
       '@floating-ui/core': 1.7.5
@@ -1892,6 +1911,10 @@ snapshots:
       estraverse: 5.3.0
 
   estraverse@5.3.0: {}
+
+  estree-walker@3.0.3:
+    dependencies:
+      '@types/estree': 1.0.8
 
   esutils@2.0.3: {}
 

@@ -19,12 +19,15 @@ export const profile = {
     return _profile !== null;
   },
 
-  async load(): Promise<void> {
+  // `this: void` — methods don't use `this`; they touch module-level
+  // closures. Lets consumers pass them as references without
+  // ESLint's unbound-method warning.
+  async load(this: void): Promise<void> {
     _profile = await storage.load<UserProfile | null>(KEY, null);
     _loaded = true;
   },
 
-  async save(input: ProfileInput): Promise<void> {
+  async save(this: void, input: ProfileInput): Promise<void> {
     const k_factor = computeKFactor(input);
     const next: UserProfile = {
       ...input,
@@ -35,7 +38,7 @@ export const profile = {
     await storage.save(KEY, next);
   },
 
-  async clear(): Promise<void> {
+  async clear(this: void): Promise<void> {
     _profile = null;
     await storage.remove(KEY);
   },
