@@ -4,16 +4,56 @@
     "color": "#4CAF50",
     "macros": { "kcal": 280, "protein": 9, "carbs": 55, "fat": 2 },
     "items": {
-      "a1": { "name": "Бобові", "max_g": 80 },
-      "a2": { "name": "Картопля", "max_g": 325 },
-      "a3": { "name": "Кукурудза свіжа", "max_g": 290 },
-      "a4": { "name": "Рис (нешліфований)", "max_g": 75 },
-      "a5": { "name": "Будь-яка крупа", "max_g": 75 },
-      "a6": { "name": "Цільнозернове борошно", "max_g": 75 },
-      "a7": { "name": "Хлібці", "max_g": 75 },
-      "a8": { "name": "Цільнозерновий хліб", "max_g": 100 },
-      "a9": { "name": "Макарони т.с.", "max_g": 70 },
-      "a10": { "name": "Лаваш", "max_g": 100 }
+      "a1": {
+        "name": "Бобові",
+        "max_g": 80,
+        "macros": { "kcal": 340, "protein": 22, "carbs": 60, "fat": 1.5 }
+      },
+      "a2": {
+        "name": "Картопля",
+        "max_g": 325,
+        "macros": { "kcal": 77, "protein": 2, "carbs": 17, "fat": 0.1 }
+      },
+      "a3": {
+        "name": "Кукурудза свіжа",
+        "max_g": 290,
+        "macros": { "kcal": 86, "protein": 3.3, "carbs": 19, "fat": 1.4 }
+      },
+      "a4": {
+        "name": "Рис (нешліфований)",
+        "max_g": 75,
+        "macros": { "kcal": 370, "protein": 8, "carbs": 76, "fat": 2.7 }
+      },
+      "a5": {
+        "name": "Будь-яка крупа",
+        "max_g": 75,
+        "macros": { "kcal": 350, "protein": 11, "carbs": 70, "fat": 3 }
+      },
+      "a6": {
+        "name": "Цільнозернове борошно",
+        "max_g": 75,
+        "macros": { "kcal": 340, "protein": 13, "carbs": 70, "fat": 2 }
+      },
+      "a7": {
+        "name": "Хлібці",
+        "max_g": 75,
+        "macros": { "kcal": 380, "protein": 11, "carbs": 65, "fat": 2 }
+      },
+      "a8": {
+        "name": "Цільнозерновий хліб",
+        "max_g": 100,
+        "macros": { "kcal": 250, "protein": 9, "carbs": 45, "fat": 3 }
+      },
+      "a9": {
+        "name": "Макарони т.с.",
+        "max_g": 70,
+        "macros": { "kcal": 360, "protein": 12, "carbs": 75, "fat": 1 }
+      },
+      "a10": {
+        "name": "Лаваш",
+        "max_g": 100,
+        "macros": { "kcal": 280, "protein": 9, "carbs": 55, "fat": 1 }
+      }
     }
   },
   "B": {
@@ -21,18 +61,42 @@
     "color": "#F44336",
     "macros": { "kcal": 140, "protein": 22, "carbs": 0.5, "fat": 5 },
     "items": {
-      "b1": { "name": "Телятина", "max_g": 250 },
-      "b2": { "name": "Печінка", "max_g": 330 },
-      "b3": { "name": "Куряче або індиче філе", "max_g": 390 },
-      "b4": { "name": "Риба (до 5% жиру)", "max_g": 390 },
-      "b5": { "name": "Риба (від 5% жиру)", "max_g": 250 },
+      "b1": {
+        "name": "Телятина",
+        "max_g": 250,
+        "macros": { "kcal": 130, "protein": 22, "carbs": 0, "fat": 4 }
+      },
+      "b2": {
+        "name": "Печінка",
+        "max_g": 330,
+        "macros": { "kcal": 135, "protein": 19, "carbs": 5, "fat": 4 }
+      },
+      "b3": {
+        "name": "Куряче або індиче філе",
+        "max_g": 390,
+        "macros": { "kcal": 110, "protein": 23, "carbs": 0, "fat": 1 }
+      },
+      "b4": {
+        "name": "Риба (до 5% жиру)",
+        "max_g": 390,
+        "macros": { "kcal": 110, "protein": 22, "carbs": 0, "fat": 3 }
+      },
+      "b5": {
+        "name": "Риба (від 5% жиру)",
+        "max_g": 250,
+        "macros": { "kcal": 200, "protein": 22, "carbs": 0, "fat": 12 }
+      },
       "b6": {
         "name": "Яйця",
         "max_g": 6,
         "unit": "шт",
         "macros": { "kcal": 70, "protein": 6, "carbs": 0.4, "fat": 5 }
       },
-      "b7": { "name": "Морепродукти", "max_g": 430 }
+      "b7": {
+        "name": "Морепродукти",
+        "max_g": 430,
+        "macros": { "kcal": 90, "protein": 18, "carbs": 1, "fat": 1 }
+      }
     }
   },
   "C": {
@@ -40,7 +104,11 @@
     "color": "#8BC34A",
     "macros": { "kcal": 25, "protein": 2, "carbs": 4, "fat": 0.3 },
     "items": {
-      "c1": { "name": "Овочі (вкл. зелень/квашені) та гриби", "max_g": 600 }
+      "c1": {
+        "name": "Овочі (вкл. зелень/квашені) та гриби",
+        "max_g": 600,
+        "macros": { "kcal": 25, "protein": 2, "carbs": 4, "fat": 0.3 }
+      }
     }
   },
   "D": {
@@ -48,12 +116,36 @@
     "color": "#FFC107",
     "macros": { "kcal": 500, "protein": 1, "carbs": 5, "fat": 50 },
     "items": {
-      "d1": { "name": "Олія (рек. лляну)", "max_g": 17 },
-      "d2": { "name": "Майонез", "max_g": 25 },
-      "d3": { "name": "Авокадо", "max_g": 100 },
-      "d4": { "name": "Оливки", "max_g": 140 },
-      "d5": { "name": "Гірчиця", "max_g": 120 },
-      "d6": { "name": "Кетчуп", "max_g": 80 }
+      "d1": {
+        "name": "Олія (рек. лляну)",
+        "max_g": 17,
+        "macros": { "kcal": 884, "protein": 0, "carbs": 0, "fat": 100 }
+      },
+      "d2": {
+        "name": "Майонез",
+        "max_g": 25,
+        "macros": { "kcal": 680, "protein": 1, "carbs": 3, "fat": 75 }
+      },
+      "d3": {
+        "name": "Авокадо",
+        "max_g": 100,
+        "macros": { "kcal": 160, "protein": 2, "carbs": 9, "fat": 15 }
+      },
+      "d4": {
+        "name": "Оливки",
+        "max_g": 140,
+        "macros": { "kcal": 115, "protein": 1, "carbs": 6, "fat": 11 }
+      },
+      "d5": {
+        "name": "Гірчиця",
+        "max_g": 120,
+        "macros": { "kcal": 60, "protein": 4, "carbs": 6, "fat": 3 }
+      },
+      "d6": {
+        "name": "Кетчуп",
+        "max_g": 80,
+        "macros": { "kcal": 100, "protein": 1, "carbs": 25, "fat": 0.5 }
+      }
     }
   },
   "E": {
@@ -61,12 +153,36 @@
     "color": "#03A9F4",
     "macros": { "kcal": 80, "protein": 6, "carbs": 4, "fat": 4 },
     "items": {
-      "e1": { "name": "Сир кисломолочний нежирний (0,2%)", "max_g": 280 },
-      "e2": { "name": "Сири м'які, тверді, плавлені", "max_g": 60 },
-      "e3": { "name": "Сметана 15%", "max_g": 150 },
-      "e4": { "name": "Кефір 1%", "max_g": 510 },
-      "e5": { "name": "Несолодкий йогурт 1%", "max_g": 510 },
-      "e6": { "name": "Молоко 1%", "max_g": 510 }
+      "e1": {
+        "name": "Сир кисломолочний нежирний (0,2%)",
+        "max_g": 280,
+        "macros": { "kcal": 70, "protein": 18, "carbs": 1.3, "fat": 0.2 }
+      },
+      "e2": {
+        "name": "Сири м'які, тверді, плавлені",
+        "max_g": 60,
+        "macros": { "kcal": 350, "protein": 25, "carbs": 2, "fat": 28 }
+      },
+      "e3": {
+        "name": "Сметана 15%",
+        "max_g": 150,
+        "macros": { "kcal": 160, "protein": 3, "carbs": 4, "fat": 15 }
+      },
+      "e4": {
+        "name": "Кефір 1%",
+        "max_g": 510,
+        "macros": { "kcal": 40, "protein": 3, "carbs": 4, "fat": 1 }
+      },
+      "e5": {
+        "name": "Несолодкий йогурт 1%",
+        "max_g": 510,
+        "macros": { "kcal": 45, "protein": 4, "carbs": 5, "fat": 1 }
+      },
+      "e6": {
+        "name": "Молоко 1%",
+        "max_g": 510,
+        "macros": { "kcal": 42, "protein": 3, "carbs": 5, "fat": 1 }
+      }
     }
   },
   "F": {
@@ -74,8 +190,16 @@
     "color": "#E91E63",
     "macros": { "kcal": 60, "protein": 1, "carbs": 14, "fat": 0.3 },
     "items": {
-      "f1": { "name": "Фрукти та ягоди", "max_g": 440 },
-      "f2": { "name": "Банани, виноград, хурма", "max_g": 230 }
+      "f1": {
+        "name": "Фрукти та ягоди",
+        "max_g": 440,
+        "macros": { "kcal": 50, "protein": 1, "carbs": 12, "fat": 0.3 }
+      },
+      "f2": {
+        "name": "Банани, виноград, хурма",
+        "max_g": 230,
+        "macros": { "kcal": 90, "protein": 1.1, "carbs": 22, "fat": 0.3 }
+      }
     }
   },
   "G": {
@@ -83,17 +207,48 @@
     "color": "#795548",
     "macros": { "kcal": 600, "protein": 20, "carbs": 15, "fat": 55 },
     "items": {
-      "g1": { "name": "Будь-які горіхи або насіння", "max_g": 10 }
+      "g1": {
+        "name": "Будь-які горіхи або насіння",
+        "max_g": 10,
+        "macros": { "kcal": 600, "protein": 20, "carbs": 15, "fat": 55 }
+      }
     }
   },
   "H": {
-    "title": "Будь-що (смаколики)",
+    "title": "Будь-що (смаколики, алкоголь)",
     "color": "#9C27B0",
     "macros": { "kcal": 380, "protein": 5, "carbs": 55, "fat": 15 },
     "items": {
-      "h1": { "name": "Будь-що (солодощі, снеки, ковбаса тощо)", "max_g": 90 },
-      "h2": { "name": "Фрукти", "max_g": 900 },
-      "h3": { "name": "Банани", "max_g": 475 }
+      "h1": {
+        "name": "Будь-що (солодощі, снеки, ковбаса тощо)",
+        "max_g": 90,
+        "macros": { "kcal": 480, "protein": 5, "carbs": 55, "fat": 22 }
+      },
+      "h2": {
+        "name": "Фрукти",
+        "max_g": 900,
+        "macros": { "kcal": 50, "protein": 1, "carbs": 12, "fat": 0.3 }
+      },
+      "h3": {
+        "name": "Банани",
+        "max_g": 475,
+        "macros": { "kcal": 90, "protein": 1.1, "carbs": 22, "fat": 0.3 }
+      },
+      "h4": {
+        "name": "Міцні алкогольні напої (НЕ КОЖНОГО ДНЯ!)",
+        "max_g": 50,
+        "macros": { "kcal": 220, "protein": 0, "carbs": 0, "fat": 0 }
+      },
+      "h5": {
+        "name": "Пиво (НЕ КОЖНОГО ДНЯ!)",
+        "max_g": 240,
+        "macros": { "kcal": 43, "protein": 0.5, "carbs": 3.5, "fat": 0 }
+      },
+      "h6": {
+        "name": "Сухе вино (НЕ КОЖНОГО ДНЯ!)",
+        "max_g": 150,
+        "macros": { "kcal": 70, "protein": 0.1, "carbs": 0.6, "fat": 0 }
+      }
     }
   }
 }
