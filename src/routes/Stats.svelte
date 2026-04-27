@@ -1,3 +1,9 @@
-<script lang="ts"></script>
+<script lang="ts">
+  import Heatmap from '../components/Heatmap.svelte';
+  import CategoryBarChart from '../components/CategoryBarChart.svelte';
+</script>
 
-<section class="p-4"><h2 class="text-xl font-semibold">Статистика</h2></section>
+<section class="grid grid-cols-1 gap-4 p-2 md:p-4 lg:grid-cols-2">
+  <Heatmap />
+  <CategoryBarChart />
+</section>

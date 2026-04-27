@@ -20,6 +20,9 @@ importers:
       motion:
         specifier: ^12.38.0
         version: 12.38.0
+      svelte-frappe-charts:
+        specifier: ^2.0.0
+        version: 2.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1))
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -746,6 +749,9 @@ packages:
       react-dom:
         optional: true
 
+  frappe-charts@1.6.2:
+    resolution: {integrity: sha512-9TC3/+YVUi84yYoEbxFiSqu+1FQ5If/ydUNj6i8FRpwynd08t6a7RkS+IRJozAk6NfdL8/LVTTE1DUOjjKZZxg==}
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -1207,6 +1213,11 @@ packages:
     peerDependenciesMeta:
       svelte:
         optional: true
+
+  svelte-frappe-charts@2.0.0:
+    resolution: {integrity: sha512-iBgsl7zyraeUbWZqvpnQ+9XyjMToGyLMVD/NU265yWep1Zi8Jf9G6HjOsIoAtoenmmZpL/JuuFL/Lq1lzYUlEQ==}
+    peerDependencies:
+      svelte: ^4.0.0 || ^5.0.0
 
   svelte@5.55.5:
     resolution: {integrity: sha512-2uCs/LZ9us+AktdzYJM8OcxQ8qnPS1kpaO7syGT/MgO+6Qr1Ybl+TqPq+97u7PHqmmMlye5ZkoyXONy5mjjAbw==}
@@ -1956,6 +1967,8 @@ snapshots:
       motion-utils: 12.36.0
       tslib: 2.8.1
 
+  frappe-charts@1.6.2: {}
+
   fsevents@2.3.3:
     optional: true
 
@@ -2307,6 +2320,11 @@ snapshots:
       postcss-selector-parser: 7.1.1
       semver: 7.7.4
     optionalDependencies:
+      svelte: 5.55.5(@typescript-eslint/types@8.59.1)
+
+  svelte-frappe-charts@2.0.0(svelte@5.55.5(@typescript-eslint/types@8.59.1)):
+    dependencies:
+      frappe-charts: 1.6.2
       svelte: 5.55.5(@typescript-eslint/types@8.59.1)
 
   svelte@5.55.5(@typescript-eslint/types@8.59.1):

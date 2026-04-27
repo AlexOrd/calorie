@@ -52,6 +52,7 @@
     "@lucide/svelte": "^1.11.0",
     "@melt-ui/svelte": "^0.86.6",
     "localforage": "^1.10.0",
-    "motion": "^12.38.0"
+    "motion": "^12.38.0",
+    "svelte-frappe-charts": "^2.0.0"
   }
 }
