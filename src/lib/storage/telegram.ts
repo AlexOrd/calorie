@@ -1,3 +1,4 @@
+import type { TelegramCloudStorage } from '$types/telegram';
 import type { StorageDriver } from './index';
 
 export class TelegramDriver implements StorageDriver {
@@ -6,7 +7,10 @@ export class TelegramDriver implements StorageDriver {
   save<T>(key: string, value: T): Promise<void> {
     const payload = JSON.stringify(value);
     return new Promise((resolve, reject) => {
-      this.cs.setItem(key, payload, (err) => (err ? reject(err) : resolve()));
+      this.cs.setItem(key, payload, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
     });
   }
 
@@ -26,13 +30,19 @@ export class TelegramDriver implements StorageDriver {
 
   remove(key: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.cs.removeItem(key, (err) => (err ? reject(err) : resolve()));
+      this.cs.removeItem(key, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
     });
   }
 
   keys(): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      this.cs.getKeys((err, keys) => (err ? reject(err) : resolve(keys)));
+      this.cs.getKeys((err, keys) => {
+        if (err) reject(err);
+        else resolve(keys);
+      });
     });
   }
 }
