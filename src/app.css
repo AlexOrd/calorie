@@ -1,2 +1,23 @@
-:root { color-scheme: light dark; }
-body { margin: 0; }
+@import "tailwindcss";
+
+@theme {
+  --color-bg: var(--tg-bg, #0f1115);
+  --color-fg: var(--tg-fg, #e7e9ee);
+  --color-muted: var(--tg-hint, #8a8f99);
+  --color-accent: var(--tg-link, #4cAF50);
+  --color-danger: #ef4444;
+  --color-warn: #f59e0b;
+  --color-ok: #4cAF50;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}

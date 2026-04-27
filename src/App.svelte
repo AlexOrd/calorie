@@ -2,10 +2,6 @@
   let greeting = $state('Calorie скоро тут.');
 </script>
 
-<main>
+<main class="p-4 text-2xl text-[color:var(--color-accent)]">
   <h1>{greeting}</h1>
 </main>
-
-<style>
-  main { padding: 1rem; font-family: system-ui, sans-serif; }
-</style>
