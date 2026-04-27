@@ -84,7 +84,8 @@ calorie/
 │  │  ├─ Stats.svelte
 │  │  └─ Onboarding.svelte
 │  └─ components/
-│     ├─ BottomNav.svelte
+│     ├─ BottomNav.svelte         # mobile (<md)
+│     ├─ SideNav.svelte           # desktop (md+)
 │     ├─ DateStrip.svelte
 │     ├─ CategoryCard.svelte
 │     ├─ EntrySheet.svelte
@@ -282,7 +283,14 @@ Two non-obvious decisions:
 
 ## 8. UI
 
-### 8.1 Shell (`App.svelte`)
+### 8.1 Shell (`App.svelte`) — mobile + desktop
+
+The app is **mobile-first** but renders well on desktop. Layout switches at the
+Tailwind `md` breakpoint (768px). Below `md` we use a single-column phone
+layout with bottom nav. At `md` and up we promote nav to a sidebar and gain
+horizontal room.
+
+**Mobile (`<md`, default):**
 
 ```
 ┌─────────────────────────────┐
@@ -300,6 +308,28 @@ Two non-obvious decisions:
 └─────────────────────────────┘
 ```
 
+**Desktop (`md+`):**
+
+```
+┌────────┬───────────────────────────────────────┐
+│        │ <DateStrip/>                          │
+│ <Side  ├───────────────────────────────────────┤
+│  Nav/> │                                       │
+│        │ <Tab content>                         │
+│        │ (max-w-5xl, centered)                 │
+│        │                                       │
+└────────┴───────────────────────────────────────┘
+```
+
+`<BottomNav>` and `<SideNav>` are two thin wrappers around the same nav-item
+list (Dashboard / Journal / Stats); only one renders at a time, controlled by
+`md:hidden` / `hidden md:flex` Tailwind classes. Nav items use Lucide icons
+and are labeled in Ukrainian.
+
+Page content is constrained to `max-w-5xl mx-auto px-4 md:px-6` so the layout
+doesn't stretch across an ultrawide monitor. Onboarding uses its own narrower
+container (`max-w-md mx-auto`) to keep the wizard form-shaped on every viewport.
+
 `currentTab = $state<'dashboard'|'journal'|'stats'>('dashboard')`. Switching
 tabs toggles `display: none` rather than mounting/unmounting — preserves chart
 state and scroll position on each tab.
@@ -311,7 +341,10 @@ top-level branch, not a route. URL hash is not used in v1.
 
 ### 8.3 Dashboard (`routes/Dashboard.svelte`)
 
-Renders 8 `<CategoryCard>`s (mobile: 1 col, ≥sm: 2 col). Each card:
+Renders 8 `<CategoryCard>`s in a responsive grid:
+`grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`. On mobile cards stack
+full-width; on tablets they pair up; on desktop all 8 categories fit in two
+rows of four — the entire daily picture is visible without scrolling. Each card:
 
 - Title (e.g. "Б — М'ясо, риба, яйця").
 - Animated progress bar driven by a `Spring` rune (stiffness 0.15, damping 0.8).
@@ -324,11 +357,19 @@ Visual cap on the bar: 150% (so a +50% overage is still expressive without
 distorting layout). When `consumed` crosses from <100 to ≥100, run
 `pulseWarning` once. Soft-cap behavior: the card never blocks input.
 
-### 8.5 `<EntrySheet>` (Melt UI Dialog as bottom sheet)
+### 8.5 `<EntrySheet>` (Melt UI Dialog — bottom sheet on mobile, centered modal on desktop)
 
 Lists products of the active category from `personalizedDb`. Tapping a row
 expands it inline to reveal `<AmountInput>` + an "Додати" button. On submit:
 `dailyLog.add(...)` → `pulseSuccess` on the source card → close sheet.
+
+**Responsive presentation** (single Melt UI Dialog instance, two style
+variants via Tailwind classes):
+
+- **Mobile (`<md`):** anchored to the bottom edge, full-width, slide-up
+  transition, `max-h-[85vh]` with internal scroll.
+- **Desktop (`md+`):** centered modal, `max-w-md`, scale-fade transition,
+  backdrop dim. Same content, no layout fork.
 
 ### 8.6 `<AmountInput>` — 2-way percent ↔ amount binding
 
@@ -361,11 +402,19 @@ This pattern is reused anywhere two values are bound to the same underlying quan
 ### 8.7 Journal (`routes/Journal.svelte`)
 
 Chronological list of `dailyLog.entries` for the active date. Each row:
-item name, `pct%`, computed amount via `personalizedDb`, time. Swipe-left
-reveals delete; tap delete → `dailyLog.remove(ts)`. Swipe is implemented with
-pointer events + `Spring` for the slide; no library. Animations: `flip` on the
-list, `fly` for row enter/exit. **Edit-in-place is not supported in v1**;
-delete + re-add is the workflow.
+item name, `pct%`, computed amount via `personalizedDb`, time. Animations:
+`flip` on the list, `fly` for row enter/exit. **Edit-in-place is not
+supported in v1**; delete + re-add is the workflow.
+
+**Delete affordance is responsive**:
+
+- **Mobile (`<md`, touch):** swipe-left reveals a delete button; pointer
+  events + `Spring` for the slide; no library.
+- **Desktop (`md+`, mouse):** a small Lucide trash icon appears on row hover
+  (also focusable via Tab for keyboard users). Click → confirm in-row
+  ("Видалити?" inline) → `dailyLog.remove(ts)`.
+
+Both paths call the same `remove(ts)` action.
 
 ### 8.8 Stats (`routes/Stats.svelte`)
 
@@ -375,6 +424,11 @@ delete + re-add is the workflow.
 - **Bar chart (week)** via `svelte-frappe-charts`. Tabs above the chart pick a
   category (А–Ж). X = last 7 days, Y = % consumed (0..N). Tab switch updates
   the existing chart instance — don't re-mount.
+
+**Layout is responsive**: charts stack vertically on mobile and place side by
+side at `lg+` (`grid-cols-1 lg:grid-cols-2 gap-6`). Frappe charts auto-resize
+to their container, so each chart picks up the extra width on desktop without
+custom logic.
 
 ### 8.9 DateStrip (`components/DateStrip.svelte`)
 
@@ -539,3 +593,4 @@ already wired.
 | K-factor extreme inputs | Clamp to [0.6, 1.6] | Typo protection. |
 | Tab swap mechanism | `display:none` toggle, not mount/unmount | Preserves chart state + scroll position. |
 | Animation library | Svelte built-ins + `motion` (Motion One, ~5KB) | Tiny footprint, covers all "important moment" cases. |
+| Mobile vs desktop | Mobile-first; desktop adapts at Tailwind `md` (768px) and `lg` (1024px) — sidebar nav, 4-column dashboard grid, side-by-side charts, hover-delete in journal, centered-modal entry sheet | One DOM tree, just Tailwind responsive classes; no separate desktop codepath. |
