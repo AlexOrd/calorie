@@ -366,7 +366,7 @@ body {
   let greeting = $state('Calorie скоро тут.');
 </script>
 
-<main class="p-4 text-2xl text-[color:var(--color-accent)]">
+<main class="p-4 text-2xl text-accent">
   <h1>{greeting}</h1>
 </main>
 ```
@@ -1519,7 +1519,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
 </script>
 
 <nav
-  class="fixed inset-x-0 bottom-0 z-30 flex border-t border-white/10 bg-[color:var(--color-bg)] md:hidden"
+  class="fixed inset-x-0 bottom-0 z-30 flex border-t border-white/10 bg-bg md:hidden"
   aria-label="Головна навігація"
 >
   {#each NAV_ITEMS as item (item.key)}
@@ -1529,8 +1529,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
       class={[
         'flex flex-1 flex-col items-center gap-1 py-2 text-xs',
         current === item.key
-          ? 'text-[color:var(--color-accent)]'
-          : 'text-[color:var(--color-muted)]',
+          ? 'text-accent'
+          : 'text-muted',
       ]}
       aria-current={current === item.key ? 'page' : undefined}
       onclick={() => (current = item.key)}
@@ -1555,7 +1555,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   class="hidden h-screen w-56 shrink-0 flex-col gap-1 border-r border-white/10 p-4 md:flex"
   aria-label="Головна навігація"
 >
-  <h1 class="mb-4 px-2 text-lg font-semibold text-[color:var(--color-accent)]">Calorie</h1>
+  <h1 class="mb-4 px-2 text-lg font-semibold text-accent">Calorie</h1>
   {#each NAV_ITEMS as item (item.key)}
     {@const Icon = item.icon}
     <button
@@ -1563,8 +1563,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
       class={[
         'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
         current === item.key
-          ? 'bg-white/5 text-[color:var(--color-fg)]'
-          : 'text-[color:var(--color-muted)] hover:bg-white/5',
+          ? 'bg-white/5 text-fg'
+          : 'text-muted hover:bg-white/5',
       ]}
       aria-current={current === item.key ? 'page' : undefined}
       onclick={() => (current = item.key)}
@@ -1638,7 +1638,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
 <div class="flex items-center gap-1 border-b border-white/10 px-2 py-2 md:px-4">
   <button
     type="button"
-    class="rounded px-2 py-1 text-sm text-[color:var(--color-muted)] hover:bg-white/5"
+    class="rounded px-2 py-1 text-sm text-muted hover:bg-white/5"
     onclick={() => shift(-7)}
     aria-label="Попередній тиждень"
   >
@@ -1652,10 +1652,10 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
         class={[
           'flex flex-col items-center rounded-md px-2 py-1 text-xs',
           activeDate.value === key
-            ? 'bg-[color:var(--color-accent)] text-white'
+            ? 'bg-accent text-white'
             : key === today
-              ? 'font-bold text-[color:var(--color-fg)]'
-              : 'text-[color:var(--color-muted)]',
+              ? 'font-bold text-fg'
+              : 'text-muted',
         ]}
         onclick={() => activeDate.set(key)}
       >
@@ -1667,7 +1667,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
 
   <button
     type="button"
-    class="rounded px-2 py-1 text-sm text-[color:var(--color-muted)] hover:bg-white/5"
+    class="rounded px-2 py-1 text-sm text-muted hover:bg-white/5"
     onclick={() => shift(7)}
     aria-label="Наступний тиждень"
   >
@@ -1742,12 +1742,12 @@ git commit -m "feat(ui): add DateStrip component"
 
 <section class="mx-auto max-w-md p-6">
   <h1 class="mb-4 text-2xl font-bold">Calorie</h1>
-  <p class="mb-6 text-[color:var(--color-muted)]">
+  <p class="mb-6 text-muted">
     Тимчасовий екран онбордингу. Натисніть, щоб створити дефолтний профіль.
   </p>
   <button
     type="button"
-    class="rounded-md bg-[color:var(--color-accent)] px-4 py-2 text-white"
+    class="rounded-md bg-accent px-4 py-2 text-white"
     onclick={bootstrap}
   >
     Почати
@@ -1789,7 +1789,7 @@ git commit -m "feat(ui): add DateStrip component"
 </script>
 
 {#if !profile.loaded}
-  <div class="flex h-screen items-center justify-center text-[color:var(--color-muted)]">
+  <div class="flex h-screen items-center justify-center text-muted">
     Завантаження…
   </div>
 {:else if !profile.hasProfile}
@@ -1860,16 +1860,16 @@ mkdir -p src/components/onboarding
 </script>
 
 <div class="flex flex-col gap-6 text-center">
-  <h1 class="text-3xl font-bold text-[color:var(--color-accent)]">Calorie</h1>
-  <p class="text-[color:var(--color-fg)]">
+  <h1 class="text-3xl font-bold text-accent">Calorie</h1>
+  <p class="text-fg">
     Персональний щоденник раціону за категоріями. Дані залишаються на вашому пристрої.
   </p>
-  <p class="text-sm text-[color:var(--color-muted)]">
+  <p class="text-sm text-muted">
     Спершу — кілька параметрів, щоб налаштувати норми під вас.
   </p>
   <button
     type="button"
-    class="mt-4 self-center rounded-md bg-[color:var(--color-accent)] px-6 py-2 text-white"
+    class="mt-4 self-center rounded-md bg-accent px-6 py-2 text-white"
     onclick={onNext}
   >
     Почати
@@ -1977,13 +1977,13 @@ git commit -m "feat(onboarding): add welcome step"
     <div class="flex gap-2">
       <label class={[
         'flex flex-1 items-center justify-center rounded-md border border-white/10 px-3 py-2',
-        gender === 'female' && 'bg-[color:var(--color-accent)] text-white',
+        gender === 'female' && 'bg-accent text-white',
       ]}>
         <input type="radio" class="sr-only" bind:group={gender} value="female" /> Жін
       </label>
       <label class={[
         'flex flex-1 items-center justify-center rounded-md border border-white/10 px-3 py-2',
-        gender === 'male' && 'bg-[color:var(--color-accent)] text-white',
+        gender === 'male' && 'bg-accent text-white',
       ]}>
         <input type="radio" class="sr-only" bind:group={gender} value="male" /> Чол
       </label>
@@ -1996,7 +1996,7 @@ git commit -m "feat(onboarding): add welcome step"
       {#each ACTIVITY_OPTIONS as opt (opt.value)}
         <label class={[
           'flex items-center justify-center rounded-md border border-white/10 px-3 py-2 text-center',
-          activity === opt.value && 'bg-[color:var(--color-accent)] text-white',
+          activity === opt.value && 'bg-accent text-white',
         ]}>
           <input type="radio" class="sr-only" bind:group={activity} value={opt.value} />
           {opt.label}
@@ -2007,7 +2007,7 @@ git commit -m "feat(onboarding): add welcome step"
 
   <button
     type="submit"
-    class="mt-4 rounded-md bg-[color:var(--color-accent)] px-4 py-2 text-white disabled:opacity-50"
+    class="mt-4 rounded-md bg-accent px-4 py-2 text-white disabled:opacity-50"
     disabled={!valid}
   >
     Продовжити
@@ -2061,9 +2061,9 @@ git commit -m "feat(onboarding): add measurements step"
 
 <div class="flex flex-col gap-5">
   <h2 class="text-xl font-semibold">Готово</h2>
-  <p class="text-[color:var(--color-muted)]">
+  <p class="text-muted">
     Ваш персональний коефіцієнт:
-    <span class="text-2xl font-bold text-[color:var(--color-accent)]">{k.toFixed(2)}</span>
+    <span class="text-2xl font-bold text-accent">{k.toFixed(2)}</span>
   </p>
   <p class="rounded-md border border-white/10 p-3 text-sm">
     Приклад: {sample}
@@ -2078,7 +2078,7 @@ git commit -m "feat(onboarding): add measurements step"
     </button>
     <button
       type="button"
-      class="flex-1 rounded-md bg-[color:var(--color-accent)] px-4 py-2 text-white"
+      class="flex-1 rounded-md bg-accent px-4 py-2 text-white"
       onclick={onConfirm}
     >
       Готово
@@ -2211,8 +2211,8 @@ git commit -m "feat(onboarding): wire up 3-step wizard with profile save"
 >
   <div class="flex w-full items-center justify-between">
     <span class="text-base font-semibold">{categoryKey} — {title}</span>
-    <span class="text-xs text-[color:var(--color-muted)]">
-      {#if over}<span class="text-[color:var(--color-danger)]">+{overshoot}%</span>
+    <span class="text-xs text-muted">
+      {#if over}<span class="text-danger">+{overshoot}%</span>
       {:else}{remaining}% залишилось{/if}
     </span>
   </div>
@@ -2306,7 +2306,7 @@ git commit -m "feat(ui): add CategoryCard with animated progress and warning pul
       oninput={onAmountInput}
       class="w-24 rounded-md border border-white/10 bg-transparent px-2 py-1"
     />
-    <span class="text-sm text-[color:var(--color-muted)]">{unit}</span>
+    <span class="text-sm text-muted">{unit}</span>
     <span class="ml-auto text-sm tabular-nums">{Math.round(pct)}%</span>
   </div>
 </div>
@@ -2399,7 +2399,7 @@ pnpm add @melt-ui/svelte
 
     <div
       use:melt={$content}
-      class="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-auto rounded-t-2xl border-t border-white/10 bg-[color:var(--color-bg)] p-4
+      class="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-auto rounded-t-2xl border-t border-white/10 bg-bg p-4
              md:bottom-auto md:left-1/2 md:top-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
       transition:fly={{ y: 80, duration: 250 }}
       role="dialog"
@@ -2410,7 +2410,7 @@ pnpm add @melt-ui/svelte
         <button
           type="button"
           use:melt={$close}
-          class="text-[color:var(--color-muted)]"
+          class="text-muted"
           aria-label="Закрити"
         >
           ✕
@@ -2429,7 +2429,7 @@ pnpm add @melt-ui/svelte
               onclick={() => expand(id)}
             >
               <span>{item.name}</span>
-              <span class="text-xs text-[color:var(--color-muted)]">
+              <span class="text-xs text-muted">
                 100% = {item.max_g} {item.unit ?? 'г'}
               </span>
             </button>
@@ -2439,7 +2439,7 @@ pnpm add @melt-ui/svelte
                 <AmountInput {item} bind:pct />
                 <button
                   type="button"
-                  class="self-end rounded-md bg-[color:var(--color-accent)] px-3 py-1 text-sm text-white disabled:opacity-50"
+                  class="self-end rounded-md bg-accent px-3 py-1 text-sm text-white disabled:opacity-50"
                   disabled={pct <= 0}
                   onclick={() => commit(id)}
                 >
@@ -2605,7 +2605,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
 <li class="relative overflow-hidden border-b border-white/5">
   <button
     type="button"
-    class="absolute inset-y-0 right-0 flex w-[88px] items-center justify-center bg-[color:var(--color-danger)] text-white"
+    class="absolute inset-y-0 right-0 flex w-[88px] items-center justify-center bg-danger text-white"
     onclick={commitDelete}
     aria-label="Видалити запис"
   >
@@ -2613,7 +2613,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
   </button>
 
   <div
-    class="group relative flex items-center justify-between bg-[color:var(--color-bg)] px-3 py-3"
+    class="group relative flex items-center justify-between bg-bg px-3 py-3"
     style="transform: translateX({offset.current}px);"
     onpointerdown={onPointerDown}
     onpointermove={onPointerMove}
@@ -2622,7 +2622,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
   >
     <div class="flex flex-col gap-0.5">
       <span class="text-sm">{item.name}</span>
-      <span class="text-xs text-[color:var(--color-muted)]">
+      <span class="text-xs text-muted">
         {amount()} {unit()} · {Math.round(entry.pct)}% · {time()}
       </span>
     </div>
@@ -2632,14 +2632,14 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
       {#if confirming}
         <button
           type="button"
-          class="rounded-md bg-[color:var(--color-danger)] px-2 py-1 text-xs text-white"
+          class="rounded-md bg-danger px-2 py-1 text-xs text-white"
           onclick={commitDelete}
         >
           Видалити?
         </button>
         <button
           type="button"
-          class="text-xs text-[color:var(--color-muted)]"
+          class="text-xs text-muted"
           onclick={() => (confirming = false)}
         >
           Ні
@@ -2647,7 +2647,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
       {:else}
         <button
           type="button"
-          class="text-[color:var(--color-muted)] opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+          class="text-muted opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
           onclick={() => (confirming = true)}
           aria-label="Видалити запис"
         >
@@ -2701,7 +2701,7 @@ git commit -m "feat(ui): add JournalRow with mobile swipe + desktop hover delete
   <h2 class="mb-3 text-xl font-semibold">Журнал</h2>
 
   {#if sorted.length === 0}
-    <p class="text-sm text-[color:var(--color-muted)]">Поки що нічого не додано.</p>
+    <p class="text-sm text-muted">Поки що нічого не додано.</p>
   {:else}
     <ul class="flex flex-col rounded-md border border-white/10 bg-white/[0.02]">
       {#each sorted as entry (entry.ts)}
@@ -2816,7 +2816,7 @@ pnpm add svelte-frappe-charts
       colors={['#1f2937', '#86efac', '#fbbf24', '#ef4444']}
     />
   {:else}
-    <p class="text-xs text-[color:var(--color-muted)]">Завантаження…</p>
+    <p class="text-xs text-muted">Завантаження…</p>
   {/if}
 </div>
 ```
@@ -2894,7 +2894,7 @@ git commit -m "feat(stats): add Heatmap (90-day verdict view via svelte-frappe-c
         type="button"
         class={[
           'rounded-md border border-white/10 px-2 py-1 text-xs',
-          selected === key && 'bg-[color:var(--color-accent)] text-white',
+          selected === key && 'bg-accent text-white',
         ]}
         onclick={() => (selected = key)}
       >
@@ -2905,7 +2905,7 @@ git commit -m "feat(stats): add Heatmap (90-day verdict view via svelte-frappe-c
   {#if loaded}
     <Chart type="bar" data={chartData} height={220} colors={['#4cAF50']} />
   {:else}
-    <p class="text-xs text-[color:var(--color-muted)]">Завантаження…</p>
+    <p class="text-xs text-muted">Завантаження…</p>
   {/if}
 </div>
 ```
