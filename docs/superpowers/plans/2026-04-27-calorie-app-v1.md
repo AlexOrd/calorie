@@ -286,7 +286,6 @@ git commit -m "feat: bootstrap Svelte 5 app shell"
 ### Task 4: Add Tailwind CSS v4
 
 **Files:**
-- Create: `tailwind.config.ts`
 - Modify: `vite.config.ts`
 - Modify: `src/app.css`
 - Modify: `src/App.svelte`
@@ -297,17 +296,7 @@ git commit -m "feat: bootstrap Svelte 5 app shell"
 pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
-- [ ] **Step 2: Create `tailwind.config.ts`** (kept minimal; Tailwind v4 reads most config from CSS)
-
-```ts
-import type { Config } from 'tailwindcss';
-
-export default {
-  content: ['./index.html', './src/**/*.{ts,svelte}'],
-} satisfies Config;
-```
-
-- [ ] **Step 3: Update `vite.config.ts` to include the Tailwind plugin**
+- [ ] **Step 2: Update `vite.config.ts` to include the Tailwind plugin**
 
 Replace `vite.config.ts`:
 
@@ -331,7 +320,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 4: Replace `src/app.css` with Tailwind imports + Telegram theme variables**
+- [ ] **Step 3: Replace `src/app.css` with Tailwind imports + Telegram theme variables**
 
 ```css
 @import "tailwindcss";
@@ -340,10 +329,10 @@ export default defineConfig({
   --color-bg: var(--tg-bg, #0f1115);
   --color-fg: var(--tg-fg, #e7e9ee);
   --color-muted: var(--tg-hint, #8a8f99);
-  --color-accent: var(--tg-link, #4cAF50);
+  --color-accent: var(--tg-link, #4caf50);
   --color-danger: #ef4444;
   --color-warn: #f59e0b;
-  --color-ok: #4cAF50;
+  --color-ok: #4caf50;
 }
 
 :root {
@@ -359,7 +348,7 @@ body {
 }
 ```
 
-- [ ] **Step 5: Replace `src/App.svelte` to use a Tailwind class for smoke test**
+- [ ] **Step 4: Replace `src/App.svelte` to use a Tailwind class for smoke test**
 
 ```svelte
 <script lang="ts">
@@ -371,7 +360,7 @@ body {
 </main>
 ```
 
-- [ ] **Step 6: Verify**
+- [ ] **Step 5: Verify**
 
 Run: `pnpm dev`
 Open `http://localhost:5173/`. The heading is green and has padding. Stop the server.
@@ -379,10 +368,10 @@ Open `http://localhost:5173/`. The heading is green and has padding. Stop the se
 Run: `pnpm check`
 Expected: `0 errors and 0 warnings`.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add tailwind.config.ts vite.config.ts src/app.css src/App.svelte package.json pnpm-lock.yaml
+git add vite.config.ts src/app.css src/App.svelte package.json pnpm-lock.yaml
 git commit -m "feat: add Tailwind CSS v4 with Telegram theme variables"
 ```
 
@@ -459,7 +448,7 @@ export default [
     },
   },
   {
-    files: ['vite.config.ts', 'svelte.config.js', 'eslint.config.js', 'tailwind.config.ts'],
+    files: ['vite.config.ts', 'svelte.config.js', 'eslint.config.js'],
     languageOptions: { globals: { ...globals.node } },
   },
   prettier,
@@ -2903,7 +2892,7 @@ git commit -m "feat(stats): add Heatmap (90-day verdict view via svelte-frappe-c
     {/each}
   </div>
   {#if loaded}
-    <Chart type="bar" data={chartData} height={220} colors={['#4cAF50']} />
+    <Chart type="bar" data={chartData} height={220} colors={['#4caf50']} />
   {:else}
     <p class="text-xs text-muted">Завантаження…</p>
   {/if}
@@ -3081,7 +3070,7 @@ export default defineConfig({
         name: 'Calorie',
         short_name: 'Calorie',
         lang: 'uk',
-        theme_color: '#4cAF50',
+        theme_color: '#4caf50',
         background_color: '#0f1115',
         display: 'standalone',
         start_url: '/',

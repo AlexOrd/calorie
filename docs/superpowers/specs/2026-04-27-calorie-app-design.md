@@ -56,7 +56,6 @@ PWA support, GitHub Pages deploy.
 calorie/
 ├─ index.html                # includes Telegram WebApp script tag
 ├─ vite.config.ts            # base: '/' (custom domain), VitePWA plugin
-├─ tailwind.config.ts
 ├─ tsconfig.json
 ├─ eslint.config.js          # flat config; TS + Svelte + Prettier
 ├─ .prettierrc               # Prettier + plugins

@@ -4,10 +4,10 @@
   --color-bg: var(--tg-bg, #0f1115);
   --color-fg: var(--tg-fg, #e7e9ee);
   --color-muted: var(--tg-hint, #8a8f99);
-  --color-accent: var(--tg-link, #4cAF50);
+  --color-accent: var(--tg-link, #4caf50);
   --color-danger: #ef4444;
   --color-warn: #f59e0b;
-  --color-ok: #4cAF50;
+  --color-ok: #4caf50;
 }
 
 :root {
