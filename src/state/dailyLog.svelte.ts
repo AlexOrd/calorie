@@ -48,7 +48,12 @@ export const dailyLog = {
   },
 };
 
-const _categoryConsumed = $derived.by<Record<CategoryKey, number>>(() => {
+/**
+ * Returns the per-category sum of consumed % for the current day.
+ * Reactive because it reads `dailyLog.entries` (a $state-backed getter) —
+ * calling this inside a `$derived` or template re-runs on each entry add/remove.
+ */
+export function categoryConsumed(): Record<CategoryKey, number> {
   const sums: Record<CategoryKey, number> = {
     A: 0,
     B: 0,
@@ -61,14 +66,6 @@ const _categoryConsumed = $derived.by<Record<CategoryKey, number>>(() => {
   };
   for (const e of dailyLog.entries) sums[e.cat] += e.pct;
   return sums;
-});
-
-// Svelte 5 disallows exporting $derived directly; wrap in a getter so consumers
-// read `.value` and stay reactive.
-export const categoryConsumed = {
-  get value(): Record<CategoryKey, number> {
-    return _categoryConsumed;
-  },
-};
+}
 
 export { CATEGORY_KEYS };

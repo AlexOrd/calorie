@@ -10,10 +10,9 @@ const _personalizedDb = $derived.by<FoodDb>(() => {
   return scaleFoodDb(BASE, k);
 });
 
-// Svelte 5 disallows exporting $derived directly; wrap in a getter so consumers
-// read `.value` and stay reactive.
-export const personalizedDb = {
-  get value(): FoodDb {
-    return _personalizedDb;
-  },
-};
+// Svelte 5 disallows exporting $derived directly. Per the compiler's hint,
+// expose the value via a function — calling it inside templates / $derived
+// keeps reactivity intact.
+export function personalizedDb(): FoodDb {
+  return _personalizedDb;
+}

@@ -3,13 +3,14 @@
   import { pulseWarning } from '$lib/anim';
   import type { CategoryKey } from '$types/food';
 
-  let { categoryKey, title, color, consumed, onClick } = $props<{
+  interface Props {
     categoryKey: CategoryKey;
     title: string;
     color: string;
     consumed: number;
     onClick: (key: CategoryKey) => void;
-  }>();
+  }
+  let { categoryKey, title, color, consumed, onClick }: Props = $props();
 
   const fill = new Spring(0, { stiffness: 0.15, damping: 0.8 });
 

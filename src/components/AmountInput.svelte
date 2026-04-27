@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { FoodItem } from '$types/food';
 
-  let { item, pct = $bindable(0) } = $props<{
+  interface Props {
     item: FoodItem;
     pct: number;
-  }>();
+  }
+  let { item, pct = $bindable(0) }: Props = $props();
 
   const unit = $derived(item.unit ?? 'г');
   const isPieces = $derived(unit === 'шт');

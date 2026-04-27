@@ -1,5 +1,8 @@
 <script lang="ts">
-  let { onNext } = $props<{ onNext: () => void }>();
+  interface Props {
+    onNext: () => void;
+  }
+  let { onNext }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-6 text-center">

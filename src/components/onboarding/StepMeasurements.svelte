@@ -1,7 +1,10 @@
 <script lang="ts">
   import type { ProfileInput, ActivityLevel } from '$types/profile';
 
-  let { onSubmit } = $props<{ onSubmit: (input: ProfileInput) => void }>();
+  interface Props {
+    onSubmit: (input: ProfileInput) => void;
+  }
+  let { onSubmit }: Props = $props();
 
   let height = $state(168);
   let weight = $state(74);

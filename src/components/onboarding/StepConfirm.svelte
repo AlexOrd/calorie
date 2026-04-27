@@ -3,11 +3,12 @@
   import { computeKFactor, scaleFoodDb } from '$lib/scaling';
   import baseFoodDb from '../../data/foodDb.json';
 
-  let { input, onConfirm, onBack } = $props<{
+  interface Props {
     input: ProfileInput;
     onConfirm: () => void;
     onBack: () => void;
-  }>();
+  }
+  let { input, onConfirm, onBack }: Props = $props();
 
   const k = $derived(computeKFactor(input));
   const sample = $derived.by(() => {

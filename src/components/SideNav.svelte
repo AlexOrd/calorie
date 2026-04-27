@@ -1,7 +1,10 @@
 <script lang="ts">
   import { NAV_ITEMS, type TabKey } from '$lib/nav';
 
-  let { current = $bindable<TabKey>() } = $props<{ current: TabKey }>();
+  interface Props {
+    current: TabKey;
+  }
+  let { current = $bindable() }: Props = $props();
 </script>
 
 <nav

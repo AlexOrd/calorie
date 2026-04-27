@@ -2397,7 +2397,7 @@ pnpm add @melt-ui/svelte
   import { createDialog, melt } from '@melt-ui/svelte';
   import { fly, scale } from 'svelte/transition';
   import { dailyLog } from '$state/dailyLog.svelte';
-  import { personalizedDb } from '$state/personalizedDb.svelte';
+  import { personalizedDb } from '$state/personalizedDb';
   import { pulseSuccess } from '$lib/anim';
   import AmountInput from './AmountInput.svelte';
   import type { CategoryKey } from '$types/food';
@@ -2420,7 +2420,7 @@ pnpm add @melt-ui/svelte
     open = $meltOpen;
   });
 
-  let category = $derived(categoryKey ? personalizedDb.value[categoryKey] : null);
+  let category = $derived(categoryKey ? personalizedDb()[categoryKey] : null);
 
   let expandedItem = $state<string | null>(null);
   let pct = $state(0);
@@ -2523,7 +2523,7 @@ git commit -m "feat(ui): add EntrySheet (Melt UI Dialog, responsive bottom sheet
 
 ```svelte
 <script lang="ts">
-  import { personalizedDb } from '$state/personalizedDb.svelte';
+  import { personalizedDb } from '$state/personalizedDb';
   import { categoryConsumed } from '$state/dailyLog.svelte';
   import { CATEGORY_KEYS } from '$types/food';
   import CategoryCard from '../components/CategoryCard.svelte';
@@ -2543,9 +2543,9 @@ git commit -m "feat(ui): add EntrySheet (Melt UI Dialog, responsive bottom sheet
   {#each CATEGORY_KEYS as key (key)}
     <CategoryCard
       categoryKey={key}
-      title={personalizedDb.value[key].title}
-      color={personalizedDb.value[key].color}
-      consumed={categoryConsumed.value[key]}
+      title={personalizedDb()[key].title}
+      color={personalizedDb()[key].color}
+      consumed={categoryConsumed()[key]}
       onClick={openSheet}
     />
   {/each}
@@ -2730,12 +2730,12 @@ git commit -m "feat(ui): add JournalRow with mobile swipe + desktop hover delete
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
   import { dailyLog } from '$state/dailyLog.svelte';
-  import { personalizedDb } from '$state/personalizedDb.svelte';
+  import { personalizedDb } from '$state/personalizedDb';
   import JournalRow from '../components/JournalRow.svelte';
   import type { CategoryKey, FoodItem } from '$types/food';
 
   function lookup(catKey: CategoryKey, itemId: string): FoodItem | null {
-    return personalizedDb.value[catKey]?.items[itemId] ?? null;
+    return personalizedDb()[catKey]?.items[itemId] ?? null;
   }
 
   let sorted = $derived([...dailyLog.entries].sort((a, b) => b.ts - a.ts));

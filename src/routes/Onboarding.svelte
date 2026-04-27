@@ -11,11 +11,13 @@
   let input = $state<ProfileInput | null>(null);
 
   function next(): void {
-    if (step < 2) step = (step + 1) as Step;
+    if (step === 0) step = 1;
+    else if (step === 1) step = 2;
   }
 
   function back(): void {
-    if (step > 0) step = (step - 1) as Step;
+    if (step === 2) step = 1;
+    else if (step === 1) step = 0;
   }
 
   function setInput(value: ProfileInput): void {
