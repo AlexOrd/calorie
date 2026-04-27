@@ -116,7 +116,7 @@ git commit -m "chore: initialize pnpm workspace with Vite + Svelte 5 + TS"
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
-    "types": ["svelte", "vite/client", "vite-plugin-pwa/client"],
+    "types": ["svelte", "vite/client"],
     "baseUrl": ".",
     "paths": {
       "$lib/*": ["./src/lib/*"],
@@ -3031,10 +3031,16 @@ git commit -m "feat(telegram): wire WebApp ready/expand and theme variables in m
 - Create: `public/CNAME`
 - Delete: `public/icons/.gitkeep`
 
-- [ ] **Step 1: Install vite-plugin-pwa**
+- [ ] **Step 1: Install vite-plugin-pwa + re-add the type reference**
 
 ```bash
-pnpm add -D vite-plugin-pwa
+command pnpm add -D vite-plugin-pwa
+```
+
+Then add `vite-plugin-pwa/client` back to `tsconfig.json`'s `types` array (it was removed in Task 2 because the package wasn't installed yet — re-adding now that it is). Final `types` line:
+
+```jsonc
+"types": ["svelte", "vite/client", "vite-plugin-pwa/client"],
 ```
 
 - [ ] **Step 2: Add icon assets + CNAME**
