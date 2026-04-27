@@ -447,7 +447,12 @@ export default [
     languageOptions: {
       globals: { ...globals.browser, ...globals.es2022 },
       parserOptions: {
-        project: './tsconfig.json',
+        // projectService auto-discovers tsconfigs and traverses project
+        // references. allowDefaultProject catches eslint.config.js itself,
+        // which isn't a member of any tsconfig.
+        projectService: {
+          allowDefaultProject: ['*.config.js'],
+        },
         extraFileExtensions: ['.svelte'],
         tsconfigRootDir: import.meta.dirname,
       },
@@ -471,6 +476,18 @@ export default [
   {
     files: ['vite.config.ts', 'svelte.config.js', 'eslint.config.js'],
     languageOptions: { globals: { ...globals.node } },
+  },
+  {
+    // Config files sit outside the typed project, so the unsafe-* rules
+    // can't reason about them — relax those for *.config.js only.
+    files: ['*.config.js'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+    },
   },
   prettier,
 ];
