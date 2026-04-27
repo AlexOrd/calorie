@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "language": "en,uk",
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "dev-dist",
+    "pnpm-lock.yaml",
+    ".pnpm-store",
+    "public/icons"
+  ],
+  "words": [
+    "calorie",
+    "Calorie",
+    "ordynski",
+    "AlexOrd",
+    "Mifflin",
+    "Jeor",
+    "TDEE",
+    "tdee",
+    "promisified",
+    "ultrawide",
+    "newapp",
+    "frappe",
+    "localforage",
+    "lucide",
+    "datadog",
+    "shadcn",
+    "Aikido",
+    "BotFather",
+    "untrack",
+    "tabular"
+  ]
+}
