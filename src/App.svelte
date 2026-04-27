@@ -3,11 +3,13 @@
   import { profile } from '$state/profile.svelte';
   import { activeDate } from '$state/activeDate.svelte';
   import { dailyLog } from '$state/dailyLog.svelte';
+  import { activity } from '$state/activity.svelte';
   import BottomNav from './components/BottomNav.svelte';
   import SideNav from './components/SideNav.svelte';
   import DateStrip from './components/DateStrip.svelte';
   import Dashboard from './routes/Dashboard.svelte';
   import Journal from './routes/Journal.svelte';
+  import Activity from './routes/Activity.svelte';
   import Stats from './routes/Stats.svelte';
   import Profile from './routes/Profile.svelte';
   import Onboarding from './routes/Onboarding.svelte';
@@ -18,13 +20,15 @@
   onMount(async () => {
     await profile.load();
     if (profile.hasProfile) {
-      await dailyLog.load(activeDate.value);
+      await Promise.all([dailyLog.load(activeDate.value), activity.load(activeDate.value)]);
     }
   });
 
   $effect(() => {
     if (!profile.hasProfile) return;
-    void dailyLog.load(activeDate.value);
+    const date = activeDate.value;
+    void dailyLog.load(date);
+    void activity.load(date);
   });
 </script>
 
@@ -40,6 +44,7 @@
       <main class="mx-auto w-full max-w-5xl flex-1 px-2 md:px-6">
         <div class:hidden={currentTab !== 'dashboard'}><Dashboard /></div>
         <div class:hidden={currentTab !== 'journal'}><Journal /></div>
+        <div class:hidden={currentTab !== 'activity'}><Activity /></div>
         <div class:hidden={currentTab !== 'stats'}><Stats /></div>
         <div class:hidden={currentTab !== 'profile'}><Profile /></div>
       </main>
