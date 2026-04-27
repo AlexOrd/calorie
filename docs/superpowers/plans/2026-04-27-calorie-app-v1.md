@@ -2420,7 +2420,7 @@ pnpm add @melt-ui/svelte
     open = $meltOpen;
   });
 
-  let category = $derived(categoryKey ? personalizedDb[categoryKey] : null);
+  let category = $derived(categoryKey ? personalizedDb.value[categoryKey] : null);
 
   let expandedItem = $state<string | null>(null);
   let pct = $state(0);
@@ -2543,9 +2543,9 @@ git commit -m "feat(ui): add EntrySheet (Melt UI Dialog, responsive bottom sheet
   {#each CATEGORY_KEYS as key (key)}
     <CategoryCard
       categoryKey={key}
-      title={personalizedDb[key].title}
-      color={personalizedDb[key].color}
-      consumed={categoryConsumed[key]}
+      title={personalizedDb.value[key].title}
+      color={personalizedDb.value[key].color}
+      consumed={categoryConsumed.value[key]}
       onClick={openSheet}
     />
   {/each}
@@ -2735,7 +2735,7 @@ git commit -m "feat(ui): add JournalRow with mobile swipe + desktop hover delete
   import type { CategoryKey, FoodItem } from '$types/food';
 
   function lookup(catKey: CategoryKey, itemId: string): FoodItem | null {
-    return personalizedDb[catKey]?.items[itemId] ?? null;
+    return personalizedDb.value[catKey]?.items[itemId] ?? null;
   }
 
   let sorted = $derived([...dailyLog.entries].sort((a, b) => b.ts - a.ts));
