@@ -1,23 +1,46 @@
 <script lang="ts">
+  import { fly } from 'svelte/transition';
   import { profile } from '$state/profile.svelte';
+  import StepWelcome from '../components/onboarding/StepWelcome.svelte';
+  import StepMeasurements from '../components/onboarding/StepMeasurements.svelte';
+  import StepConfirm from '../components/onboarding/StepConfirm.svelte';
+  import type { ProfileInput } from '$types/profile';
 
-  async function bootstrap(): Promise<void> {
-    await profile.save({
-      height: 168,
-      weight: 74,
-      gender: 'female',
-      age: 30,
-      activity: 1.2,
-    });
+  type Step = 0 | 1 | 2;
+  let step = $state<Step>(0);
+  let input = $state<ProfileInput | null>(null);
+
+  function next(): void {
+    if (step < 2) step = (step + 1) as Step;
+  }
+
+  function back(): void {
+    if (step > 0) step = (step - 1) as Step;
+  }
+
+  function setInput(value: ProfileInput): void {
+    input = value;
+    next();
+  }
+
+  async function confirm(): Promise<void> {
+    if (!input) return;
+    await profile.save(input);
   }
 </script>
 
-<section class="mx-auto max-w-md p-6">
-  <h1 class="mb-4 text-2xl font-bold">Calorie</h1>
-  <p class="text-muted mb-6">
-    Тимчасовий екран онбордингу. Натисніть, щоб створити дефолтний профіль.
-  </p>
-  <button type="button" class="bg-accent rounded-md px-4 py-2 text-white" onclick={bootstrap}>
-    Почати
-  </button>
+<section class="mx-auto flex min-h-screen max-w-md flex-col justify-center p-6">
+  {#if step === 0}
+    <div in:fly={{ x: 24, duration: 250 }}>
+      <StepWelcome onNext={next} />
+    </div>
+  {:else if step === 1}
+    <div in:fly={{ x: 24, duration: 250 }}>
+      <StepMeasurements onSubmit={setInput} />
+    </div>
+  {:else if step === 2 && input}
+    <div in:fly={{ x: 24, duration: 250 }}>
+      <StepConfirm {input} onConfirm={confirm} onBack={back} />
+    </div>
+  {/if}
 </section>
