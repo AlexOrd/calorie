@@ -23,6 +23,7 @@
 ### Task 1: Initialize package.json + base dev dependencies
 
 **Files:**
+
 - Create: `package.json`
 - Create: `.gitignore`
 
@@ -68,6 +69,7 @@ dev-dist
 - [ ] **Step 4: Install Vite + Svelte 5 + TS toolchain**
 
 Run:
+
 ```bash
 pnpm add -D vite @sveltejs/vite-plugin-svelte svelte typescript svelte-check @tsconfig/svelte
 ```
@@ -91,6 +93,7 @@ git commit -m "chore: initialize pnpm workspace with Vite + Svelte 5 + TS"
 ### Task 2: TypeScript + Svelte + Vite configs
 
 **Files:**
+
 - Create: `tsconfig.json`
 - Create: `tsconfig.node.json`
 - Create: `svelte.config.js`
@@ -121,11 +124,11 @@ git commit -m "chore: initialize pnpm workspace with Vite + Svelte 5 + TS"
     "paths": {
       "$lib/*": ["./src/lib/*"],
       "$state/*": ["./src/state/*"],
-      "$types/*": ["./src/types/*"]
-    }
+      "$types/*": ["./src/types/*"],
+    },
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
 }
 ```
 
@@ -139,9 +142,9 @@ git commit -m "chore: initialize pnpm workspace with Vite + Svelte 5 + TS"
     "moduleResolution": "Bundler",
     "strict": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node"],
   },
-  "include": ["vite.config.ts", "svelte.config.js"]
+  "include": ["vite.config.ts", "svelte.config.js"],
 }
 ```
 
@@ -204,6 +207,7 @@ git commit -m "chore: add TypeScript, Svelte, and Vite configs"
 ### Task 3: Hello-world bootstrap (`index.html`, `main.ts`, `App.svelte`)
 
 **Files:**
+
 - Create: `index.html`
 - Create: `src/main.ts`
 - Create: `src/App.svelte`
@@ -253,15 +257,22 @@ mount(App, { target });
 </main>
 
 <style>
-  main { padding: 1rem; font-family: system-ui, sans-serif; }
+  main {
+    padding: 1rem;
+    font-family: system-ui, sans-serif;
+  }
 </style>
 ```
 
 - [ ] **Step 4: Create `src/app.css` (placeholder, will be replaced in Task 4)**
 
 ```css
-:root { color-scheme: light dark; }
-body { margin: 0; }
+:root {
+  color-scheme: light dark;
+}
+body {
+  margin: 0;
+}
 ```
 
 - [ ] **Step 5: Verify dev server starts**
@@ -286,6 +297,7 @@ git commit -m "feat: bootstrap Svelte 5 app shell"
 ### Task 4: Add Tailwind CSS v4
 
 **Files:**
+
 - Modify: `vite.config.ts`
 - Modify: `src/app.css`
 - Modify: `src/App.svelte`
@@ -323,7 +335,7 @@ export default defineConfig({
 - [ ] **Step 3: Replace `src/app.css` with Tailwind imports + Telegram theme variables**
 
 ```css
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-bg: var(--tg-bg, #0f1115);
@@ -339,12 +351,20 @@ export default defineConfig({
   color-scheme: light dark;
 }
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-fg);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 ```
 
@@ -355,7 +375,7 @@ body {
   let greeting = $state('Calorie скоро тут.');
 </script>
 
-<main class="p-4 text-2xl text-accent">
+<main class="text-accent p-4 text-2xl">
   <h1>{greeting}</h1>
 </main>
 ```
@@ -380,6 +400,7 @@ git commit -m "feat: add Tailwind CSS v4 with Telegram theme variables"
 ### Task 5: Lint, format, and pre-commit hooks
 
 **Files:**
+
 - Create: `eslint.config.js`
 - Create: `.prettierrc`
 - Create: `.prettierignore`
@@ -525,6 +546,7 @@ Replace the `scripts` block and add `lint-staged`:
 - [ ] **Step 9: Initialize husky and create the pre-commit hook**
 
 Run:
+
 ```bash
 pnpm dlx husky init
 ```
@@ -537,6 +559,7 @@ pnpm check
 ```
 
 Make sure it's executable:
+
 ```bash
 chmod +x .husky/pre-commit
 ```
@@ -568,6 +591,7 @@ Expected: hook output shows `lint-staged` running, then `svelte-check` running, 
 ### Task 6: Project directory skeleton
 
 **Files:**
+
 - Create: `src/data/.gitkeep`
 - Create: `src/types/.gitkeep`
 - Create: `src/lib/.gitkeep`
@@ -598,6 +622,7 @@ git commit -m "chore: scaffold project directory skeleton"
 ### Task 7: TypeScript types
 
 **Files:**
+
 - Create: `src/types/food.ts`
 - Create: `src/types/log.ts`
 - Create: `src/types/profile.ts`
@@ -623,7 +648,14 @@ export interface FoodCategory {
 export type FoodDb = Record<CategoryKey, FoodCategory>;
 
 export const CATEGORY_KEYS: readonly CategoryKey[] = [
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
 ] as const;
 ```
 
@@ -633,10 +665,10 @@ export const CATEGORY_KEYS: readonly CategoryKey[] = [
 import type { CategoryKey } from './food';
 
 export interface LogEntry {
-  id: string;          // foodDb item id (e.g. "a1")
+  id: string; // foodDb item id (e.g. "a1")
   cat: CategoryKey;
-  pct: number;         // 0..N — soft cap, can exceed 100
-  ts: number;          // Date.now() at creation
+  pct: number; // 0..N — soft cap, can exceed 100
+  ts: number; // Date.now() at creation
 }
 ```
 
@@ -648,16 +680,16 @@ export type Gender = 'male' | 'female';
 export type ActivityLevel = 1.2 | 1.375 | 1.55 | 1.725;
 
 export interface ProfileInput {
-  height: number;        // cm
-  weight: number;        // kg
+  height: number; // cm
+  weight: number; // kg
   gender: Gender;
   age: number;
   activity: ActivityLevel;
 }
 
 export interface UserProfile extends ProfileInput {
-  k_factor: number;      // computed; never user-edited directly
-  last_updated: string;  // ISO timestamp
+  k_factor: number; // computed; never user-edited directly
+  last_updated: string; // ISO timestamp
 }
 ```
 
@@ -684,6 +716,7 @@ git commit -m "feat(types): add FoodDb, LogEntry, and UserProfile types"
 ### Task 8: Static food database
 
 **Files:**
+
 - Create: `src/data/foodDb.json`
 - Delete: `src/data/.gitkeep`
 
@@ -801,6 +834,7 @@ git commit -m "feat(data): add static foodDb with 8 categories from spec"
 ### Task 9: Storage adapter — interface + localforage driver
 
 **Files:**
+
 - Create: `src/lib/storage/local.ts`
 - Create: `src/lib/storage/index.ts`
 - Delete: `src/lib/storage/.gitkeep`, `src/lib/.gitkeep`
@@ -904,6 +938,7 @@ git commit -m "feat(storage): add StorageDriver interface and localforage driver
 ### Task 10: Telegram CloudStorage driver + runtime selection
 
 **Files:**
+
 - Create: `src/lib/storage/telegram.ts`
 - Modify: `src/lib/storage/index.ts`
 
@@ -1035,6 +1070,7 @@ git commit -m "feat(storage): add Telegram CloudStorage driver and runtime selec
 ### Task 11: Mifflin-St Jeor scaling math
 
 **Files:**
+
 - Create: `src/lib/scaling.ts`
 
 - [ ] **Step 1: Create `src/lib/scaling.ts`**
@@ -1092,6 +1128,7 @@ Expected: passes.
 - [ ] **Step 3: Sanity-check the math in a Node REPL**
 
 Run:
+
 ```bash
 node --input-type=module -e "
 import('./src/lib/scaling.ts').then(({ computeKFactor }) => {
@@ -1121,6 +1158,7 @@ git commit -m "feat(scaling): add Mifflin-St Jeor TDEE-based k-factor and scaleF
 ### Task 12: Date and debounce helpers
 
 **Files:**
+
 - Create: `src/lib/date.ts`
 - Create: `src/lib/debounce.ts`
 
@@ -1204,6 +1242,7 @@ git commit -m "feat(lib): add date helpers and debounce utility"
 ### Task 13: State modules — profile + activeDate + dailyLog
 
 **Files:**
+
 - Create: `src/state/profile.svelte.ts`
 - Create: `src/state/activeDate.svelte.ts`
 - Create: `src/state/dailyLog.svelte.ts`
@@ -1327,7 +1366,14 @@ export const dailyLog = {
 
 export const categoryConsumed = $derived.by<Record<CategoryKey, number>>(() => {
   const sums: Record<CategoryKey, number> = {
-    A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+    E: 0,
+    F: 0,
+    G: 0,
+    H: 0,
   };
   for (const e of dailyLog.entries) sums[e.cat] += e.pct;
   return sums;
@@ -1360,6 +1406,7 @@ git commit -m "feat(state): add profile, activeDate, and dailyLog rune modules"
 ### Task 14: personalizedDb derived module
 
 **Files:**
+
 - Create: `src/state/personalizedDb.svelte.ts`
 
 - [ ] **Step 1: Create `src/state/personalizedDb.svelte.ts`**
@@ -1397,6 +1444,7 @@ git commit -m "feat(state): add personalizedDb derived module (scales foodDb by 
 ### Task 15: Motion One animation helpers
 
 **Files:**
+
 - Create: `src/lib/anim.ts`
 
 - [ ] **Step 1: Install `motion`**
@@ -1467,6 +1515,7 @@ git commit -m "feat(anim): add Motion One helpers (pulseSuccess, pulseWarning, c
 ### Task 16: Bottom + side navigation components
 
 **Files:**
+
 - Create: `src/components/BottomNav.svelte`
 - Create: `src/components/SideNav.svelte`
 - Create: `src/lib/nav.ts`
@@ -1508,7 +1557,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
 </script>
 
 <nav
-  class="fixed inset-x-0 bottom-0 z-30 flex border-t border-white/10 bg-bg md:hidden"
+  class="bg-bg fixed inset-x-0 bottom-0 z-30 flex border-t border-white/10 md:hidden"
   aria-label="Головна навігація"
 >
   {#each NAV_ITEMS as item (item.key)}
@@ -1517,9 +1566,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
       type="button"
       class={[
         'flex flex-1 flex-col items-center gap-1 py-2 text-xs',
-        current === item.key
-          ? 'text-accent'
-          : 'text-muted',
+        current === item.key ? 'text-accent' : 'text-muted',
       ]}
       aria-current={current === item.key ? 'page' : undefined}
       onclick={() => (current = item.key)}
@@ -1544,16 +1591,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
   class="hidden h-screen w-56 shrink-0 flex-col gap-1 border-r border-white/10 p-4 md:flex"
   aria-label="Головна навігація"
 >
-  <h1 class="mb-4 px-2 text-lg font-semibold text-accent">Calorie</h1>
+  <h1 class="text-accent mb-4 px-2 text-lg font-semibold">Calorie</h1>
   {#each NAV_ITEMS as item (item.key)}
     {@const Icon = item.icon}
     <button
       type="button"
       class={[
         'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-        current === item.key
-          ? 'bg-white/5 text-fg'
-          : 'text-muted hover:bg-white/5',
+        current === item.key ? 'text-fg bg-white/5' : 'text-muted hover:bg-white/5',
       ]}
       aria-current={current === item.key ? 'page' : undefined}
       onclick={() => (current = item.key)}
@@ -1589,6 +1634,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
 ### Task 17: DateStrip component
 
 **Files:**
+
 - Create: `src/components/DateStrip.svelte`
 
 - [ ] **Step 1: Create `src/components/DateStrip.svelte`**
@@ -1603,9 +1649,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
   let anchor = $state(activeDate.value);
 
   // Build a 7-day strip centered on `anchor`.
-  let days = $derived(
-    Array.from({ length: 7 }, (_, i) => addDays(anchor, i - 3)),
-  );
+  let days = $derived(Array.from({ length: 7 }, (_, i) => addDays(anchor, i - 3)));
 
   function shift(days: number): void {
     anchor = addDays(anchor, days);
@@ -1627,7 +1671,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
 <div class="flex items-center gap-1 border-b border-white/10 px-2 py-2 md:px-4">
   <button
     type="button"
-    class="rounded px-2 py-1 text-sm text-muted hover:bg-white/5"
+    class="text-muted rounded px-2 py-1 text-sm hover:bg-white/5"
     onclick={() => shift(-7)}
     aria-label="Попередній тиждень"
   >
@@ -1643,7 +1687,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
           activeDate.value === key
             ? 'bg-accent text-white'
             : key === today
-              ? 'font-bold text-fg'
+              ? 'text-fg font-bold'
               : 'text-muted',
         ]}
         onclick={() => activeDate.set(key)}
@@ -1656,7 +1700,7 @@ git commit -m "feat(nav): add responsive BottomNav + SideNav with shared NAV_ITE
 
   <button
     type="button"
-    class="rounded px-2 py-1 text-sm text-muted hover:bg-white/5"
+    class="text-muted rounded px-2 py-1 text-sm hover:bg-white/5"
     onclick={() => shift(7)}
     aria-label="Наступний тиждень"
   >
@@ -1683,6 +1727,7 @@ git commit -m "feat(ui): add DateStrip component"
 ### Task 18: App shell with onboarding gate
 
 **Files:**
+
 - Modify: `src/App.svelte`
 - Create: `src/routes/Dashboard.svelte` (placeholder)
 - Create: `src/routes/Journal.svelte` (placeholder)
@@ -1731,14 +1776,10 @@ git commit -m "feat(ui): add DateStrip component"
 
 <section class="mx-auto max-w-md p-6">
   <h1 class="mb-4 text-2xl font-bold">Calorie</h1>
-  <p class="mb-6 text-muted">
+  <p class="text-muted mb-6">
     Тимчасовий екран онбордингу. Натисніть, щоб створити дефолтний профіль.
   </p>
-  <button
-    type="button"
-    class="rounded-md bg-accent px-4 py-2 text-white"
-    onclick={bootstrap}
-  >
+  <button type="button" class="bg-accent rounded-md px-4 py-2 text-white" onclick={bootstrap}>
     Почати
   </button>
 </section>
@@ -1778,9 +1819,7 @@ git commit -m "feat(ui): add DateStrip component"
 </script>
 
 {#if !profile.loaded}
-  <div class="flex h-screen items-center justify-center text-muted">
-    Завантаження…
-  </div>
+  <div class="text-muted flex h-screen items-center justify-center">Завантаження…</div>
 {:else if !profile.hasProfile}
   <Onboarding />
 {:else}
@@ -1812,6 +1851,7 @@ Run: `pnpm lint`
 Expected: both pass.
 
 Run: `pnpm dev`. Open the page:
+
 1. The onboarding placeholder should appear ("Тимчасовий екран онбордингу").
 2. Click "Почати" — the shell renders, DateStrip shows the current week, the three tab placeholders are reachable from BottomNav (mobile) or SideNav (desktop ≥768px).
 3. Resize the window across 768px — nav swaps location.
@@ -1833,6 +1873,7 @@ git commit -m "feat(shell): app skeleton with onboarding gate, tab swap, respons
 ### Task 19: Onboarding step 1 — welcome
 
 **Files:**
+
 - Create: `src/components/onboarding/StepWelcome.svelte`
 
 - [ ] **Step 1: Create directory**
@@ -1849,16 +1890,14 @@ mkdir -p src/components/onboarding
 </script>
 
 <div class="flex flex-col gap-6 text-center">
-  <h1 class="text-3xl font-bold text-accent">Calorie</h1>
+  <h1 class="text-accent text-3xl font-bold">Calorie</h1>
   <p class="text-fg">
     Персональний щоденник раціону за категоріями. Дані залишаються на вашому пристрої.
   </p>
-  <p class="text-sm text-muted">
-    Спершу — кілька параметрів, щоб налаштувати норми під вас.
-  </p>
+  <p class="text-muted text-sm">Спершу — кілька параметрів, щоб налаштувати норми під вас.</p>
   <button
     type="button"
-    class="mt-4 self-center rounded-md bg-accent px-6 py-2 text-white"
+    class="bg-accent mt-4 self-center rounded-md px-6 py-2 text-white"
     onclick={onNext}
   >
     Почати
@@ -1883,6 +1922,7 @@ git commit -m "feat(onboarding): add welcome step"
 ### Task 20: Onboarding step 2 — measurements
 
 **Files:**
+
 - Create: `src/components/onboarding/StepMeasurements.svelte`
 
 - [ ] **Step 1: Create `src/components/onboarding/StepMeasurements.svelte`**
@@ -1907,9 +1947,7 @@ git commit -m "feat(onboarding): add welcome step"
   ];
 
   let valid = $derived(
-    height >= 120 && height <= 230 &&
-    weight >= 30 && weight <= 250 &&
-    age >= 12 && age <= 100,
+    height >= 120 && height <= 230 && weight >= 30 && weight <= 250 && age >= 12 && age <= 100,
   );
 
   function submit(): void {
@@ -1964,16 +2002,20 @@ git commit -m "feat(onboarding): add welcome step"
   <fieldset class="flex flex-col gap-2 text-sm">
     <legend>Стать</legend>
     <div class="flex gap-2">
-      <label class={[
-        'flex flex-1 items-center justify-center rounded-md border border-white/10 px-3 py-2',
-        gender === 'female' && 'bg-accent text-white',
-      ]}>
+      <label
+        class={[
+          'flex flex-1 items-center justify-center rounded-md border border-white/10 px-3 py-2',
+          gender === 'female' && 'bg-accent text-white',
+        ]}
+      >
         <input type="radio" class="sr-only" bind:group={gender} value="female" /> Жін
       </label>
-      <label class={[
-        'flex flex-1 items-center justify-center rounded-md border border-white/10 px-3 py-2',
-        gender === 'male' && 'bg-accent text-white',
-      ]}>
+      <label
+        class={[
+          'flex flex-1 items-center justify-center rounded-md border border-white/10 px-3 py-2',
+          gender === 'male' && 'bg-accent text-white',
+        ]}
+      >
         <input type="radio" class="sr-only" bind:group={gender} value="male" /> Чол
       </label>
     </div>
@@ -1983,10 +2025,12 @@ git commit -m "feat(onboarding): add welcome step"
     <legend>Рівень активності</legend>
     <div class="grid grid-cols-2 gap-2">
       {#each ACTIVITY_OPTIONS as opt (opt.value)}
-        <label class={[
-          'flex items-center justify-center rounded-md border border-white/10 px-3 py-2 text-center',
-          activity === opt.value && 'bg-accent text-white',
-        ]}>
+        <label
+          class={[
+            'flex items-center justify-center rounded-md border border-white/10 px-3 py-2 text-center',
+            activity === opt.value && 'bg-accent text-white',
+          ]}
+        >
           <input type="radio" class="sr-only" bind:group={activity} value={opt.value} />
           {opt.label}
         </label>
@@ -1996,7 +2040,7 @@ git commit -m "feat(onboarding): add welcome step"
 
   <button
     type="submit"
-    class="mt-4 rounded-md bg-accent px-4 py-2 text-white disabled:opacity-50"
+    class="bg-accent mt-4 rounded-md px-4 py-2 text-white disabled:opacity-50"
     disabled={!valid}
   >
     Продовжити
@@ -2022,6 +2066,7 @@ git commit -m "feat(onboarding): add measurements step"
 ### Task 21: Onboarding step 3 + wire up Onboarding route
 
 **Files:**
+
 - Create: `src/components/onboarding/StepConfirm.svelte`
 - Modify: `src/routes/Onboarding.svelte`
 
@@ -2052,22 +2097,18 @@ git commit -m "feat(onboarding): add measurements step"
   <h2 class="text-xl font-semibold">Готово</h2>
   <p class="text-muted">
     Ваш персональний коефіцієнт:
-    <span class="text-2xl font-bold text-accent">{k.toFixed(2)}</span>
+    <span class="text-accent text-2xl font-bold">{k.toFixed(2)}</span>
   </p>
   <p class="rounded-md border border-white/10 p-3 text-sm">
     Приклад: {sample}
   </p>
   <div class="flex justify-between gap-3">
-    <button
-      type="button"
-      class="rounded-md border border-white/10 px-4 py-2"
-      onclick={onBack}
-    >
+    <button type="button" class="rounded-md border border-white/10 px-4 py-2" onclick={onBack}>
       Назад
     </button>
     <button
       type="button"
-      class="flex-1 rounded-md bg-accent px-4 py-2 text-white"
+      class="bg-accent flex-1 rounded-md px-4 py-2 text-white"
       onclick={onConfirm}
     >
       Готово
@@ -2151,6 +2192,7 @@ git commit -m "feat(onboarding): wire up 3-step wizard with profile save"
 ### Task 22: CategoryCard component
 
 **Files:**
+
 - Create: `src/components/CategoryCard.svelte`
 
 - [ ] **Step 1: Create `src/components/CategoryCard.svelte`**
@@ -2200,7 +2242,7 @@ git commit -m "feat(onboarding): wire up 3-step wizard with profile save"
 >
   <div class="flex w-full items-center justify-between">
     <span class="text-base font-semibold">{categoryKey} — {title}</span>
-    <span class="text-xs text-muted">
+    <span class="text-muted text-xs">
       {#if over}<span class="text-danger">+{overshoot}%</span>
       {:else}{remaining}% залишилось{/if}
     </span>
@@ -2209,7 +2251,9 @@ git commit -m "feat(onboarding): wire up 3-step wizard with profile save"
   <div class="h-2 w-full overflow-hidden rounded-full bg-white/10">
     <div
       class="h-full rounded-full"
-      style="width: {Math.min(displayPct, 100)}%; background: {over ? 'var(--color-danger)' : color};"
+      style="width: {Math.min(displayPct, 100)}%; background: {over
+        ? 'var(--color-danger)'
+        : color};"
     ></div>
   </div>
 </button>
@@ -2233,6 +2277,7 @@ git commit -m "feat(ui): add CategoryCard with animated progress and warning pul
 ### Task 23: AmountInput (2-way binding)
 
 **Files:**
+
 - Create: `src/components/AmountInput.svelte`
 
 - [ ] **Step 1: Create `src/components/AmountInput.svelte`**
@@ -2295,7 +2340,7 @@ git commit -m "feat(ui): add CategoryCard with animated progress and warning pul
       oninput={onAmountInput}
       class="w-24 rounded-md border border-white/10 bg-transparent px-2 py-1"
     />
-    <span class="text-sm text-muted">{unit}</span>
+    <span class="text-muted text-sm">{unit}</span>
     <span class="ml-auto text-sm tabular-nums">{Math.round(pct)}%</span>
   </div>
 </div>
@@ -2319,6 +2364,7 @@ git commit -m "feat(ui): add AmountInput with 2-way percent ↔ grams/pieces bin
 ### Task 24: EntrySheet (Melt UI Dialog, responsive)
 
 **Files:**
+
 - Create: `src/components/EntrySheet.svelte`
 
 - [ ] **Step 1: Install Melt UI**
@@ -2388,38 +2434,29 @@ pnpm add @melt-ui/svelte
 
     <div
       use:melt={$content}
-      class="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-auto rounded-t-2xl border-t border-white/10 bg-bg p-4
-             md:bottom-auto md:left-1/2 md:top-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
+      class="bg-bg fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-auto rounded-t-2xl border-t border-white/10 p-4
+             md:top-1/2 md:bottom-auto md:left-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
       transition:fly={{ y: 80, duration: 250 }}
       role="dialog"
       aria-modal="true"
     >
       <div class="mb-4 flex items-center justify-between">
         <h2 class="text-lg font-semibold">{categoryKey} — {category.title}</h2>
-        <button
-          type="button"
-          use:melt={$close}
-          class="text-muted"
-          aria-label="Закрити"
-        >
-          ✕
-        </button>
+        <button type="button" use:melt={$close} class="text-muted" aria-label="Закрити"> ✕ </button>
       </div>
 
       <ul class="flex flex-col gap-2">
         {#each Object.entries(category.items) as [id, item] (id)}
-          <li
-            bind:this={cardElById[id]}
-            class="rounded-md border border-white/10 p-3"
-          >
+          <li bind:this={cardElById[id]} class="rounded-md border border-white/10 p-3">
             <button
               type="button"
               class="flex w-full items-center justify-between text-left"
               onclick={() => expand(id)}
             >
               <span>{item.name}</span>
-              <span class="text-xs text-muted">
-                100% = {item.max_g} {item.unit ?? 'г'}
+              <span class="text-muted text-xs">
+                100% = {item.max_g}
+                {item.unit ?? 'г'}
               </span>
             </button>
 
@@ -2428,7 +2465,7 @@ pnpm add @melt-ui/svelte
                 <AmountInput {item} bind:pct />
                 <button
                   type="button"
-                  class="self-end rounded-md bg-accent px-3 py-1 text-sm text-white disabled:opacity-50"
+                  class="bg-accent self-end rounded-md px-3 py-1 text-sm text-white disabled:opacity-50"
                   disabled={pct <= 0}
                   onclick={() => commit(id)}
                 >
@@ -2462,6 +2499,7 @@ git commit -m "feat(ui): add EntrySheet (Melt UI Dialog, responsive bottom sheet
 ### Task 25: Dashboard route
 
 **Files:**
+
 - Modify: `src/routes/Dashboard.svelte`
 
 - [ ] **Step 1: Replace `src/routes/Dashboard.svelte`**
@@ -2506,6 +2544,7 @@ Run: `pnpm lint`
 Expected: both pass.
 
 Run: `pnpm dev`. Open at any width. Walk through:
+
 1. Onboarding (or skip if already onboarded).
 2. Dashboard renders 8 cards. Tap one — sheet opens (bottom on mobile, centered modal on desktop).
 3. Tap an item, drag the slider, click "Додати". Card progress animates up; if pct > 100% the card flashes red.
@@ -2524,6 +2563,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
 ### Task 26: JournalRow with responsive delete
 
 **Files:**
+
 - Create: `src/components/JournalRow.svelte`
 
 - [ ] **Step 1: Create `src/components/JournalRow.svelte`**
@@ -2594,7 +2634,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
 <li class="relative overflow-hidden border-b border-white/5">
   <button
     type="button"
-    class="absolute inset-y-0 right-0 flex w-[88px] items-center justify-center bg-danger text-white"
+    class="bg-danger absolute inset-y-0 right-0 flex w-[88px] items-center justify-center text-white"
     onclick={commitDelete}
     aria-label="Видалити запис"
   >
@@ -2602,7 +2642,7 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
   </button>
 
   <div
-    class="group relative flex items-center justify-between bg-bg px-3 py-3"
+    class="group bg-bg relative flex items-center justify-between px-3 py-3"
     style="transform: translateX({offset.current}px);"
     onpointerdown={onPointerDown}
     onpointermove={onPointerMove}
@@ -2611,8 +2651,9 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
   >
     <div class="flex flex-col gap-0.5">
       <span class="text-sm">{item.name}</span>
-      <span class="text-xs text-muted">
-        {amount()} {unit()} · {Math.round(entry.pct)}% · {time()}
+      <span class="text-muted text-xs">
+        {amount()}
+        {unit()} · {Math.round(entry.pct)}% · {time()}
       </span>
     </div>
 
@@ -2621,16 +2662,12 @@ git commit -m "feat(ui): wire up Dashboard with CategoryCard grid and EntrySheet
       {#if confirming}
         <button
           type="button"
-          class="rounded-md bg-danger px-2 py-1 text-xs text-white"
+          class="bg-danger rounded-md px-2 py-1 text-xs text-white"
           onclick={commitDelete}
         >
           Видалити?
         </button>
-        <button
-          type="button"
-          class="text-xs text-muted"
-          onclick={() => (confirming = false)}
-        >
+        <button type="button" class="text-muted text-xs" onclick={() => (confirming = false)}>
           Ні
         </button>
       {:else}
@@ -2666,6 +2703,7 @@ git commit -m "feat(ui): add JournalRow with mobile swipe + desktop hover delete
 ### Task 27: Journal route
 
 **Files:**
+
 - Modify: `src/routes/Journal.svelte`
 
 - [ ] **Step 1: Replace `src/routes/Journal.svelte`**
@@ -2690,13 +2728,17 @@ git commit -m "feat(ui): add JournalRow with mobile swipe + desktop hover delete
   <h2 class="mb-3 text-xl font-semibold">Журнал</h2>
 
   {#if sorted.length === 0}
-    <p class="text-sm text-muted">Поки що нічого не додано.</p>
+    <p class="text-muted text-sm">Поки що нічого не додано.</p>
   {:else}
     <ul class="flex flex-col rounded-md border border-white/10 bg-white/[0.02]">
       {#each sorted as entry (entry.ts)}
         {@const item = lookup(entry.cat, entry.id)}
         {#if item}
-          <div animate:flip={{ duration: 200 }} in:fly={{ y: 8, duration: 200 }} out:fly={{ x: -32, duration: 150 }}>
+          <div
+            animate:flip={{ duration: 200 }}
+            in:fly={{ y: 8, duration: 200 }}
+            out:fly={{ x: -32, duration: 150 }}
+          >
             <JournalRow {entry} {item} onDelete={(ts) => dailyLog.remove(ts)} />
           </div>
         {/if}
@@ -2713,6 +2755,7 @@ Run: `pnpm lint`
 Expected: both pass.
 
 Run: `pnpm dev`. Add a few entries from Dashboard, switch to Journal:
+
 - Entries appear newest-first.
 - Mobile (<768px): swipe a row left, tap red delete.
 - Desktop (≥768px): hover a row, click trash, confirm.
@@ -2734,6 +2777,7 @@ git commit -m "feat(ui): wire up Journal route with flip + fly animations"
 ### Task 28: Heatmap component
 
 **Files:**
+
 - Create: `src/components/Heatmap.svelte`
 
 - [ ] **Step 1: Install svelte-frappe-charts**
@@ -2761,7 +2805,14 @@ pnpm add svelte-frappe-charts
   function dayVerdict(entries: LogEntry[]): DayVerdict {
     if (entries.length === 0) return 0;
     const sums: Record<CategoryKey, number> = {
-      A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0,
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
     };
     for (const e of entries) sums[e.cat] += e.pct;
     const overCount = Object.values(sums).filter((v) => v > 100).length;
@@ -2805,7 +2856,7 @@ pnpm add svelte-frappe-charts
       colors={['#1f2937', '#86efac', '#fbbf24', '#ef4444']}
     />
   {:else}
-    <p class="text-xs text-muted">Завантаження…</p>
+    <p class="text-muted text-xs">Завантаження…</p>
   {/if}
 </div>
 ```
@@ -2828,6 +2879,7 @@ git commit -m "feat(stats): add Heatmap (90-day verdict view via svelte-frappe-c
 ### Task 29: CategoryBarChart component
 
 **Files:**
+
 - Create: `src/components/CategoryBarChart.svelte`
 
 - [ ] **Step 1: Create `src/components/CategoryBarChart.svelte`**
@@ -2853,9 +2905,7 @@ git commit -m "feat(stats): add Heatmap (90-day verdict view via svelte-frappe-c
     const totals: number[] = [];
     for (const d of days) {
       const entries = await storage.load<LogEntry[]>(`log_${d}`, []);
-      const sum = entries
-        .filter((e) => e.cat === selected)
-        .reduce((acc, e) => acc + e.pct, 0);
+      const sum = entries.filter((e) => e.cat === selected).reduce((acc, e) => acc + e.pct, 0);
       totals.push(Math.round(sum));
     }
     labels = days.map((d) => d.slice(5)); // MM-DD
@@ -2894,7 +2944,7 @@ git commit -m "feat(stats): add Heatmap (90-day verdict view via svelte-frappe-c
   {#if loaded}
     <Chart type="bar" data={chartData} height={220} colors={['#4caf50']} />
   {:else}
-    <p class="text-xs text-muted">Завантаження…</p>
+    <p class="text-muted text-xs">Завантаження…</p>
   {/if}
 </div>
 ```
@@ -2917,6 +2967,7 @@ git commit -m "feat(stats): add CategoryBarChart (7-day per-category consumption
 ### Task 30: Stats route
 
 **Files:**
+
 - Modify: `src/routes/Stats.svelte`
 
 - [ ] **Step 1: Replace `src/routes/Stats.svelte`**
@@ -2940,6 +2991,7 @@ Run: `pnpm lint`
 Expected: both pass.
 
 Run: `pnpm dev`. Switch to the Stats tab:
+
 - Heatmap shows recent days colored per verdict.
 - Bar chart shows the last 7 days for the selected category.
 - Click another category — bars update.
@@ -2961,6 +3013,7 @@ git commit -m "feat(stats): wire up Stats route with Heatmap + CategoryBarChart"
 ### Task 31: Wire Telegram WebApp init
 
 **Files:**
+
 - Modify: `src/main.ts`
 
 - [ ] **Step 1: Replace `src/main.ts`**
@@ -3013,6 +3066,7 @@ git commit -m "feat(telegram): wire WebApp ready/expand and theme variables in m
 ### Task 32: vite-plugin-pwa with manifest + icons + CNAME
 
 **Files:**
+
 - Modify: `vite.config.ts`
 - Create: `public/icons/192.png`
 - Create: `public/icons/512.png`
@@ -3035,6 +3089,7 @@ Then add `vite-plugin-pwa/client` back to `tsconfig.json`'s `types` array (it wa
 - [ ] **Step 2: Add icon assets + CNAME**
 
 The product needs three PNG icons in `public/icons/`:
+
 - `192.png` (192×192)
 - `512.png` (512×512)
 - `maskable-512.png` (512×512, with safe-zone padding for Android adaptive)
@@ -3078,7 +3133,12 @@ export default defineConfig({
         icons: [
           { src: 'icons/192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          {
+            src: 'icons/maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
         ],
       },
       workbox: {
@@ -3109,6 +3169,7 @@ Run: `pnpm build`
 Expected: `dist/` contains `manifest.webmanifest`, `sw.js`, `workbox-*.js`, the icons, and the bundled assets.
 
 Run: `pnpm preview`. Open `http://localhost:4173/` in Chrome:
+
 - DevTools → Application → Manifest — name "Calorie", icons listed.
 - DevTools → Application → Service Workers — `sw.js` activated.
 
@@ -3126,6 +3187,7 @@ git commit -m "feat(pwa): add vite-plugin-pwa with manifest, icons, CNAME, and w
 ### Task 33: GitHub Actions deploy workflow
 
 **Files:**
+
 - Create: `.github/workflows/deploy.yml`
 
 - [ ] **Step 1: Create `.github/workflows/deploy.yml`**
@@ -3197,11 +3259,12 @@ git commit -m "ci: add GitHub Pages deploy workflow with lint, format, check, bu
 ### Task 34: Push + verify deploy + finalize README
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Replace `README.md`**
 
-```markdown
+````markdown
 # Calorie
 
 Local-First persona food-quota diary as a PWA + Telegram WebApp.
@@ -3222,6 +3285,7 @@ pnpm format:check # Prettier (CI mode)
 pnpm build        # Production build to dist/
 pnpm preview      # Serve dist/ locally
 ```
+````
 
 ## Deploy
 
@@ -3232,7 +3296,8 @@ type-checks, format-checks, builds, and deploys `dist/` to GitHub Pages.
 
 After the GitHub Pages deploy is live, create a bot via @BotFather and run
 `/newapp` against the deployed URL — no code changes needed.
-```
+
+````
 
 - [ ] **Step 2: Configure GitHub Pages**
 
@@ -3247,19 +3312,21 @@ In the GitHub repo (`https://github.com/AlexOrd/calorie`):
 git add README.md
 git commit -m "docs: add README with stack, scripts, and deploy notes"
 git push origin master
-```
+````
 
 Open the **Actions** tab in GitHub. The "Deploy" workflow runs `build` → `deploy`. When green, open `https://calorie.ordynski.com/`.
 
 - [ ] **Step 4: Smoke test the live site**
 
 On a phone (or DevTools mobile emulation):
+
 1. Onboarding wizard runs end-to-end and saves the profile.
 2. Dashboard, Journal, Stats render and round-trip data through IndexedDB.
 3. "Add to Home Screen" / "Install" works (PWA installable).
 4. Reload offline (Network tab → Offline) — the app still loads.
 
 On desktop:
+
 1. Layout switches to sidebar nav.
 2. Dashboard shows 8 cards in 2×4 grid at lg+.
 3. Stats sit side-by-side at lg+.
@@ -3268,6 +3335,7 @@ On desktop:
 - [ ] **Step 5: (Optional) create the Telegram bot**
 
 In Telegram, talk to @BotFather:
+
 - `/newbot` — name + handle (e.g. `calorie_bot`).
 - `/newapp` — pick the bot, set Web App URL to `https://calorie.ordynski.com/`.
 - Open the bot in any Telegram client and tap the Web App button.

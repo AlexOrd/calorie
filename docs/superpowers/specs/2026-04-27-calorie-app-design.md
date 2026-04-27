@@ -124,29 +124,37 @@ ID (`a1`, `b3`, etc.). Each item has `name`, `max_g` (the value that equals
 
 ```ts
 // food.ts
-export type CategoryKey = 'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H';
-export interface FoodItem { name: string; max_g: number; unit?: string }
-export interface FoodCategory { title: string; color: string; items: Record<string, FoodItem> }
+export type CategoryKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H';
+export interface FoodItem {
+  name: string;
+  max_g: number;
+  unit?: string;
+}
+export interface FoodCategory {
+  title: string;
+  color: string;
+  items: Record<string, FoodItem>;
+}
 export type FoodDb = Record<CategoryKey, FoodCategory>;
 
 // log.ts
 export interface LogEntry {
-  id: string;          // foodDb item id, e.g. "a1"
+  id: string; // foodDb item id, e.g. "a1"
   cat: CategoryKey;
-  pct: number;         // 0..N (soft cap, can exceed 100)
-  ts: number;          // Date.now() at creation
+  pct: number; // 0..N (soft cap, can exceed 100)
+  ts: number; // Date.now() at creation
 }
 
 // profile.ts
 export type Gender = 'male' | 'female';
 export interface UserProfile {
-  height: number;          // cm
-  weight: number;          // kg
+  height: number; // cm
+  weight: number; // kg
   gender: Gender;
   age: number;
-  activity: number;        // 1.2 | 1.375 | 1.55 | 1.725
-  k_factor: number;        // computed; never user-edited directly
-  last_updated: string;    // ISO timestamp
+  activity: number; // 1.2 | 1.375 | 1.55 | 1.725
+  k_factor: number; // computed; never user-edited directly
+  last_updated: string; // ISO timestamp
 }
 ```
 
@@ -169,6 +177,7 @@ internal `$state` is private.
 Holds `_profile: UserProfile | null` and `_loaded: boolean`.
 
 Public API:
+
 - `value` (getter) — current profile or null.
 - `loaded` (getter) — has the initial load attempt completed?
 - `hasProfile` (getter) — convenience for the onboarding gate.
@@ -186,6 +195,7 @@ Holds `_date: string` (YYYY-MM-DD), defaults to today. Setting it triggers
 Holds `_entries: LogEntry[]` and `_date: string` for the currently loaded day.
 
 Public API:
+
 - `entries`, `date` (getters).
 - `load(date)` — replaces `_entries` with the persisted log for `date`.
 - `add(entry)` — appends with `ts: Date.now()`, schedules debounced save.
@@ -197,7 +207,7 @@ Module also exports a top-level derived value:
 
 ```ts
 export const categoryConsumed = $derived.by(() => {
-  const sums: Record<CategoryKey, number> = { A:0,B:0,C:0,D:0,E:0,F:0,G:0,H:0 };
+  const sums: Record<CategoryKey, number> = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 };
   for (const e of dailyLog.entries) sums[e.cat] += e.pct;
   return sums;
 });
@@ -233,7 +243,7 @@ export interface StorageDriver {
   save<T>(key: string, value: T): Promise<void>;
   load<T>(key: string, fallback: T): Promise<T>;
   remove(key: string): Promise<void>;
-  keys(): Promise<string[]>;        // used by Stats heatmap
+  keys(): Promise<string[]>; // used by Stats heatmap
 }
 ```
 
@@ -241,9 +251,7 @@ Runtime selection:
 
 ```ts
 const isTelegram = !!window.Telegram?.WebApp?.initData;
-export const storage: StorageDriver = isTelegram
-  ? new TelegramDriver()
-  : new LocalforageDriver();
+export const storage: StorageDriver = isTelegram ? new TelegramDriver() : new LocalforageDriver();
 ```
 
 - `TelegramDriver` wraps `window.Telegram.WebApp.CloudStorage` (callback API
@@ -608,21 +616,21 @@ already wired.
 
 ## 12. Resolved ambiguities
 
-| Question | Decision | Why |
-|---|---|---|
-| Over-100% behavior | Soft cap: allow logging, show red, never block | User wants to see reality, not be prevented from logging it. |
-| Eggs / non-gram items | Generic `unit?: string` field on items, defaults to "г" | Lets the input form switch labels and step size; future-proof. |
-| Pieces scaling under k-factor | Pieces don't scale | Eggs are eggs regardless of body size. |
-| Journal entry edit | Delete + re-add only | Simpler; v1 doesn't need it. |
-| State management | Runes-only `.svelte.ts` modules | Modern Svelte 5 idiom, better TS inference. |
-| K-factor extreme inputs | Clamp to [0.6, 1.6] | Typo protection. |
-| Tab swap mechanism | `display:none` toggle, not mount/unmount | Preserves chart state + scroll position. |
-| Animation library | Svelte built-ins + `motion` (Motion One, ~5KB) | Tiny footprint, covers all "important moment" cases. |
-| Mobile vs desktop | Mobile-first; desktop adapts at Tailwind `md` (768px) and `lg` (1024px) — sidebar nav, 4-column dashboard grid, side-by-side charts, hover-delete in journal, centered-modal entry sheet | One DOM tree, just Tailwind responsive classes; no separate desktop codepath. |
-| Lint / format / type check tooling | ESLint v9 flat + `typescript-eslint` + `eslint-plugin-svelte` + Prettier (with svelte + tailwindcss plugins) + `svelte-check` | Modern Svelte/TS canonical stack; ESLint flat config is the v9 default; Prettier owns formatting so ESLint stays focused on correctness. |
-| Pre-commit hook runner | husky v9 + lint-staged v15 | De-facto standard, auto-bootstrapped via `prepare` script; no extra setup for new clones. |
-| Pre-commit scope | `lint-staged` (eslint+prettier on staged files) → `pnpm check` (full project) | Per-file lint/format keeps hooks fast; full-project type check catches cross-file errors that staged-only would miss. |
-| Strict TS settings | `strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true` | Catches the bugs you'd otherwise hit at runtime in a data-shape-heavy app. |
+| Question                           | Decision                                                                                                                                                                                 | Why                                                                                                                                      |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Over-100% behavior                 | Soft cap: allow logging, show red, never block                                                                                                                                           | User wants to see reality, not be prevented from logging it.                                                                             |
+| Eggs / non-gram items              | Generic `unit?: string` field on items, defaults to "г"                                                                                                                                  | Lets the input form switch labels and step size; future-proof.                                                                           |
+| Pieces scaling under k-factor      | Pieces don't scale                                                                                                                                                                       | Eggs are eggs regardless of body size.                                                                                                   |
+| Journal entry edit                 | Delete + re-add only                                                                                                                                                                     | Simpler; v1 doesn't need it.                                                                                                             |
+| State management                   | Runes-only `.svelte.ts` modules                                                                                                                                                          | Modern Svelte 5 idiom, better TS inference.                                                                                              |
+| K-factor extreme inputs            | Clamp to [0.6, 1.6]                                                                                                                                                                      | Typo protection.                                                                                                                         |
+| Tab swap mechanism                 | `display:none` toggle, not mount/unmount                                                                                                                                                 | Preserves chart state + scroll position.                                                                                                 |
+| Animation library                  | Svelte built-ins + `motion` (Motion One, ~5KB)                                                                                                                                           | Tiny footprint, covers all "important moment" cases.                                                                                     |
+| Mobile vs desktop                  | Mobile-first; desktop adapts at Tailwind `md` (768px) and `lg` (1024px) — sidebar nav, 4-column dashboard grid, side-by-side charts, hover-delete in journal, centered-modal entry sheet | One DOM tree, just Tailwind responsive classes; no separate desktop codepath.                                                            |
+| Lint / format / type check tooling | ESLint v9 flat + `typescript-eslint` + `eslint-plugin-svelte` + Prettier (with svelte + tailwindcss plugins) + `svelte-check`                                                            | Modern Svelte/TS canonical stack; ESLint flat config is the v9 default; Prettier owns formatting so ESLint stays focused on correctness. |
+| Pre-commit hook runner             | husky v9 + lint-staged v15                                                                                                                                                               | De-facto standard, auto-bootstrapped via `prepare` script; no extra setup for new clones.                                                |
+| Pre-commit scope                   | `lint-staged` (eslint+prettier on staged files) → `pnpm check` (full project)                                                                                                            | Per-file lint/format keeps hooks fast; full-project type check catches cross-file errors that staged-only would miss.                    |
+| Strict TS settings                 | `strict: true`, `noUncheckedIndexedAccess: true`, `exactOptionalPropertyTypes: true`                                                                                                     | Catches the bugs you'd otherwise hit at runtime in a data-shape-heavy app.                                                               |
 
 ## 13. Code quality (lint, format, type check, hooks)
 
@@ -668,11 +676,11 @@ case hooks were skipped locally (e.g. `--no-verify`).
     "paths": {
       "$lib/*": ["./src/lib/*"],
       "$state/*": ["./src/state/*"],
-      "$types/*": ["./src/types/*"]
+      "$types/*": ["./src/types/*"],
     },
-    "baseUrl": "."
+    "baseUrl": ".",
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts"]
+  "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.svelte.ts"],
 }
 ```
 
