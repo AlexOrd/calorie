@@ -11,7 +11,12 @@
   class="hidden h-screen w-56 shrink-0 flex-col gap-1 border-r border-white/10 p-4 md:flex"
   aria-label="Головна навігація"
 >
-  <h1 class="text-accent mb-4 px-2 text-lg font-semibold">Calorie</h1>
+  <div class="mb-4 flex items-center gap-2 px-2">
+    <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white">
+      <img src="/logo.png" alt="" class="h-8 w-auto object-contain" />
+    </div>
+    <h1 class="text-accent text-lg font-semibold">Calorie</h1>
+  </div>
   {#each NAV_ITEMS as item (item.key)}
     {@const Icon = item.icon}
     <button

@@ -5,7 +5,12 @@
   let { onNext }: Props = $props();
 </script>
 
-<div class="flex flex-col gap-6 text-center">
+<div class="flex flex-col items-center gap-6 text-center">
+  <div
+    class="flex h-46 w-46 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg shadow-black/30"
+  >
+    <img src="/logo.png" alt="Calorie" class="h-32 w-auto object-contain" />
+  </div>
   <h1 class="text-accent text-3xl font-bold">Calorie</h1>
   <p class="text-fg">
     Персональний щоденник раціону за категоріями. Дані залишаються на вашому пристрої.
