@@ -15,13 +15,13 @@
 ## File map
 
 | File                                           | Action | Responsibility                                                                                                                      |
-| ---------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------------------------------------ |
+| ---------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/theme.ts`                             | create | Resolve + apply light/dark mode (`tg.colorScheme` → `prefers-color-scheme`)                                                         |
 | `src/types/telegram.ts`                        | modify | Extend `TelegramWebApp` with `colorScheme` and optional `onEvent`                                                                   |
 | `src/main.ts`                                  | modify | Call `applyThemeMode`; subscribe to `themeChanged` + media-query change; call `macroCrossings.pruneOlderThan(7)` after profile load |
 | `src/app.css`                                  | modify | New `:root` light tokens + `.dark` overrides; rewrite `@theme` to bind to semantic vars                                             |
 | `src/lib/anim.ts`                              | extend | Add `getCSSVar`, `shakeWarning`, `burstConfetti`, `flashEdge`; bump `pulseWarning` strength                                         |
-| `src/state/macroCrossings.svelte.ts`           | create | Per-day `under                                                                                                                      | hit | over`flags for kcal/protein/carbs/fat + per-category over flags; persist in`storage` |
+| `src/state/macroCrossings.svelte.ts`           | create | Per-day `under` / `hit` / `over` flags for kcal/protein/carbs/fat + per-category over flags; persist in `storage`                   |
 | `src/components/DateStrip.svelte`              | modify | Token sweep                                                                                                                         |
 | `src/components/BottomNav.svelte`              | modify | Token sweep                                                                                                                         |
 | `src/components/SideNav.svelte`                | modify | Token sweep                                                                                                                         |
