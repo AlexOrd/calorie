@@ -15,8 +15,10 @@
   }
 </script>
 
-<section class="mx-auto flex max-w-md flex-col gap-4 p-3 md:p-6">
-  <h2 class="text-xl font-semibold">Активність</h2>
+<section
+  class="mx-auto flex max-w-md flex-col gap-4 p-3 md:grid md:max-w-none md:grid-cols-2 md:gap-4 md:p-6"
+>
+  <h2 class="text-xl font-semibold md:col-span-2">Активність</h2>
 
   <!-- Steps card -->
   <div class="border-border bg-surface-2 rounded-xl border p-5">
