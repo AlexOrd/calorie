@@ -5,9 +5,10 @@
   interface Props {
     initial?: ProfileInput | null;
     submitLabel: string;
-    onSubmit: (input: ProfileInput) => void;
+    dirtyLabel?: string;
+    onSubmit: (input: ProfileInput) => Promise<void> | void;
   }
-  let { initial = null, submitLabel, onSubmit }: Props = $props();
+  let { initial = null, submitLabel, dirtyLabel, onSubmit }: Props = $props();
 
   // Seed the form from `initial` once on mount; subsequent prop updates
   // shouldn't clobber the user's in-progress edits. untrack() makes that
@@ -29,9 +30,37 @@
     height >= 120 && height <= 230 && weight >= 30 && weight <= 250 && age >= 12 && age <= 100,
   );
 
-  function submit(): void {
-    if (!valid) return;
-    onSubmit({ height, weight, gender, age, activity });
+  const initialSnapshot = {
+    height: untrack(() => initial?.height ?? 168),
+    weight: untrack(() => initial?.weight ?? 74),
+    age: untrack(() => initial?.age ?? 30),
+    gender: untrack(() => initial?.gender ?? 'female'),
+    activity: untrack(() => initial?.activity ?? 1.2),
+  };
+  let snapshot = $state({ ...initialSnapshot });
+
+  let isDirty = $derived(
+    height !== snapshot.height ||
+      weight !== snapshot.weight ||
+      age !== snapshot.age ||
+      gender !== snapshot.gender ||
+      activity !== snapshot.activity,
+  );
+
+  // Onboarding (no `initial`) treats every submission as dirty.
+  let canSubmit = $derived(valid && (initial === null || isDirty));
+
+  let saving = $state(false);
+
+  async function submit(): Promise<void> {
+    if (!canSubmit || saving) return;
+    saving = true;
+    try {
+      await onSubmit({ height, weight, gender, age, activity });
+      snapshot = { height, weight, age, gender, activity };
+    } finally {
+      saving = false;
+    }
   }
 </script>
 
@@ -39,13 +68,16 @@
   class="flex flex-col gap-5"
   onsubmit={(e) => {
     e.preventDefault();
-    submit();
+    void submit();
   }}
 >
   <label class="text-muted flex flex-col gap-2 text-sm">
     Зріст, см
     <input
       type="number"
+      inputmode="numeric"
+      enterkeyhint="next"
+      autocomplete="off"
       class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
       min="120"
       max="230"
@@ -57,6 +89,9 @@
     Вага, кг
     <input
       type="number"
+      inputmode="decimal"
+      enterkeyhint="next"
+      autocomplete="off"
       class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
       min="30"
       max="250"
@@ -69,6 +104,9 @@
     Вік
     <input
       type="number"
+      inputmode="numeric"
+      enterkeyhint="done"
+      autocomplete="off"
       class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
       min="12"
       max="100"
@@ -118,8 +156,14 @@
   <button
     type="submit"
     class="bg-accent mt-4 min-h-14 rounded-lg px-6 py-4 text-lg font-semibold text-white shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
-    disabled={!valid}
+    disabled={!canSubmit || saving}
   >
-    {submitLabel}
+    {#if saving}
+      …
+    {:else if initial !== null && isDirty && dirtyLabel}
+      {dirtyLabel}
+    {:else}
+      {submitLabel}
+    {/if}
   </button>
 </form>
