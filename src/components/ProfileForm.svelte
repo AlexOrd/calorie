@@ -119,16 +119,18 @@
     <div class="flex gap-2">
       <label
         class={[
-          'border-border bg-surface flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-4 text-lg transition-colors',
-          gender === 'female' && 'bg-accent border-accent text-on-accent',
+          'flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-4 text-lg transition-colors',
+          gender === 'female'
+            ? 'bg-accent border-accent text-on-accent'
+            : 'border-border bg-surface',
         ]}
       >
         <input type="radio" class="sr-only" bind:group={gender} value="female" /> Жін
       </label>
       <label
         class={[
-          'border-border bg-surface flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-4 text-lg transition-colors',
-          gender === 'male' && 'bg-accent border-accent text-on-accent',
+          'flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-4 text-lg transition-colors',
+          gender === 'male' ? 'bg-accent border-accent text-on-accent' : 'border-border bg-surface',
         ]}
       >
         <input type="radio" class="sr-only" bind:group={gender} value="male" /> Чол
@@ -142,8 +144,10 @@
       {#each ACTIVITY_OPTIONS as opt (opt.value)}
         <label
           class={[
-            'border-border bg-surface flex min-h-14 cursor-pointer items-center justify-center rounded-lg border px-3 py-4 text-center text-base transition-colors',
-            activity === opt.value && 'bg-accent border-accent text-on-accent',
+            'flex min-h-14 cursor-pointer items-center justify-center rounded-lg border px-3 py-4 text-center text-base transition-colors',
+            activity === opt.value
+              ? 'bg-accent border-accent text-on-accent'
+              : 'border-border bg-surface',
           ]}
         >
           <input type="radio" class="sr-only" bind:group={activity} value={opt.value} />
