@@ -3,6 +3,7 @@
   import { categoryConsumed } from '$state/dailyLog.svelte';
   import { CATEGORY_KEYS } from '$types/food';
   import CategoryCard from '../components/CategoryCard.svelte';
+  import EnergyBalanceRow from '../components/EnergyBalanceRow.svelte';
   import EntrySheet from '../components/EntrySheet.svelte';
   import type { CategoryKey } from '$types/food';
 
@@ -16,6 +17,9 @@
 </script>
 
 <section class="grid grid-cols-1 gap-3 p-2 sm:grid-cols-2 md:grid-cols-4 md:gap-4 md:p-4">
+  <div class="col-span-1 sm:col-span-2 md:col-span-4">
+    <EnergyBalanceRow />
+  </div>
   {#each CATEGORY_KEYS as key (key)}
     <CategoryCard
       categoryKey={key}
