@@ -66,7 +66,7 @@
 
     <div
       use:melt={$content}
-      class="bg-bg fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-auto rounded-t-2xl border-t border-white/10 p-4 md:top-1/2 md:bottom-auto md:left-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
+      class="bg-bg fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-auto overscroll-contain rounded-t-2xl border-t border-white/10 p-4 md:top-1/2 md:bottom-auto md:left-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
       transition:fly={{ y: 80, duration: 250 }}
       role="dialog"
       aria-modal="true"
