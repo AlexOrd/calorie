@@ -18,7 +18,14 @@
       aria-current={activeRoute.value === item.key ? 'page' : undefined}
       onclick={() => activeRoute.set(item.key)}
     >
-      <Icon size={24} />
+      <span
+        class={[
+          'flex items-center justify-center rounded-full px-3 py-1 transition-colors',
+          activeRoute.value === item.key && 'bg-accent/15',
+        ]}
+      >
+        <Icon size={22} class={activeRoute.value === item.key ? 'fill-current' : ''} />
+      </span>
       {item.label}
     </button>
   {/each}

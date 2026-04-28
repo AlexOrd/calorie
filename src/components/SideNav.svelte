@@ -18,8 +18,10 @@
     <button
       type="button"
       class={[
-        'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
-        activeRoute.value === item.key ? 'text-fg bg-white/5' : 'text-muted hover:bg-white/5',
+        'flex items-center gap-3 rounded-md border-l-2 px-3 py-2 text-sm transition-colors',
+        activeRoute.value === item.key
+          ? 'text-accent border-accent bg-white/5'
+          : 'text-muted border-transparent hover:bg-white/5',
       ]}
       aria-current={activeRoute.value === item.key ? 'page' : undefined}
       onclick={() => activeRoute.set(item.key)}
