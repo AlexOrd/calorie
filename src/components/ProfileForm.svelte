@@ -78,7 +78,7 @@
       inputmode="numeric"
       enterkeyhint="next"
       autocomplete="off"
-      class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
+      class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-4 py-4 text-lg focus:ring-2 focus:outline-none"
       min="120"
       max="230"
       bind:value={height}
@@ -92,7 +92,7 @@
       inputmode="decimal"
       enterkeyhint="next"
       autocomplete="off"
-      class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
+      class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-4 py-4 text-lg focus:ring-2 focus:outline-none"
       min="30"
       max="250"
       step="0.1"
@@ -107,7 +107,7 @@
       inputmode="numeric"
       enterkeyhint="done"
       autocomplete="off"
-      class="text-fg rounded-lg border border-white/10 bg-transparent px-4 py-4 text-lg"
+      class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-4 py-4 text-lg focus:ring-2 focus:outline-none"
       min="12"
       max="100"
       bind:value={age}
@@ -119,16 +119,16 @@
     <div class="flex gap-2">
       <label
         class={[
-          'flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border border-white/10 px-4 py-4 text-lg transition-colors',
-          gender === 'female' && 'bg-accent border-accent text-white',
+          'border-border bg-surface flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-4 text-lg transition-colors',
+          gender === 'female' && 'bg-accent border-accent text-on-accent',
         ]}
       >
         <input type="radio" class="sr-only" bind:group={gender} value="female" /> Жін
       </label>
       <label
         class={[
-          'flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border border-white/10 px-4 py-4 text-lg transition-colors',
-          gender === 'male' && 'bg-accent border-accent text-white',
+          'border-border bg-surface flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-lg border px-4 py-4 text-lg transition-colors',
+          gender === 'male' && 'bg-accent border-accent text-on-accent',
         ]}
       >
         <input type="radio" class="sr-only" bind:group={gender} value="male" /> Чол
@@ -142,8 +142,8 @@
       {#each ACTIVITY_OPTIONS as opt (opt.value)}
         <label
           class={[
-            'flex min-h-14 cursor-pointer items-center justify-center rounded-lg border border-white/10 px-3 py-4 text-center text-base transition-colors',
-            activity === opt.value && 'bg-accent border-accent text-white',
+            'border-border bg-surface flex min-h-14 cursor-pointer items-center justify-center rounded-lg border px-3 py-4 text-center text-base transition-colors',
+            activity === opt.value && 'bg-accent border-accent text-on-accent',
           ]}
         >
           <input type="radio" class="sr-only" bind:group={activity} value={opt.value} />
@@ -155,7 +155,7 @@
 
   <button
     type="submit"
-    class="bg-accent mt-4 min-h-14 rounded-lg px-6 py-4 text-lg font-semibold text-white shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
+    class="bg-accent text-on-accent mt-4 min-h-14 rounded-lg px-6 py-4 text-lg font-semibold shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
     disabled={!canSubmit || saving}
   >
     {#if saving}

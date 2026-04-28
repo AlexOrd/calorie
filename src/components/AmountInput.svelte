@@ -46,7 +46,7 @@
       {step}
       bind:value={amount}
       oninput={onAmountInput}
-      class="w-32 rounded-lg border border-white/10 bg-transparent px-4 py-3 text-lg"
+      class="border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-4 py-3 text-lg focus:ring-2 focus:outline-none"
     />
     <span class="text-muted text-lg">{unit}</span>
     <span class="text-accent ml-auto text-2xl font-bold tabular-nums">{Math.round(pct)}%</span>
