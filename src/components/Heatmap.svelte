@@ -81,7 +81,7 @@
   });
 </script>
 
-<div class="rounded-md border border-white/10 p-3">
+<div class="border-border rounded-md border p-3">
   <h3 class="mb-2 text-sm font-semibold">Останні {DAYS} днів</h3>
   {#if loaded}
     <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto">

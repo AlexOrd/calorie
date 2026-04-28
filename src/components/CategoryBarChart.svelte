@@ -57,14 +57,14 @@
   let yHundred = $derived(barY(100));
 </script>
 
-<div class="rounded-md border border-white/10 p-3">
+<div class="border-border rounded-md border p-3">
   <div class="mb-3 flex flex-wrap gap-1">
     {#each CATEGORY_KEYS as key (key)}
       <button
         type="button"
         class={[
-          'rounded-md border border-white/10 px-2 py-1 text-xs',
-          selected === key && 'bg-accent text-white',
+          'border-border rounded-md border px-2 py-1 text-xs',
+          selected === key && 'bg-accent text-on-accent',
         ]}
         onclick={() => (selected = key)}
       >

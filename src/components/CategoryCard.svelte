@@ -38,7 +38,7 @@
 <button
   bind:this={cardEl}
   type="button"
-  class="flex min-h-20 w-full flex-col items-start justify-center gap-2.5 rounded-xl border border-white/10 bg-white/2 p-5 text-left transition-colors hover:bg-white/5 active:bg-white/10"
+  class="border-border bg-surface-2 hover:bg-surface active:bg-surface flex min-h-20 w-full flex-col items-start justify-center gap-2.5 rounded-xl border p-5 text-left transition-colors"
   onclick={() => onClick(categoryKey)}
 >
   <div class="flex w-full items-center justify-between gap-2">
@@ -49,7 +49,7 @@
     </span>
   </div>
 
-  <div class="h-3 w-full overflow-hidden rounded-full bg-white/10">
+  <div class="bg-surface-2 h-3 w-full overflow-hidden rounded-full">
     <div
       class="h-full rounded-full transition-[background] duration-200"
       style="width: {Math.min(displayPct, 100)}%; background: {over

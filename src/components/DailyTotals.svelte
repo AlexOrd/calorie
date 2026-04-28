@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="rounded-md border border-white/10 p-4 md:p-5">
+<div class="border-border rounded-md border p-4 md:p-5">
   <h3 class="mb-4 text-sm font-semibold">Сьогодні</h3>
 
   <div class="grid grid-cols-2 gap-3">
@@ -102,7 +102,7 @@
       <span class="text-muted ml-auto text-xs">{unit}</span>
     </div>
     {#if target > 0}
-      <div class="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div class="bg-surface-2 h-1.5 w-full overflow-hidden rounded-full">
         <div
           class="h-full rounded-full {b.over ? 'bg-danger' : fg.replace('text-', 'bg-')}"
           style="width: {b.width}%;"

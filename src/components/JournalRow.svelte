@@ -23,7 +23,7 @@
 </script>
 
 <li
-  class="flex items-center justify-between gap-3 border-b border-white/5 px-3 py-3.5 last:border-b-0"
+  class="border-border flex items-center justify-between gap-3 border-b px-3 py-3.5 last:border-b-0"
 >
   <div class="flex min-w-0 flex-1 flex-col gap-0.5">
     <span class="truncate text-base">{item.name}</span>
@@ -37,7 +37,7 @@
     <div class="flex items-center gap-1.5">
       <button
         type="button"
-        class="bg-danger flex min-h-10 min-w-10 items-center justify-center rounded-md px-2 text-white"
+        class="bg-danger text-on-accent flex min-h-10 min-w-10 items-center justify-center rounded-md px-2"
         onclick={commitDelete}
         aria-label="Підтвердити видалення"
       >
@@ -45,7 +45,7 @@
       </button>
       <button
         type="button"
-        class="text-muted flex min-h-10 min-w-10 items-center justify-center rounded-md border border-white/10 px-2"
+        class="text-muted border-border flex min-h-10 min-w-10 items-center justify-center rounded-md border px-2"
         onclick={() => (confirming = false)}
         aria-label="Скасувати"
       >
@@ -55,7 +55,7 @@
   {:else}
     <button
       type="button"
-      class="text-muted hover:text-danger flex min-h-10 min-w-10 items-center justify-center rounded-md border border-white/10 px-2 transition-colors"
+      class="text-muted hover:text-danger border-border flex min-h-10 min-w-10 items-center justify-center rounded-md border px-2 transition-colors"
       onclick={() => (confirming = true)}
       aria-label="Видалити запис"
     >
