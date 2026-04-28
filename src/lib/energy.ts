@@ -21,7 +21,7 @@ export function trainingKcal(trainings: number): number {
 }
 
 export function actualBurn(p: ProfileInput, a: DayActivity): number {
-  return Math.round(bmr(p) + stepKcal(a.steps, p.weight)); // trainings added in Task 2
+  return Math.round(bmr(p) + stepKcal(a.steps, p.weight) + trainingKcal(a.trainings));
 }
 
 export type BalanceState = 'deficit' | 'balanced' | 'surplus';

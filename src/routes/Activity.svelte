@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Footprints, Dumbbell, Check } from '@lucide/svelte';
+  import { Footprints, Dumbbell } from '@lucide/svelte';
   import { activity, STEP_TARGET } from '$state/activity.svelte';
 
   let steps = $derived(activity.value.steps);
@@ -13,6 +13,8 @@
     const value = Number(target.value);
     if (Number.isFinite(value)) activity.setSteps(value);
   }
+
+  const SLOTS: readonly [0, 1, 2] = [0, 1, 2] as const;
 </script>
 
 <section
@@ -55,35 +57,34 @@
     </p>
   </div>
 
-  <!-- Strength training toggle -->
-  <button
-    type="button"
-    class={[
-      'flex min-h-16 items-center gap-4 rounded-xl border px-5 py-4 text-left transition-colors',
-      activity.value.strength
-        ? 'border-ok bg-ok/10'
-        : 'border-border bg-surface-2 hover:bg-surface',
-    ]}
-    onclick={() => activity.toggleStrength()}
-    aria-pressed={activity.value.strength}
-  >
-    <div
-      class={[
-        'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg',
-        activity.value.strength ? 'bg-ok text-on-accent' : 'text-muted bg-surface-2',
-      ]}
-    >
-      {#if activity.value.strength}
-        <Check size={24} />
-      {:else}
-        <Dumbbell size={24} />
-      {/if}
+  <!-- Trainings (3 light sessions) -->
+  <div class="border-border bg-surface-2 rounded-xl border p-5 md:col-start-2 md:row-start-2">
+    <div class="text-muted mb-3 flex items-center gap-2 text-sm">
+      <Dumbbell size={18} />
+      Тренування
     </div>
-    <div class="flex flex-col">
-      <span class="text-base font-semibold">Силове тренування</span>
-      <span class="text-muted text-sm">
-        {activity.value.strength ? 'Виконано сьогодні' : 'Не виконано'}
-      </span>
+    <div class="grid grid-cols-3 gap-3">
+      {#each SLOTS as slot (slot)}
+        {@const slotNum = slot + 1}
+        {@const ticked = activity.value.trainings >= slotNum}
+        <button
+          type="button"
+          class={[
+            'flex min-h-16 flex-col items-center justify-center rounded-lg border transition-colors',
+            ticked
+              ? 'border-ok bg-ok/10 text-ok'
+              : 'border-border bg-surface text-muted hover:bg-surface-2',
+          ]}
+          aria-pressed={ticked}
+          onclick={() => activity.tickTraining(slot)}
+        >
+          <Dumbbell size={20} />
+          <span class="mt-1 text-xs font-semibold tabular-nums">{slotNum}</span>
+        </button>
+      {/each}
     </div>
-  </button>
+    {#if activity.value.trainings > 0}
+      <p class="text-muted mt-3 text-xs">+{activity.value.trainings * 120} ккал сьогодні</p>
+    {/if}
+  </div>
 </section>
