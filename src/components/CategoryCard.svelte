@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Spring } from 'svelte/motion';
   import { pulseWarning } from '$lib/anim';
+  import { activeDate } from '$state/activeDate.svelte';
+  import { macroCrossings } from '$state/macroCrossings.svelte';
   import type { CategoryKey } from '$types/food';
 
   interface Props {
@@ -15,18 +17,20 @@
   const fill = new Spring(0, { stiffness: 0.15, damping: 0.8 });
 
   let cardEl = $state<HTMLButtonElement | undefined>(undefined);
-  let prevOver = false;
 
   $effect(() => {
     fill.target = Math.min(consumed, 150);
   });
 
   $effect(() => {
-    const over = consumed > 100;
-    if (over && !prevOver && cardEl) {
+    const date = activeDate.value;
+    const next: 'under' | 'over' = consumed > 100 ? 'over' : 'under';
+    const prev = macroCrossings.categoryState(date, categoryKey);
+    if (next === prev) return;
+    void macroCrossings.setCategory(date, categoryKey, next);
+    if (prev === 'under' && next === 'over' && cardEl) {
       pulseWarning(cardEl);
     }
-    prevOver = over;
   });
 
   let displayPct = $derived(fill.current);
