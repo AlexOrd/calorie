@@ -37,6 +37,8 @@ export interface TelegramWebApp {
   ready(): void;
   expand(): void;
   themeParams: TelegramThemeParams;
+  colorScheme: 'light' | 'dark';
   CloudStorage: TelegramCloudStorage;
   disableVerticalSwipes?(): void;
+  onEvent?(name: string, callback: () => void): void;
 }
