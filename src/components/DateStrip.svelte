@@ -3,6 +3,11 @@
   import { addDays, dateFromKey, todayKey } from '$lib/date';
   import { activeRoute } from '$state/route.svelte';
 
+  interface Props {
+    compact?: boolean;
+  }
+  let { compact = false }: Props = $props();
+
   const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
 
   let anchor = $state(activeDate.value);
@@ -27,23 +32,34 @@
 </script>
 
 <div
-  class="border-border flex items-center gap-1 border-b px-2 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] md:px-4"
+  class={[
+    'flex items-center gap-1',
+    compact
+      ? 'inline-flex'
+      : 'border-border w-full border-b px-2 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] md:px-4',
+  ]}
 >
   <button
     type="button"
-    class="text-muted hover:bg-surface-2 min-h-10 rounded px-3 py-2 text-base"
+    class={[
+      'text-muted hover:bg-surface-2 rounded',
+      compact ? 'min-h-9 px-2 py-1 text-sm' : 'min-h-10 px-3 py-2 text-base',
+    ]}
     onclick={() => shift(-7)}
     aria-label="Попередній тиждень"
   >
     ‹
   </button>
 
-  <div class="flex flex-1 justify-between gap-1">
+  <div class={['flex gap-1', compact ? '' : 'flex-1 justify-between']}>
     {#each days as key (key)}
       <button
         type="button"
         class={[
-          'flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-md px-1 py-1.5 text-xs',
+          'flex flex-col items-center justify-center rounded-md',
+          compact
+            ? 'min-h-9 min-w-9 px-1 py-1 text-[11px]'
+            : 'min-h-12 min-w-0 flex-1 px-1 py-1.5 text-xs',
           activeDate.value === key
             ? 'bg-accent text-on-accent'
             : key === today
@@ -56,14 +72,17 @@
         }}
       >
         <span>{dayLabel(key)}</span>
-        <span class="text-lg font-semibold">{dayNum(key)}</span>
+        <span class={['font-semibold', compact ? 'text-base' : 'text-lg']}>{dayNum(key)}</span>
       </button>
     {/each}
   </div>
 
   <button
     type="button"
-    class="text-muted hover:bg-surface-2 min-h-10 rounded px-3 py-2 text-base"
+    class={[
+      'text-muted hover:bg-surface-2 rounded',
+      compact ? 'min-h-9 px-2 py-1 text-sm' : 'min-h-10 px-3 py-2 text-base',
+    ]}
     onclick={() => shift(7)}
     aria-label="Наступний тиждень"
   >
