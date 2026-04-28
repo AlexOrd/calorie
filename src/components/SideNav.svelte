@@ -4,7 +4,7 @@
 </script>
 
 <nav
-  class="border-border hidden h-full w-56 shrink-0 flex-col gap-1 border-r p-4 md:flex"
+  class="border-border bg-bg hidden h-full w-64 shrink-0 flex-col gap-1 border-r p-4 md:flex"
   aria-label="Головна навігація"
 >
   <div class="mb-4 flex items-center gap-2 px-2">
@@ -13,6 +13,9 @@
     </div>
     <h1 class="text-accent text-lg font-semibold">Calorie</h1>
   </div>
+  <h2 class="text-muted mt-2 mb-1 px-3 text-[11px] font-semibold tracking-wider uppercase">
+    Сьогодні
+  </h2>
   {#each NAV_ITEMS as item (item.key)}
     {@const Icon = item.icon}
     <button
