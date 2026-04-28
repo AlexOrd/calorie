@@ -2,19 +2,21 @@
   import { profile } from '$state/profile.svelte';
   import ProfileForm from '../components/ProfileForm.svelte';
   import TelegramUserHeader from '../components/TelegramUserHeader.svelte';
-  import { pulseSuccess } from '$lib/anim';
+  import { celebrate } from '$lib/anim';
+  import { dailyTargets } from '$lib/scaling';
   import type { ProfileInput } from '$types/profile';
 
-  let formEl = $state<HTMLDivElement | undefined>(undefined);
+  let targetsEl = $state<HTMLDivElement | undefined>(undefined);
   let savedAt = $state<number | null>(null);
 
   async function save(input: ProfileInput): Promise<void> {
     await profile.save(input);
     savedAt = Date.now();
-    if (formEl) pulseSuccess(formEl);
+    if (targetsEl) celebrate(targetsEl);
   }
 
-  let savedRecently = $derived(savedAt !== null && Date.now() - savedAt < 3000);
+  let savedRecently = $derived(savedAt !== null && Date.now() - savedAt < 2500);
+  let targets = $derived(profile.value ? dailyTargets(profile.value) : null);
 </script>
 
 <section class="mx-auto max-w-md p-3 md:p-6">
@@ -27,15 +29,42 @@
     {/if}
   </div>
 
+  {#if targets}
+    <div
+      bind:this={targetsEl}
+      class="mb-5 grid grid-cols-4 gap-2 rounded-lg border border-white/10 p-3 text-center"
+    >
+      <div>
+        <div class="text-accent text-lg font-semibold tabular-nums">{targets.kcal}</div>
+        <div class="text-muted text-[11px]">ккал</div>
+      </div>
+      <div>
+        <div class="text-fg text-lg font-semibold tabular-nums">{targets.protein}</div>
+        <div class="text-muted text-[11px]">білок, г</div>
+      </div>
+      <div>
+        <div class="text-fg text-lg font-semibold tabular-nums">{targets.carbs}</div>
+        <div class="text-muted text-[11px]">вугл., г</div>
+      </div>
+      <div>
+        <div class="text-fg text-lg font-semibold tabular-nums">{targets.fat}</div>
+        <div class="text-muted text-[11px]">жири, г</div>
+      </div>
+    </div>
+  {/if}
+
   <p class="text-muted mb-4 text-sm">
     Зміна параметрів перерахує норми для всіх майбутніх днів. Існуючі записи журналу не змінюються.
   </p>
 
-  <div bind:this={formEl}>
-    <ProfileForm initial={profile.value} submitLabel="Зберегти" onSubmit={save} />
-  </div>
+  <ProfileForm
+    initial={profile.value}
+    submitLabel="Зберегти"
+    dirtyLabel="Зберегти зміни"
+    onSubmit={save}
+  />
 
   {#if savedRecently}
-    <p class="text-ok mt-3 text-center text-sm">Збережено</p>
+    <p class="text-ok mt-3 text-center text-sm">Цілі оновлено за новим профілем</p>
   {/if}
 </section>
