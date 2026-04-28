@@ -7,6 +7,7 @@ function applyTelegramTheme(): void {
   if (!tg) return;
   tg.ready();
   tg.expand();
+  tg.disableVerticalSwipes?.();
   const t = tg.themeParams;
   const root = document.documentElement.style;
   if (t.bg_color) root.setProperty('--tg-bg', t.bg_color);
