@@ -37,7 +37,7 @@
 {:else}
   <div class="flex h-dvh">
     <SideNav />
-    <div class="flex h-dvh flex-1 flex-col">
+    <div class="flex flex-1 flex-col">
       <DateStrip />
       <main
         class="scroll-region mx-auto w-full max-w-5xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 md:px-6"
