@@ -1,6 +1,7 @@
 <script lang="ts">
   import { activeDate } from '$state/activeDate.svelte';
   import { addDays, dateFromKey, todayKey } from '$lib/date';
+  import { activeRoute } from '$state/route.svelte';
 
   const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
 
@@ -42,14 +43,17 @@
       <button
         type="button"
         class={[
-          'flex min-h-12 min-w-10 flex-col items-center justify-center rounded-md px-2 py-1.5 text-xs',
+          'flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-md px-1 py-1.5 text-xs',
           activeDate.value === key
             ? 'bg-accent text-white'
             : key === today
               ? 'text-fg font-bold'
               : 'text-muted',
         ]}
-        onclick={() => activeDate.set(key)}
+        onclick={() => {
+          activeDate.set(key);
+          activeRoute.set('dashboard');
+        }}
       >
         <span>{dayLabel(key)}</span>
         <span class="text-lg font-semibold">{dayNum(key)}</span>
