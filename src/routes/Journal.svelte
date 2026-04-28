@@ -27,7 +27,7 @@
   );
 </script>
 
-<section class="p-2 md:p-4">
+<section class="mx-auto max-w-2xl p-2 md:p-4">
   <h2 class="mb-3 text-xl font-semibold">Журнал</h2>
 
   {#if visible.length === 0}
