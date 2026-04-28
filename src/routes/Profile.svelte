@@ -15,7 +15,15 @@
     if (targetsEl) celebrate(targetsEl);
   }
 
-  let savedRecently = $derived(savedAt !== null && Date.now() - savedAt < 2500);
+  let savedRecently = $derived(savedAt !== null);
+
+  $effect(() => {
+    if (savedAt === null) return;
+    const id = setTimeout(() => {
+      savedAt = null;
+    }, 2500);
+    return () => clearTimeout(id);
+  });
   let targets = $derived(profile.value ? dailyTargets(profile.value) : null);
 </script>
 

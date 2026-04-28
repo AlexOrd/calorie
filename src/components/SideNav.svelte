@@ -4,7 +4,7 @@
 </script>
 
 <nav
-  class="hidden h-screen w-56 shrink-0 flex-col gap-1 border-r border-white/10 p-4 md:flex"
+  class="hidden h-full w-56 shrink-0 flex-col gap-1 border-r border-white/10 p-4 md:flex"
   aria-label="Головна навігація"
 >
   <div class="mb-4 flex items-center gap-2 px-2">
