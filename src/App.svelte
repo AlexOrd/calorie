@@ -5,6 +5,7 @@
   import { activeRoute } from '$state/route.svelte';
   import { dailyLog } from '$state/dailyLog.svelte';
   import { activity } from '$state/activity.svelte';
+  import { macroCrossings } from '$state/macroCrossings.svelte';
   import BottomNav from './components/BottomNav.svelte';
   import SideNav from './components/SideNav.svelte';
   import DateStrip from './components/DateStrip.svelte';
@@ -20,7 +21,12 @@
   onMount(async () => {
     await profile.load();
     if (profile.hasProfile) {
-      await Promise.all([dailyLog.load(activeDate.value), activity.load(activeDate.value)]);
+      await Promise.all([
+        dailyLog.load(activeDate.value),
+        activity.load(activeDate.value),
+        macroCrossings.load(activeDate.value),
+      ]);
+      void macroCrossings.pruneOlderThan(7);
     }
   });
 
@@ -29,6 +35,7 @@
     const date = activeDate.value;
     void dailyLog.load(date);
     void activity.load(date);
+    void macroCrossings.load(date);
   });
 
   $effect(() => {
