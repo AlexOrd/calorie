@@ -15,9 +15,9 @@
 ## File map
 
 | File                                     | Action | Responsibility                                                                                                                                               |
-| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- | ----------------------------------------------------------------- |
+| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `src/lib/energy.ts`                      | create | `bmr`, `stepKcal`, `trainingKcal`, `actualBurn`, `energyBalance` + `BalanceState` / `EnergyBalance` types + `KCAL_PER_TRAINING` / `NEUTRAL_BAND_KCAL` consts |
-| `src/state/activity.svelte.ts`           | modify | Schema migrates `strength` → `trainings: 0                                                                                                                   | 1   | 2   | 3`; adds `setTrainings`, `tickTraining`; removes `toggleStrength` |
+| `src/state/activity.svelte.ts`           | modify | Schema migrates `strength` → `trainings` (0..3); adds `setTrainings`, `tickTraining`; removes `toggleStrength`                                               |
 | `src/routes/Activity.svelte`             | modify | Strength toggle replaced with 3 training tiles + footer                                                                                                      |
 | `src/components/EnergyBalanceRow.svelte` | create | Compact / full variants; reads profile + activity + dailyLog                                                                                                 |
 | `src/routes/Dashboard.svelte`            | modify | Mount `<EnergyBalanceRow />` spanning the grid above category cards                                                                                          |
