@@ -3,14 +3,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Light — Claude warm cream */
-  --bg: #faf7f2;
+  /* Light — Claude warm cream. --tg-* vars are set by main.ts only when
+     Telegram is providing a custom theme; default themes leave them
+     unset so the Claude fallback is used. */
+  --bg: var(--tg-bg, #faf7f2);
   --surface: #ffffff;
   --surface-2: #f3eee5;
   --border: #e6dfd1;
   --border-strong: #c8bda5;
-  --fg: #1f1d1a;
-  --muted: #6b665d;
+  --fg: var(--tg-fg, #1f1d1a);
+  --muted: var(--tg-hint, #6b665d);
   --accent: var(--tg-link, #c96442);
   --on-accent: #ffffff;
   --danger: #c14a3a;
@@ -21,13 +23,13 @@
 
 .dark {
   /* Dark — warm dim */
-  --bg: #1a1816;
+  --bg: var(--tg-bg, #1a1816);
   --surface: #242120;
   --surface-2: #2d2927;
   --border: #3a3633;
   --border-strong: #524c47;
-  --fg: #ece8e2;
-  --muted: #9a938a;
+  --fg: var(--tg-fg, #ece8e2);
+  --muted: var(--tg-hint, #9a938a);
   --accent: var(--tg-link, #d97757);
   --on-accent: #ffffff;
   --danger: #e26b5c;
