@@ -48,6 +48,7 @@
 
   $effect(() => {
     const date = activeDate.value;
+    if (!macroCrossings.isLoaded(date)) return;
     const checks: { name: Macro; el: HTMLDivElement | undefined; next: MacroState }[] = [
       { name: 'kcal', el: kcalEl, next: kcalState(totals.kcal, targets.kcal) },
       { name: 'protein', el: proteinEl, next: nonKcalState(totals.protein, targets.protein) },
@@ -164,13 +165,13 @@
     </div>
 
     <!-- fat -->
-    <div bind:this={fatEl} class="flex flex-col gap-2 rounded-lg bg-blue-500/10 p-4">
+    <div bind:this={fatEl} class="bg-fat/10 flex flex-col gap-2 rounded-lg p-4">
       <div class="text-muted flex items-center gap-2 text-xs">
         <Droplet size={14} />
         Жири
       </div>
       <div class="flex items-baseline gap-1.5">
-        <span class="text-2xl font-bold text-blue-400 tabular-nums">{Math.round(totals.fat)}</span>
+        <span class="text-fat text-2xl font-bold tabular-nums">{Math.round(totals.fat)}</span>
         {#if targets.fat > 0}
           <span class="text-muted text-sm tabular-nums">/ {targets.fat}</span>
         {/if}
@@ -179,9 +180,7 @@
       {#if targets.fat > 0}
         <div class="bg-surface-2 h-1.5 w-full overflow-hidden rounded-full">
           <div
-            class="h-full rounded-full {bar(totals.fat, targets.fat).over
-              ? 'bg-danger'
-              : 'bg-blue-400'}"
+            class="h-full rounded-full {bar(totals.fat, targets.fat).over ? 'bg-danger' : 'bg-fat'}"
             style="width: {bar(totals.fat, targets.fat).width}%;"
           ></div>
         </div>

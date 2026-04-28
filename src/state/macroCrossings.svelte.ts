@@ -32,6 +32,10 @@ export const macroCrossings = {
     _byDate[date] = stored ?? emptyDay();
   },
 
+  isLoaded(this: void, date: string): boolean {
+    return date in _byDate;
+  },
+
   macroState(this: void, date: string, macro: Macro): MacroState {
     return _byDate[date]?.[macro] ?? 'under';
   },

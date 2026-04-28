@@ -24,6 +24,7 @@
 
   $effect(() => {
     const date = activeDate.value;
+    if (!macroCrossings.isLoaded(date)) return;
     const next: 'under' | 'over' = consumed > 100 ? 'over' : 'under';
     const prev = macroCrossings.categoryState(date, categoryKey);
     if (next === prev) return;

@@ -16,6 +16,7 @@
   --danger: #c14a3a;
   --warn: #b8862a;
   --ok: #4a7a3a;
+  --fat: #3a7095;
 }
 
 .dark {
@@ -32,6 +33,7 @@
   --danger: #e26b5c;
   --warn: #d4a040;
   --ok: #6fa55b;
+  --fat: #7eb8d8;
 }
 
 @theme {
@@ -47,6 +49,7 @@
   --color-danger: var(--danger);
   --color-warn: var(--warn);
   --color-ok: var(--ok);
+  --color-fat: var(--fat);
 }
 
 :root {
@@ -90,7 +93,7 @@ input[type='range'] {
   appearance: none;
   width: 100%;
   height: 10px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--color-surface-2);
   border-radius: 9999px;
   outline: none;
   cursor: pointer;
