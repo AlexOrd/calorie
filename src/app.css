@@ -1,13 +1,52 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Light — Claude warm cream */
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --surface-2: #f3eee5;
+  --border: #e6dfd1;
+  --border-strong: #c8bda5;
+  --fg: #1f1d1a;
+  --muted: #6b665d;
+  --accent: var(--tg-link, #c96442);
+  --on-accent: #ffffff;
+  --danger: #c14a3a;
+  --warn: #b8862a;
+  --ok: #4a7a3a;
+}
+
+.dark {
+  /* Dark — warm dim */
+  --bg: #1a1816;
+  --surface: #242120;
+  --surface-2: #2d2927;
+  --border: #3a3633;
+  --border-strong: #524c47;
+  --fg: #ece8e2;
+  --muted: #9a938a;
+  --accent: var(--tg-link, #d97757);
+  --on-accent: #ffffff;
+  --danger: #e26b5c;
+  --warn: #d4a040;
+  --ok: #6fa55b;
+}
+
 @theme {
-  --color-bg: var(--tg-bg, #0f1115);
-  --color-fg: var(--tg-fg, #e7e9ee);
-  --color-muted: var(--tg-hint, #8a8f99);
-  --color-accent: var(--tg-link, #4caf50);
-  --color-danger: #ef4444;
-  --color-warn: #f59e0b;
-  --color-ok: #4caf50;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-ok: var(--ok);
 }
 
 :root {
