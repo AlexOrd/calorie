@@ -18,7 +18,7 @@
   <p class="text-muted text-sm">Спершу — кілька параметрів, щоб налаштувати норми під вас.</p>
   <button
     type="button"
-    class="bg-accent mt-4 min-h-14 self-center rounded-lg px-8 py-4 text-lg font-semibold text-white shadow-md shadow-black/20"
+    class="bg-accent text-on-accent mt-4 min-h-14 self-center rounded-lg px-8 py-4 text-lg font-semibold shadow-md shadow-black/20"
     onclick={onNext}
   >
     Почати

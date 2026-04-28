@@ -19,7 +19,7 @@
   <h2 class="text-xl font-semibold">Активність</h2>
 
   <!-- Steps card -->
-  <div class="rounded-xl border border-white/10 bg-white/2 p-5">
+  <div class="border-border bg-surface-2 rounded-xl border p-5">
     <div class="text-muted mb-3 flex items-center gap-2 text-sm">
       <Footprints size={18} />
       Кроки
@@ -32,13 +32,13 @@
         step="100"
         value={steps}
         oninput={onStepsInput}
-        class="text-fg w-32 rounded-lg border border-white/10 bg-transparent px-4 py-3 text-2xl font-bold tabular-nums"
+        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-4 py-3 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
       />
       <span class="text-muted text-base">/ {STEP_TARGET}</span>
       <span class="text-accent ml-auto text-2xl font-bold tabular-nums">{stepsPct}%</span>
     </div>
 
-    <div class="mt-4 h-3 w-full overflow-hidden rounded-full bg-white/10">
+    <div class="bg-surface-2 mt-4 h-3 w-full overflow-hidden rounded-full">
       <div
         class={[
           'h-full rounded-full transition-[width] duration-300',
@@ -60,7 +60,7 @@
       'flex min-h-16 items-center gap-4 rounded-xl border px-5 py-4 text-left transition-colors',
       activity.value.strength
         ? 'border-ok bg-ok/10'
-        : 'border-white/10 bg-white/2 hover:bg-white/5',
+        : 'border-border bg-surface-2 hover:bg-surface',
     ]}
     onclick={() => activity.toggleStrength()}
     aria-pressed={activity.value.strength}
@@ -68,7 +68,7 @@
     <div
       class={[
         'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg',
-        activity.value.strength ? 'bg-ok text-white' : 'text-muted bg-white/5',
+        activity.value.strength ? 'bg-ok text-on-accent' : 'text-muted bg-surface-2',
       ]}
     >
       {#if activity.value.strength}

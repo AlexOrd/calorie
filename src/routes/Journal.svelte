@@ -33,7 +33,7 @@
   {#if visible.length === 0}
     <p class="text-muted text-sm">Поки що нічого не додано.</p>
   {:else}
-    <ul class="flex flex-col rounded-md border border-white/10 bg-white/2">
+    <ul class="border-border bg-surface-2 flex flex-col rounded-md border">
       {#each visible as { entry, item } (entry.ts)}
         <div
           animate:flip={{ duration: 200 }}

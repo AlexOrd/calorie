@@ -40,7 +40,7 @@
   {#if targets}
     <div
       bind:this={targetsEl}
-      class="mb-5 grid grid-cols-4 gap-2 rounded-lg border border-white/10 p-3 text-center"
+      class="border-border bg-surface mb-5 grid grid-cols-4 gap-2 rounded-lg border p-3 text-center"
     >
       <div>
         <div class="text-accent text-lg font-semibold tabular-nums">{targets.kcal}</div>
