@@ -205,13 +205,13 @@ Replace the entire `{#if profile.loaded ... {/if}` block with:
 
 ```svelte
 {#if !profile.loaded}
-  <div class="text-muted flex h-[100dvh] items-center justify-center">Завантаження…</div>
+  <div class="text-muted flex h-dvh items-center justify-center">Завантаження…</div>
 {:else if !profile.hasProfile}
   <Onboarding />
 {:else}
-  <div class="flex h-[100dvh]">
+  <div class="flex h-dvh">
     <SideNav />
-    <div class="flex h-[100dvh] flex-1 flex-col">
+    <div class="flex h-dvh flex-1 flex-col">
       <DateStrip />
       <main
         class="scroll-region mx-auto w-full max-w-5xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 md:px-6"
@@ -229,7 +229,7 @@ Replace the entire `{#if profile.loaded ... {/if}` block with:
 {/if}
 ```
 
-Note: `pb-16 md:pb-0` is removed (no longer needed — BottomNav is a flex sibling, not floating). `min-h-screen` becomes `h-[100dvh]`.
+Note: `pb-16 md:pb-0` is removed (no longer needed — BottomNav is a flex sibling, not floating). `min-h-screen` becomes `h-dvh`.
 
 - [ ] **Step 3: Remove `fixed` positioning from `src/components/BottomNav.svelte`**
 
