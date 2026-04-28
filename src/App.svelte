@@ -31,22 +31,25 @@
 </script>
 
 {#if !profile.loaded}
-  <div class="text-muted flex h-screen items-center justify-center">Завантаження…</div>
+  <div class="text-muted flex h-dvh items-center justify-center">Завантаження…</div>
 {:else if !profile.hasProfile}
   <Onboarding />
 {:else}
-  <div class="flex min-h-screen">
+  <div class="flex h-dvh">
     <SideNav />
-    <div class="flex min-h-screen flex-1 flex-col pb-16 md:pb-0">
+    <div class="flex h-dvh flex-1 flex-col">
       <DateStrip />
-      <main class="mx-auto w-full max-w-5xl flex-1 px-2 md:px-6">
+      <main
+        class="scroll-region mx-auto w-full max-w-5xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 md:px-6"
+        style="scroll-padding-bottom: 16rem;"
+      >
         <div class:hidden={activeRoute.value !== 'dashboard'}><Dashboard /></div>
         <div class:hidden={activeRoute.value !== 'journal'}><Journal /></div>
         <div class:hidden={activeRoute.value !== 'activity'}><Activity /></div>
         <div class:hidden={activeRoute.value !== 'stats'}><Stats /></div>
         <div class:hidden={activeRoute.value !== 'profile'}><Profile /></div>
       </main>
+      <BottomNav />
     </div>
-    <BottomNav />
   </div>
 {/if}

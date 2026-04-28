@@ -4,7 +4,7 @@
 </script>
 
 <nav
-  class="bg-bg fixed inset-x-0 bottom-0 z-30 flex border-t border-white/10 pb-[env(safe-area-inset-bottom)] md:hidden"
+  class="bg-bg flex shrink-0 border-t border-white/10 pb-[env(safe-area-inset-bottom)] md:hidden"
   aria-label="Головна навігація"
 >
   {#each NAV_ITEMS as item (item.key)}
