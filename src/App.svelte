@@ -57,7 +57,7 @@
       <DesktopHeader />
       <main
         bind:this={mainEl}
-        class="scroll-region mx-auto w-full max-w-6xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 py-2 md:px-6 md:py-6"
+        class="scroll-region mx-auto w-full max-w-6xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 md:px-6 md:py-6"
         style="scroll-padding-bottom: 16rem;"
       >
         <div class:hidden={activeRoute.value !== 'dashboard'}><Dashboard /></div>
