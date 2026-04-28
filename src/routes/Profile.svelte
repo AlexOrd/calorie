@@ -1,6 +1,7 @@
 <script lang="ts">
   import { profile } from '$state/profile.svelte';
   import ProfileForm from '../components/ProfileForm.svelte';
+  import TelegramUserHeader from '../components/TelegramUserHeader.svelte';
   import { pulseSuccess } from '$lib/anim';
   import type { ProfileInput } from '$types/profile';
 
@@ -17,6 +18,8 @@
 </script>
 
 <section class="mx-auto max-w-md p-3 md:p-6">
+  <TelegramUserHeader />
+
   <div class="mb-5 flex items-baseline justify-between">
     <h2 class="text-xl font-semibold">Профіль</h2>
     {#if profile.value}
