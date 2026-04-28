@@ -15,6 +15,8 @@
   import Profile from './routes/Profile.svelte';
   import Onboarding from './routes/Onboarding.svelte';
 
+  let mainEl = $state<HTMLElement | undefined>(undefined);
+
   onMount(async () => {
     await profile.load();
     if (profile.hasProfile) {
@@ -28,6 +30,11 @@
     void dailyLog.load(date);
     void activity.load(date);
   });
+
+  $effect(() => {
+    void activeRoute.value;
+    mainEl?.scrollTo({ top: 0, behavior: 'instant' });
+  });
 </script>
 
 {#if !profile.loaded}
@@ -40,6 +47,7 @@
     <div class="flex flex-1 flex-col">
       <DateStrip />
       <main
+        bind:this={mainEl}
         class="scroll-region mx-auto w-full max-w-5xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 md:px-6"
         style="scroll-padding-bottom: 16rem;"
       >
