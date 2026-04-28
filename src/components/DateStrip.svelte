@@ -27,11 +27,11 @@
 </script>
 
 <div
-  class="flex items-center gap-1 border-b border-white/10 px-2 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] md:px-4"
+  class="border-border flex items-center gap-1 border-b px-2 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] md:px-4"
 >
   <button
     type="button"
-    class="text-muted min-h-10 rounded px-3 py-2 text-base hover:bg-white/5"
+    class="text-muted hover:bg-surface-2 min-h-10 rounded px-3 py-2 text-base"
     onclick={() => shift(-7)}
     aria-label="Попередній тиждень"
   >
@@ -45,7 +45,7 @@
         class={[
           'flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-md px-1 py-1.5 text-xs',
           activeDate.value === key
-            ? 'bg-accent text-white'
+            ? 'bg-accent text-on-accent'
             : key === today
               ? 'text-fg font-bold'
               : 'text-muted',
@@ -63,7 +63,7 @@
 
   <button
     type="button"
-    class="text-muted min-h-10 rounded px-3 py-2 text-base hover:bg-white/5"
+    class="text-muted hover:bg-surface-2 min-h-10 rounded px-3 py-2 text-base"
     onclick={() => shift(7)}
     aria-label="Наступний тиждень"
   >

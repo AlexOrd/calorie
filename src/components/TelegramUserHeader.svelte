@@ -7,7 +7,7 @@
 </script>
 
 <div class="mb-5 flex items-center gap-3">
-  <div class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white/5">
+  <div class="bg-surface-2 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full">
     {#if user?.photo_url}
       <img src={user.photo_url} alt="" class="h-12 w-12 object-cover" />
     {:else if user}

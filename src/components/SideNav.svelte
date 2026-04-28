@@ -4,7 +4,7 @@
 </script>
 
 <nav
-  class="hidden h-full w-56 shrink-0 flex-col gap-1 border-r border-white/10 p-4 md:flex"
+  class="border-border hidden h-full w-56 shrink-0 flex-col gap-1 border-r p-4 md:flex"
   aria-label="Головна навігація"
 >
   <div class="mb-4 flex items-center gap-2 px-2">
@@ -20,8 +20,8 @@
       class={[
         'flex items-center gap-3 rounded-md border-l-2 px-3 py-2 text-sm transition-colors',
         activeRoute.value === item.key
-          ? 'text-accent border-accent bg-white/5'
-          : 'text-muted border-transparent hover:bg-white/5',
+          ? 'text-accent border-accent bg-surface-2'
+          : 'text-muted hover:bg-surface-2 border-transparent',
       ]}
       aria-current={activeRoute.value === item.key ? 'page' : undefined}
       onclick={() => activeRoute.set(item.key)}

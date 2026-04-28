@@ -66,7 +66,7 @@
 
     <div
       use:melt={$content}
-      class="bg-bg fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-auto overscroll-contain rounded-t-2xl border-t border-white/10 p-4 md:top-1/2 md:bottom-auto md:left-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
+      class="bg-surface border-border md:border-border fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-auto overscroll-contain rounded-t-2xl border-t p-4 md:top-1/2 md:bottom-auto md:left-1/2 md:max-w-md md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:border"
       transition:fly={{ y: 80, duration: 250 }}
       role="dialog"
       aria-modal="true"
@@ -86,7 +86,7 @@
       <ul class="flex flex-col gap-2">
         {#each Object.entries(category.items) as [id, item] (id)}
           {@const existing = categoryKey ? itemTotal(id, categoryKey) : 0}
-          <li bind:this={cardElById[id]} class="rounded-md border border-white/10 p-4">
+          <li bind:this={cardElById[id]} class="border-border rounded-md border p-4">
             <button
               type="button"
               class="flex w-full items-center justify-between text-left"
@@ -106,7 +106,7 @@
                 <AmountInput {item} bind:pct />
                 <button
                   type="button"
-                  class="bg-accent min-h-14 w-full rounded-lg px-6 py-4 text-lg font-semibold text-white shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
+                  class="bg-accent text-on-accent min-h-14 w-full rounded-lg px-6 py-4 text-lg font-semibold shadow-md shadow-black/20 transition-opacity disabled:opacity-50"
                   disabled={pct <= 0}
                   onclick={() => commit(id)}
                 >
