@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { profile } from '$state/profile.svelte';
   import { activeDate } from '$state/activeDate.svelte';
+  import { activeRoute } from '$state/route.svelte';
   import { dailyLog } from '$state/dailyLog.svelte';
   import { activity } from '$state/activity.svelte';
   import BottomNav from './components/BottomNav.svelte';
@@ -13,9 +14,6 @@
   import Stats from './routes/Stats.svelte';
   import Profile from './routes/Profile.svelte';
   import Onboarding from './routes/Onboarding.svelte';
-  import type { TabKey } from '$lib/nav';
-
-  let currentTab = $state<TabKey>('dashboard');
 
   onMount(async () => {
     await profile.load();
@@ -38,17 +36,17 @@
   <Onboarding />
 {:else}
   <div class="flex min-h-screen">
-    <SideNav bind:current={currentTab} />
+    <SideNav />
     <div class="flex min-h-screen flex-1 flex-col pb-16 md:pb-0">
       <DateStrip />
       <main class="mx-auto w-full max-w-5xl flex-1 px-2 md:px-6">
-        <div class:hidden={currentTab !== 'dashboard'}><Dashboard /></div>
-        <div class:hidden={currentTab !== 'journal'}><Journal /></div>
-        <div class:hidden={currentTab !== 'activity'}><Activity /></div>
-        <div class:hidden={currentTab !== 'stats'}><Stats /></div>
-        <div class:hidden={currentTab !== 'profile'}><Profile /></div>
+        <div class:hidden={activeRoute.value !== 'dashboard'}><Dashboard /></div>
+        <div class:hidden={activeRoute.value !== 'journal'}><Journal /></div>
+        <div class:hidden={activeRoute.value !== 'activity'}><Activity /></div>
+        <div class:hidden={activeRoute.value !== 'stats'}><Stats /></div>
+        <div class:hidden={activeRoute.value !== 'profile'}><Profile /></div>
       </main>
     </div>
-    <BottomNav bind:current={currentTab} />
+    <BottomNav />
   </div>
 {/if}

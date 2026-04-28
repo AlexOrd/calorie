@@ -1,10 +1,6 @@
 <script lang="ts">
-  import { NAV_ITEMS, type TabKey } from '$lib/nav';
-
-  interface Props {
-    current: TabKey;
-  }
-  let { current = $bindable() }: Props = $props();
+  import { NAV_ITEMS } from '$lib/nav';
+  import { activeRoute } from '$state/route.svelte';
 </script>
 
 <nav
@@ -17,10 +13,10 @@
       type="button"
       class={[
         'flex min-h-12 flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[11px]',
-        current === item.key ? 'text-accent' : 'text-muted',
+        activeRoute.value === item.key ? 'text-accent' : 'text-muted',
       ]}
-      aria-current={current === item.key ? 'page' : undefined}
-      onclick={() => (current = item.key)}
+      aria-current={activeRoute.value === item.key ? 'page' : undefined}
+      onclick={() => activeRoute.set(item.key)}
     >
       <Icon size={24} />
       {item.label}
