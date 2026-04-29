@@ -2,6 +2,27 @@ import type { ChangelogEntry } from '$types/changelog';
 
 export const changelog: readonly ChangelogEntry[] = [
   {
+    version: '0.3.0',
+    date: '2026-04-29',
+    items: [
+      {
+        type: 'major',
+        icon: 'Sparkles',
+        title: 'Новий рівень контролю',
+        body: 'Графік ваги, прогноз цілі, шаблони страв, серії дефіциту, тижневі відзнаки — і кнопка "Зберегти підсумок тижня" як картинку для історії.',
+      },
+      { type: 'feature', text: 'Графік ваги за 90 днів + цільова вага на Профілі' },
+      { type: 'feature', text: 'Антропометрія: талія / шия / стегна → % жиру за US Navy' },
+      { type: 'feature', text: 'Прогноз цілі: за поточним темпом до дати X' },
+      { type: 'feature', text: 'Шаблони страв у Журналі: збережи день, повтори завтра' },
+      { type: 'feature', text: 'Серії дефіциту, води, чистих категорій на Дашборді' },
+      { type: 'feature', text: 'Підсумок дня та тижневі відзнаки з конфеті' },
+      { type: 'feature', text: 'Запрошення встановити як додаток (PWA / Telegram)' },
+      { type: 'feature', text: 'Захист Face ID / Touch ID (опційно)' },
+      { type: 'feature', text: '"Зберегти підсумок тижня" — PNG-картка для сторіс' },
+    ],
+  },
+  {
     version: '0.2.3',
     date: '2026-04-29',
     items: [
