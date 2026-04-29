@@ -2,7 +2,7 @@
 
 Every numeric formula and threshold the app uses, in one place. Each entry has a plain-language summary, the code form, the published source, and a pointer to the implementation.
 
-The food catalog (per-item macros, max grams, units) lives separately in [`food-database.md`](./food-database.md).
+The food catalog (per-item macros, max grams, units) lives separately in [`food-database.md`](./food-database.md). For research-validated formulas the app does not currently implement (IBW, caloric safety floors, MoH 1073/1613 caps, pediatric percentiles, GLP-1 considerations), see [`health-references.md`](./health-references.md).
 
 ---
 
@@ -138,6 +138,84 @@ fat_target     = (TDEE × 0.30) / 9                       [g, 9 kcal/g]
 - Atwater factors: 4 kcal/g for carbs and protein, 9 kcal/g for fat (Atwater WO, Bryant AP, 1900).
 
 **Used in.** `src/lib/scaling.ts` (`dailyTargets`); rendered in `DailyTotals.svelte`, the targets card on `Profile.svelte`, and used by `Heatmap.svelte` for per-day comparisons.
+
+---
+
+## BMI — Body Mass Index
+
+**Plain language.** A weight-for-height screening number. Useful as a quick adult risk classifier; not a diagnosis. The app shows it on the Stats page next to the energy-balance pill.
+
+**Code.**
+
+```ts
+function bmi(weightKg: number, heightCm: number): number {
+  if (heightCm <= 0) return 0;
+  const heightM = heightCm / 100;
+  return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
+}
+```
+
+**Math.**
+
+```
+BMI = weight_kg / (height_m)^2
+```
+
+**Classes** (WHO):
+
+| BMI       | Class       |
+| --------- | ----------- |
+| < 18.5    | Underweight |
+| 18.5–24.9 | Healthy     |
+| 25.0–29.9 | Overweight  |
+| ≥ 30.0    | Obese       |
+
+**Source.** WHO BMI classification for adults aged 20+. The app does not implement pediatric percentiles or class subdivisions (Class 1/2/3 obesity); see `health-references.md` if those are added later.
+
+**Used in.** `src/lib/health.ts`; rendered by `EnergyBalanceRow.svelte` (Stats `variant="full"` only).
+
+---
+
+## Hydration target & state
+
+**Plain language.** Daily fluid intake target derived from body weight, with a gender-specific minimum so very small users still hit EFSA's absolute recommendation. The Activity tab tracks consumed millilitres against this target; the Stats heatmap colours each day green/red/blue based on whether you hit the band.
+
+**Code.**
+
+```ts
+const ML_PER_KG = 30;
+const FLOOR_MALE = 2500;
+const FLOOR_FEMALE = 2000;
+
+function hydrationTarget(p: ProfileInput): number {
+  const floor = p.gender === 'male' ? FLOOR_MALE : FLOOR_FEMALE;
+  return Math.max(Math.round(p.weight * ML_PER_KG), floor);
+}
+
+function hydrationState(consumedMl: number, targetMl: number): 'deficit' | 'balanced' | 'surplus' {
+  const ratio = consumedMl / targetMl;
+  if (ratio < 0.7) return 'deficit';
+  if (ratio > 1.2) return 'surplus';
+  return 'balanced';
+}
+```
+
+**Math.**
+
+```
+target_ml = max(weight_kg × 30, gender_floor)
+gender_floor = 2500 (male) | 2000 (female)
+
+state = deficit  if consumed/target < 0.7
+        surplus  if consumed/target > 1.2
+        balanced otherwise
+
+severe_deficit = consumed < 0.5 × target   (used by day-verdict strike)
+```
+
+**Source.** EFSA Dietary Reference Values (2010): 2.0 L (♀) / 2.5 L (♂) total water from beverages and food. The 30 ml/kg coefficient is the conservative low end of the EFSA-aligned 30–35 ml/kg range cited in national dietary guidelines (Estonia, Latvia); 35 is reserved for active climates and not modelled.
+
+**Used in.** `src/lib/hydration.ts`; consumed by `Activity.svelte` (water tile), `EnergyBalanceRow.svelte` (water pill), and `Heatmap.svelte` (per-day strip + verdict strike).
 
 ---
 
@@ -308,36 +386,45 @@ export const STEP_TARGET = 7000;
 
 ## Per-day quota verdict (Heatmap)
 
-**Plain language.** Each day in the heatmap is colored by how many food categories were over their 100 % quota. Green = all categories under; amber = 1–2 over; red = 3+ over.
+**Plain language.** Each day in the heatmap is colored by the count of "strikes" — categories over their 100 % quota plus, if applicable, a single hydration strike for severe under-hydration (< 50 % of target). Green = no strikes; amber = 1–2; red = 3+.
 
 **Code.**
 
 ```ts
-function dayVerdict(entries: LogEntry[]): DayVerdict {
-  if (entries.length === 0) return 0; // no data
+function dayVerdict(entries: LogEntry[], hydrationDeficitSevere: boolean): DayVerdict {
+  if (entries.length === 0 && !hydrationDeficitSevere) return 0;
   const sums: Record<CategoryKey, number> = {
-    /* zero-init */
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+    E: 0,
+    F: 0,
+    G: 0,
+    H: 0,
   };
   for (const e of entries) sums[e.cat] += e.pct;
-  const overCount = Object.values(sums).filter((v) => v > 100).length;
-  if (overCount === 0) return 1; // clean
-  if (overCount <= 2) return 2; // 1–2 over
-  return 3; // 3+ over
+  let overCount = Object.values(sums).filter((v) => v > 100).length;
+  if (hydrationDeficitSevere) overCount += 1;
+  if (overCount === 0) return 1;
+  if (overCount <= 2) return 2;
+  return 3;
 }
 ```
 
 **Math.**
 
 ```
-verdict = 0  if no entries
-          1  if no category > 100 %
-          2  if 1–2 categories > 100 %
-          3  if 3+ categories > 100 %
+strikes = #(category_pct > 100) + (1 if water < 0.5 × hydration_target else 0)
+verdict = 0  if no entries and no severe hydration deficit
+          1  if strikes == 0
+          2  if strikes ∈ {1, 2}
+          3  if strikes ≥ 3
 ```
 
-**Source.** Project-specific.
+**Source.** Project-specific. The hydration strike threshold (< 50 % of target) is intentionally tight — 60 % won't punish a normal day, but a 40 % day is a genuine bad-health signal.
 
-**Used in.** `src/components/Heatmap.svelte`.
+**Used in.** `src/components/Heatmap.svelte` (function is local to the component, not exported).
 
 ---
 
@@ -390,20 +477,30 @@ The 5 % dead band on kcal (`× 1.05`) prevents a 1-kcal overshoot from triggerin
 
 ## Summary of constants
 
-| Constant                        | Value                              | Where                                |
-| ------------------------------- | ---------------------------------- | ------------------------------------ |
-| `K_MIN`                         | 0.6                                | `src/lib/scaling.ts`                 |
-| `K_MAX`                         | 1.6                                | `src/lib/scaling.ts`                 |
-| Baseline profile                | 168 cm / 74 kg / 30 / female / 1.2 | `src/lib/scaling.ts`                 |
-| Step kcal constant              | 0.0005                             | `src/lib/energy.ts`                  |
-| `KCAL_PER_TRAINING`             | 120                                | `src/lib/energy.ts`                  |
-| `NEUTRAL_BAND_KCAL`             | 100                                | `src/lib/energy.ts`                  |
-| `STEP_TARGET`                   | 7 000                              | `src/state/activity.svelte.ts`       |
-| Kcal "over" dead band           | × 1.05                             | `src/components/DailyTotals.svelte`  |
-| Protein g/kg (active ≥ 1.55)    | 1.6                                | `src/lib/scaling.ts`                 |
-| Protein g/kg (else)             | 1.2                                | `src/lib/scaling.ts`                 |
-| Carb % of kcal                  | 50 %                               | `src/lib/scaling.ts`                 |
-| Fat % of kcal                   | 30 %                               | `src/lib/scaling.ts`                 |
-| Atwater factor — carb / protein | 4 kcal/g                           | `src/lib/scaling.ts`                 |
-| Atwater factor — fat            | 9 kcal/g                           | `src/lib/scaling.ts`                 |
-| Crossings storage TTL           | 7 days                             | `src/state/macroCrossings.svelte.ts` |
+| Constant                           | Value                              | Where                                |
+| ---------------------------------- | ---------------------------------- | ------------------------------------ |
+| `K_MIN`                            | 0.6                                | `src/lib/scaling.ts`                 |
+| `K_MAX`                            | 1.6                                | `src/lib/scaling.ts`                 |
+| Baseline profile                   | 168 cm / 74 kg / 30 / female / 1.2 | `src/lib/scaling.ts`                 |
+| Step kcal constant                 | 0.0005                             | `src/lib/energy.ts`                  |
+| `KCAL_PER_TRAINING`                | 120                                | `src/lib/energy.ts`                  |
+| `NEUTRAL_BAND_KCAL`                | 100                                | `src/lib/energy.ts`                  |
+| `STEP_TARGET`                      | 7 000                              | `src/state/activity.svelte.ts`       |
+| Kcal "over" dead band              | × 1.05                             | `src/components/DailyTotals.svelte`  |
+| Protein g/kg (active ≥ 1.55)       | 1.6                                | `src/lib/scaling.ts`                 |
+| Protein g/kg (else)                | 1.2                                | `src/lib/scaling.ts`                 |
+| Carb % of kcal                     | 50 %                               | `src/lib/scaling.ts`                 |
+| Fat % of kcal                      | 30 %                               | `src/lib/scaling.ts`                 |
+| Atwater factor — carb / protein    | 4 kcal/g                           | `src/lib/scaling.ts`                 |
+| Atwater factor — fat               | 9 kcal/g                           | `src/lib/scaling.ts`                 |
+| Crossings storage TTL              | 7 days                             | `src/state/macroCrossings.svelte.ts` |
+| Hydration target factor            | 30 ml/kg                           | `src/lib/hydration.ts`               |
+| Hydration floor (male)             | 2500 ml                            | `src/lib/hydration.ts`               |
+| Hydration floor (female)           | 2000 ml                            | `src/lib/hydration.ts`               |
+| Hydration deficit threshold        | 0.7 × target                       | `src/lib/hydration.ts`               |
+| Hydration surplus threshold        | 1.2 × target                       | `src/lib/hydration.ts`               |
+| Hydration severe-deficit threshold | 0.5 × target                       | `src/lib/hydration.ts`               |
+| Hydration quick-add                | 250 ml                             | `src/lib/hydration.ts`               |
+| BMI healthy lower bound            | 18.5                               | `src/lib/health.ts`                  |
+| BMI overweight lower bound         | 25.0                               | `src/lib/health.ts`                  |
+| BMI obese lower bound              | 30.0                               | `src/lib/health.ts`                  |
