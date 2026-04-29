@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { Sparkles } from '@lucide/svelte';
+  import { Plus, Sparkles } from '@lucide/svelte';
   import { profile } from '$state/profile.svelte';
   import { changelogState } from '$state/changelog.svelte';
+  import { weightLog } from '$state/weightLog.svelte';
   import ProfileForm from '../components/ProfileForm.svelte';
   import TelegramUserHeader from '../components/TelegramUserHeader.svelte';
   import ChangelogModal from '../components/ChangelogModal.svelte';
+  import ProjectionCard from '../components/ProjectionCard.svelte';
+  import WeightHistoryChart from '../components/WeightHistoryChart.svelte';
   import { celebrate } from '$lib/anim';
-  import { hapticSelection } from '$lib/haptics';
+  import { hapticImpact, hapticSelection } from '$lib/haptics';
   import { dailyTargets } from '$lib/scaling';
   import type { ProfileInput } from '$types/profile';
 
@@ -16,6 +19,7 @@
 
   async function save(input: ProfileInput): Promise<void> {
     await profile.save(input);
+    await weightLog.setToday(input.weight);
     savedAt = Date.now();
     if (targetsEl) celebrate(targetsEl);
   }
@@ -89,13 +93,28 @@
       </div>
     {/if}
 
+    <button
+      type="button"
+      class="border-border bg-surface text-fg hover:bg-surface-2 mb-4 inline-flex items-center justify-center gap-1.5 self-start rounded-lg border px-3 py-2 text-sm font-semibold transition-colors md:mb-0"
+      onclick={() => {
+        hapticImpact('light');
+        if (profile.value) void weightLog.setToday(profile.value.weight);
+      }}
+    >
+      <Plus size={14} />
+      Зафіксувати вагу сьогодні
+      {#if weightLog.today !== null}
+        <span class="text-muted text-xs tabular-nums">· {weightLog.today.toFixed(1)} кг</span>
+      {/if}
+    </button>
+
     <p class="text-muted mb-4 text-sm md:mb-0">
       Зміна параметрів перерахує норми для всіх майбутніх днів. Існуючі записи журналу не
       змінюються.
     </p>
   </div>
 
-  <div class="md:flex md:flex-col">
+  <div class="md:flex md:flex-col md:gap-5">
     <ProfileForm
       initial={profile.value}
       submitLabel="Зберегти"
@@ -105,6 +124,11 @@
 
     {#if savedRecently}
       <p class="text-ok mt-3 text-center text-sm">Цілі оновлено за новим профілем</p>
+    {/if}
+
+    {#if profile.value}
+      <ProjectionCard />
+      <WeightHistoryChart />
     {/if}
   </div>
 </section>
