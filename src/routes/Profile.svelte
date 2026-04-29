@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Plus, Sparkles } from '@lucide/svelte';
+  import { Fingerprint, Plus, Sparkles } from '@lucide/svelte';
   import { profile } from '$state/profile.svelte';
   import { changelogState } from '$state/changelog.svelte';
   import { weightLog } from '$state/weightLog.svelte';
@@ -11,11 +11,37 @@
   import { celebrate } from '$lib/anim';
   import { hapticImpact, hapticSelection } from '$lib/haptics';
   import { dailyTargets } from '$lib/scaling';
+  import { biometricSupport, enrol, clearEnrolment } from '$lib/biometric';
   import type { ProfileInput } from '$types/profile';
 
   let targetsEl = $state<HTMLDivElement | undefined>(undefined);
   let savedAt = $state<number | null>(null);
   let changelogOpen = $state(false);
+  let bioSupported = $state(false);
+  let bioPending = $state(false);
+
+  async function refreshBioSupport(): Promise<void> {
+    const s = await biometricSupport();
+    bioSupported = s !== 'unsupported';
+  }
+
+  async function toggleBio(): Promise<void> {
+    if (!profile.value || bioPending) return;
+    bioPending = true;
+    try {
+      if (profile.value.biometric_lock) {
+        await profile.setBiometricLock(false);
+        await clearEnrolment();
+      } else {
+        const ok = await enrol();
+        if (ok) await profile.setBiometricLock(true);
+      }
+    } finally {
+      bioPending = false;
+    }
+  }
+
+  void refreshBioSupport();
 
   async function save(input: ProfileInput): Promise<void> {
     await profile.save(input);
@@ -108,6 +134,33 @@
       {/if}
     </button>
 
+    {#if bioSupported && profile.value}
+      <button
+        type="button"
+        class={[
+          'mb-4 inline-flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm transition-colors md:mb-0',
+          profile.value.biometric_lock
+            ? 'border-accent bg-accent/10 text-accent'
+            : 'border-border bg-surface text-fg',
+        ]}
+        disabled={bioPending}
+        onclick={() => void toggleBio()}
+      >
+        <span class="flex items-center gap-2">
+          <Fingerprint size={14} />
+          Захист Face ID / Touch ID
+        </span>
+        <span class="text-xs">
+          {#if bioPending}
+            …
+          {:else if profile.value.biometric_lock}
+            ON
+          {:else}
+            OFF
+          {/if}
+        </span>
+      </button>
+    {/if}
     <p class="text-muted mb-4 text-sm md:mb-0">
       Зміна параметрів перерахує норми для всіх майбутніх днів. Існуючі записи журналу не
       змінюються.
