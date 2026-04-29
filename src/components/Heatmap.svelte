@@ -82,6 +82,7 @@
           const dayAct = await storage.load<DayActivity>(`activity_${date}`, {
             steps: 0,
             trainings: 0,
+            waterMl: 0,
           });
           const intake = sumMacros(entries, personalizedDb()).kcal;
           const burn = actualBurn(profile.value, dayAct);

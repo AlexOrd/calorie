@@ -4,28 +4,31 @@ import { debounce } from '$lib/debounce';
 export interface DayActivity {
   steps: number;
   trainings: 0 | 1 | 2 | 3;
+  waterMl: number;
 }
 
 interface LegacyActivity {
   steps?: number;
   strength?: boolean;
   trainings?: 0 | 1 | 2 | 3;
+  waterMl?: number;
 }
 
-const EMPTY: DayActivity = { steps: 0, trainings: 0 };
+const EMPTY: DayActivity = { steps: 0, trainings: 0, waterMl: 0 };
 
 function migrate(raw: LegacyActivity | null): DayActivity {
   if (!raw) return { ...EMPTY };
   const steps = Math.max(0, Math.round(raw.steps ?? 0));
+  const waterMl = Math.max(0, Math.round(raw.waterMl ?? 0));
   if (typeof raw.trainings === 'number') {
     const t = Math.max(0, Math.min(3, raw.trainings));
-    if (t === 0) return { steps, trainings: 0 };
-    if (t === 1) return { steps, trainings: 1 };
-    if (t === 2) return { steps, trainings: 2 };
-    return { steps, trainings: 3 };
+    if (t === 0) return { steps, trainings: 0, waterMl };
+    if (t === 1) return { steps, trainings: 1, waterMl };
+    if (t === 2) return { steps, trainings: 2, waterMl };
+    return { steps, trainings: 3, waterMl };
   }
-  if (raw.strength === true) return { steps, trainings: 1 };
-  return { steps, trainings: 0 };
+  if (raw.strength === true) return { steps, trainings: 1, waterMl };
+  return { steps, trainings: 0, waterMl };
 }
 
 let _activity = $state<DayActivity>({ ...EMPTY });
@@ -74,6 +77,17 @@ export const activity = {
         break;
     }
     _activity = { ..._activity, trainings: next };
+    persist();
+  },
+
+  setWater(this: void, ml: number): void {
+    _activity = { ..._activity, waterMl: Math.max(0, Math.round(ml)) };
+    persist();
+  },
+
+  addWater(this: void, deltaMl: number): void {
+    const next = Math.max(0, Math.round(_activity.waterMl + deltaMl));
+    _activity = { ..._activity, waterMl: next };
     persist();
   },
 };
