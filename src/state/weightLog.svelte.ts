@@ -1,10 +1,22 @@
 import { storage } from '$lib/storage';
-import { todayKey } from '$lib/date';
+import { addDays, todayKey } from '$lib/date';
 
 const KEY = 'weight_log';
+// Telegram CloudStorage caps a key at ~4 KB. ~20 bytes/entry → keep ~180 days
+// max. We render 90 days; pruning at 180 leaves a safe headroom for backfill.
+const KEEP_DAYS = 180;
 
 let _log = $state<Record<string, number>>({});
 let _loaded = $state(false);
+
+function prune(log: Record<string, number>): Record<string, number> {
+  const cutoff = addDays(todayKey(), -KEEP_DAYS);
+  const out: Record<string, number> = {};
+  for (const [iso, kg] of Object.entries(log)) {
+    if (iso >= cutoff) out[iso] = kg;
+  }
+  return out;
+}
 
 export const weightLog = {
   get value(): Record<string, number> {
@@ -25,7 +37,7 @@ export const weightLog = {
 
   async setForDate(this: void, dateIso: string, kg: number): Promise<void> {
     const safe = Math.max(20, Math.min(400, Math.round(kg * 10) / 10));
-    _log = { ..._log, [dateIso]: safe };
+    _log = prune({ ..._log, [dateIso]: safe });
     await storage.save(KEY, _log);
   },
 

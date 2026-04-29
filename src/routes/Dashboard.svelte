@@ -8,7 +8,7 @@
   import { CATEGORY_KEYS } from '$types/food';
   import { changelog, APP_VERSION } from '../data/changelog';
   import { cmpVersion } from '$lib/version';
-  import { computeStreaks } from '$lib/streaks';
+  import { lastWeekTally } from '$lib/streaks';
   import { addDays, todayKey } from '$lib/date';
   import type { ChangelogItem } from '$types/changelog';
   import CategoryCard from '../components/CategoryCard.svelte';
@@ -56,23 +56,23 @@
     const stored = await storage.load<string | null>('last_celebrated_week', null);
     if (stored === weekId) return;
 
-    const stats = await computeStreaks(profile.value);
+    const tally = await lastWeekTally(profile.value);
     const badges: MilestoneBadge[] = [];
-    if (stats.deficit.current >= 5 || stats.deficit.best >= 5) {
+    if (tally.deficitDays >= 5) {
       badges.push({
         kind: 'deficit',
         title: 'Тиждень дефіциту',
-        body: '5+ днів у дефіциті — впевнений курс.',
+        body: `${tally.deficitDays} днів у дефіциті — впевнений курс.`,
       });
     }
-    if (stats.water.current >= 7 || stats.water.best >= 7) {
+    if (tally.waterTargetHits >= 7) {
       badges.push({
         kind: 'water',
         title: 'Гідрований тиждень',
         body: 'Ціль по воді щодня.',
       });
     }
-    if (stats.category.current >= 7 || stats.category.best >= 7) {
+    if (tally.cleanCategoryDays >= 7) {
       badges.push({
         kind: 'category',
         title: 'Чисті категорії',

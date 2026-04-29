@@ -129,3 +129,28 @@ export async function computeStreaks(profile: UserProfile): Promise<StreakStats>
 
   return result;
 }
+
+export interface WeekTally {
+  deficitDays: number;
+  waterTargetHits: number;
+  cleanCategoryDays: number;
+}
+
+/**
+ * Tally the last 7 calendar days (excluding today) of deficit / water-hit /
+ * clean-category days. Used by the Monday milestone trigger so badges reflect
+ * the just-completed week, not all-time records.
+ */
+export async function lastWeekTally(profile: UserProfile): Promise<WeekTally> {
+  const target = hydrationTarget(profile);
+  const today = todayKey();
+  const tally: WeekTally = { deficitDays: 0, waterTargetHits: 0, cleanCategoryDays: 0 };
+  for (let i = 1; i <= 7; i++) {
+    const date = addDays(today, -i);
+    const state = await loadDayState(date, profile, target);
+    if (state.inDeficit) tally.deficitDays += 1;
+    if (state.hitWater) tally.waterTargetHits += 1;
+    if (state.cleanCategories) tally.cleanCategoryDays += 1;
+  }
+  return tally;
+}
