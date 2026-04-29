@@ -12,7 +12,8 @@ export const changelog: readonly ChangelogEntry[] = [
         body: 'Стеж за водою поряд із кроками. Швидкі +250 мл, ціль на основі ваги, нова смужка в heatmap.',
       },
       { type: 'feature', text: 'BMI-показник на сторінці статистики' },
-      { type: 'feature', text: 'Підказки до формул на сторінці статистики' },
+      { type: 'feature', text: 'Оновлений вигляд статистики на мобільному' },
+      { type: 'feature', text: 'Підказки до формул у модальному вікні' },
     ],
   },
 ] as const;
