@@ -2,6 +2,18 @@ import type { ChangelogEntry } from '$types/changelog';
 
 export const changelog: readonly ChangelogEntry[] = [
   {
+    version: '0.2.3',
+    date: '2026-04-29',
+    items: [
+      {
+        type: 'major',
+        icon: 'BarChart3',
+        title: 'Енергобаланс — у центрі статистики',
+        body: 'Повертаємо звичну сітку "як на GitHub" за останні 90 днів — тепер кольорами показує енергобаланс (дефіцит / баланс / профіцит). Категорії та гідрація — окремими тонкими смужками знизу. Легенда лишається.',
+      },
+    ],
+  },
+  {
     version: '0.2.2',
     date: '2026-04-29',
     items: [
