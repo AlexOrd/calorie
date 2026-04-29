@@ -46,7 +46,7 @@
   });
 </script>
 
-{#if !profile.loaded}
+{#if !profile.loaded || !changelogState.isLoaded}
   <div class="text-muted flex h-dvh items-center justify-center">Завантаження…</div>
 {:else if !profile.hasProfile}
   <Onboarding />
