@@ -75,4 +75,6 @@ export interface TelegramWebApp {
   showAlert?(message: string, callback?: () => void): void;
   showConfirm?(message: string, callback?: (ok: boolean) => void): void;
   showPopup?(params: TelegramPopupParams, callback?: (buttonId: string) => void): void;
+  addToHomeScreen?(): void;
+  checkHomeScreenStatus?(callback: (status: string) => void): void;
 }

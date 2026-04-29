@@ -2,6 +2,7 @@ import './app.css';
 import { mount } from 'svelte';
 import App from './App.svelte';
 import { applyTelegramPalette, applyThemeMode, resolveThemeMode } from '$lib/theme';
+import { captureBeforeInstallPrompt } from '$lib/install';
 
 function bootTelegram(): void {
   const tg = window.Telegram?.WebApp;
@@ -29,6 +30,7 @@ function watchTheme(): void {
 
 bootTelegram();
 watchTheme();
+captureBeforeInstallPrompt();
 
 const target = document.getElementById('app');
 if (!target) throw new Error('Missing #app element in index.html');
