@@ -2,6 +2,19 @@ import type { ChangelogEntry } from '$types/changelog';
 
 export const changelog: readonly ChangelogEntry[] = [
   {
+    version: '0.2.2',
+    date: '2026-04-29',
+    items: [
+      {
+        type: 'major',
+        icon: 'BarChart3',
+        title: 'Свіжий графік статистики',
+        body: '30 днів енергобалансу як стовпчики (дефіцит вниз / профіцит вгору) + три 7-денні смужки: вода, категорії, кроки. Без зайвого скролу.',
+      },
+      { type: 'fix', text: 'Світла тема: текст і ось графіків більше не зливаються з фоном' },
+    ],
+  },
+  {
     version: '0.2.1',
     date: '2026-04-29',
     items: [
