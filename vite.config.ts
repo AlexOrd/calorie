@@ -3,9 +3,18 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+
+interface PackageJson {
+  version: string;
+}
+const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8')) as PackageJson;
 
 export default defineConfig({
   base: '/',
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   plugins: [
     svelte(),
     tailwindcss(),
