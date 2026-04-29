@@ -16,6 +16,7 @@ export const changelog: readonly ChangelogEntry[] = [
       { type: 'feature', text: 'Підказки до формул у модальному вікні' },
       { type: 'feature', text: 'Розбивка спалених калорій за день: BMR / кроки / тренування' },
       { type: 'feature', text: 'Калорії та вода в одному рядку на дашборді' },
+      { type: 'feature', text: 'Іконки категорій на дашборді' },
     ],
   },
 ] as const;
