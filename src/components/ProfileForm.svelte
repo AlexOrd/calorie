@@ -21,7 +21,14 @@
   let waist = $state<number | undefined>(untrack(() => initial?.waist_cm));
   let neck = $state<number | undefined>(untrack(() => initial?.neck_cm));
   let hip = $state<number | undefined>(untrack(() => initial?.hip_cm));
-  let advancedOpen = $state(false);
+  let advancedOpen = $state(
+    untrack(
+      () =>
+        initial?.waist_cm !== undefined ||
+        initial?.neck_cm !== undefined ||
+        initial?.hip_cm !== undefined,
+    ),
+  );
 
   const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
     { value: 1.2, label: 'Сидячий' },
