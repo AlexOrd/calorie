@@ -2,6 +2,8 @@
 
 The seed catalog the app personalizes per user. 8 categories (А–З), 39 items total. Lives in `src/data/foodDb.json` and is wrapped at runtime by `personalizedDb()` (in `src/state/personalizedDb.ts`), which applies the user's `k_factor` to gram-based portion sizes.
 
+> **Regulatory limits — Ukraine MoH Orders 1073 (2017) and 1613 (2020).** Order 1073 codified Ukrainian physiological norms aligned with WHO/EFSA: free sugars < 10 % of energy (preferably < 5 %), saturated fat < 10 %, fibre ≥ 25 g/day, sodium target 2 g/day. Order 1613 caps industrial trans-fatty acids at ≤ 2 g per 100 g total fat in retail products, in line with the WHO REPLACE initiative. The app does **not** currently track sodium, sugar, or trans-fat per food item — these are documented in [`health-references.md`](./health-references.md) as out-of-scope future fields. Present limits inform portion-size calibration only.
+
 For the formulas referenced below — BMR, TDEE, k_factor, daily macro targets — see [`formulas.md`](./formulas.md).
 
 ---
@@ -56,6 +58,8 @@ A few items intentionally have no per-item macros and inherit the category's `ma
 | a9  | Макарони т.с.         | 70            | г    | 360  | 12      | 75    | 1   |
 | a10 | Лаваш                 | 100           | г    | 280  | 9       | 55    | 1   |
 
+> **Notes on А-category staples.** Whole-grain rye and unrefined-grain alternatives (a4, a8) carry arabinoxylans and beta-glucans that lower postprandial glycaemic response and serum LDL. Pseudocereal **buckwheat** (covered by a5 "Будь-яка крупа") is naturally gluten-free and rich in rutin. See [`health-references.md`](./health-references.md) for the underlying clinical citations.
+
 ### Б — М'ясо, риба, яйця
 
 | ID  | Item                   | max_g (k=1.0) | unit | kcal | protein | carbs | fat |
@@ -70,6 +74,8 @@ A few items intentionally have no per-item macros and inherit the category's `ma
 
 `b6` (eggs) is the canonical piece-based item — the `max_g` value here is "6 eggs", not "6 grams".
 
+> **Notes on Б-category fats.** Pieces-based items (e.g. eggs, b6) intentionally do not k-scale; they are physiologically discrete. Cured pork fat ("сало") would belong in Г-category if added — its fatty-acid profile carries fat-soluble vitamins A and D but is calorie-dense (~700–800 kcal / 100 g) and warrants tight portion control.
+
 ### В — Овочі та гриби
 
 | ID  | Item                                 | max_g (k=1.0) | unit | kcal | protein | carbs | fat |
@@ -77,6 +83,8 @@ A few items intentionally have no per-item macros and inherit the category's `ma
 | c1  | Овочі (вкл. зелень/квашені) та гриби | 600           | г    | 25   | 2       | 4     | 0.3 |
 
 A single umbrella row covering vegetables, greens, fermented vegetables, and mushrooms.
+
+> **Notes on В-category umbrella.** Traditional Ukrainian borscht — water-dense (~80.5 % moisture), low calorie (~30–65 kcal / 100 g), high fibre (1.5–3 g) — fits squarely under c1 plus contributions from the chosen meat/dairy categories. Beetroot betalains and dietary nitrates contribute documented antioxidant and vasodilatory effects.
 
 ### Г — Жири та соуси
 
