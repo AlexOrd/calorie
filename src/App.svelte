@@ -5,6 +5,7 @@
   import { activeRoute } from '$state/route.svelte';
   import { dailyLog } from '$state/dailyLog.svelte';
   import { activity } from '$state/activity.svelte';
+  import { changelogState } from '$state/changelog.svelte';
   import { macroCrossings } from '$state/macroCrossings.svelte';
   import BottomNav from './components/BottomNav.svelte';
   import SideNav from './components/SideNav.svelte';
@@ -20,7 +21,7 @@
   let mainEl = $state<HTMLElement | undefined>(undefined);
 
   onMount(async () => {
-    await profile.load();
+    await Promise.all([profile.load(), changelogState.load()]);
     if (profile.hasProfile) {
       await Promise.all([
         dailyLog.load(activeDate.value),
