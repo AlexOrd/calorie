@@ -32,6 +32,7 @@ These come from the user. Do not negotiate them.
 7. **Don't push** to `origin/master` unless the user explicitly asks. Never force-push to `master`.
 8. **No automated test runner.** Verification is the gates above + manual viewport pass on the target devices when UI changes.
 9. **Don't create `*.md` documentation** unless explicitly requested. Edit existing docs in `docs/` and `README.md` rather than scattering new ones.
+10. **Changelog discipline.** Every user-visible change appends an entry to `src/data/changelog.ts` and bumps the version (patch for fixes, minor for features, major for big shifts). The displayed app version derives from `changelog[0].version` automatically — do not hand-edit it elsewhere; keep `package.json#version` in sync as the build sources `__APP_VERSION__` from there. All changelog text in Ukrainian.
 
 ---
 
@@ -153,6 +154,20 @@ For interactions outside the anim helpers (tab switch, date tap, training-tile t
 
 ---
 
+## Changelog & versioning
+
+The app's running version is the topmost entry in `src/data/changelog.ts`. To ship a change:
+
+1. Append (or extend the topmost) entry in `src/data/changelog.ts`. Bump the version in the entry; bump `package.json#version` to match.
+2. Add an item to the entry's `items` array:
+   - `{ type: 'fix', text: '…' }` — short Ukrainian one-liner. Hidden from the auto-popup but visible in the Profile-icon changelog.
+   - `{ type: 'feature', text: '…' }` — short Ukrainian one-liner. Shows in the auto-popup and the Profile changelog.
+   - `{ type: 'major', title: '…', body: '…', icon?: 'Sparkles' | 'Droplet' | … }` — Ukrainian title + 1–2 sentence body, gets a hero card in the auto-popup. Use sparingly.
+3. The `WhatsNewModal` fires once per user, on Dashboard mount, when their stored `last_shown_changelog_version` is older than `APP_VERSION`. First-ever launches are silent.
+4. Available icons live in `CHANGELOG_ICONS` in `src/types/changelog.ts`. Add new ones to the whitelist explicitly so tree-shaking stays predictable.
+
+---
+
 ## Native Telegram APIs
 
 Three small wrapper modules give the mini app a native feel:
@@ -193,6 +208,7 @@ The whole surface is graceful — every API access is optional-chained, types in
 - [`README.md`](./README.md) — user-facing project description, setup, scripts, deploy, Telegram setup.
 - [`docs/formulas.md`](./docs/formulas.md) — every formula and threshold (BMR, TDEE, k_factor, macros, energy balance, animation thresholds) with plain-language summaries, code, sources, and file pointers.
 - [`docs/food-database.md`](./docs/food-database.md) — full catalog of 39 items grouped by category + an explainer on `k_factor` personalization.
+- [`docs/health-references.md`](./docs/health-references.md) — research-validated formulas not currently implemented (IBW, caloric safety floors, MoH 1073/1613 caps, pediatric percentiles, GLP-1 considerations). Companion to `formulas.md`.
 - `docs/superpowers/specs/` — design specs (chronological, dated). The original v1 is `2026-04-27-calorie-app-design.md`.
 - `docs/superpowers/plans/` — implementation plans matching the specs.
 
