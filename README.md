@@ -41,7 +41,20 @@ The custom domain (`calorie.ordynski.com`) is wired via `public/CNAME`. The GitH
 
 After the GitHub Pages deploy is live, create a bot via @BotFather and run `/newapp` against the deployed URL — no code changes needed. The Telegram script tag is loaded in `index.html`; the runtime detects Telegram via `window.Telegram?.WebApp.initData` and switches storage / theme accordingly.
 
-## Spec & plan
+## Reference
 
-- Design spec: `docs/superpowers/specs/2026-04-27-calorie-app-design.md`
-- Implementation plan: `docs/superpowers/plans/2026-04-27-calorie-app-v1.md`
+Where the numbers and the catalog come from:
+
+- **Formulas** — `docs/formulas.md` — every formula and threshold the app uses (BMR, TDEE, k_factor, macro targets, energy balance, animation thresholds), each with plain-language summary, code form, source, and a pointer to the implementation.
+- **Food database** — `docs/food-database.md` — all 39 catalog items grouped by category, with per-100 g (or per-piece) macros, baseline quotas, and an explainer on `k_factor` personalization.
+
+For LLM-assisted work, `CLAUDE.md` at the repo root is the operating manual.
+
+## Specs and plans
+
+Design specs and implementation plans live under `docs/superpowers/`:
+
+- Specs: `docs/superpowers/specs/`
+- Plans: `docs/superpowers/plans/`
+
+The original v1 design is `docs/superpowers/specs/2026-04-27-calorie-app-design.md`.

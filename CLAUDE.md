@@ -1,71 +1,79 @@
-# Calorie — Working Notes for Claude
+# Calorie — Working Notes for an LLM
 
-This file is the operating manual for an LLM working on this repo. Keep it terse and current.
+Operating manual for an LLM working in this repo. Concise on purpose. For domain context (formulas, food catalog, full architecture history) follow the deep-dive pointers at the bottom.
+
+---
 
 ## What this is
 
-A **personal-only, local-first nutrition tracker** that runs as a Telegram mini app and as a PWA. One user, no accounts, no backend, no export. The app is opened from the user's Telegram, expands full-screen, and tracks the day against a category-quota system plus daily macro targets.
+A personal-only, local-first nutrition tracker that runs as a Telegram mini app and a PWA. One user, no accounts, no backend, no export.
 
-**Core domain:**
+- **8 food categories** (А–З) each with a 100 % daily quota.
+- **Per-user catalog scaling** via a `k_factor` derived from BMR/TDEE → portion sizes adapt to the person.
+- **Daily journal** of timestamped entries.
+- **Daily macro targets** (kcal/protein/carbs/fat) + **energy balance** (food intake − BMR − step kcal − training kcal).
+- **Activity tracker:** steps + 3-slot training counter.
+- **Animations carry meaning** — confetti when a macro hits target, shake on kcal overshoot, edge-flash on first day-crossing — gated through a persistent `macroCrossings` store so reloads don't replay past events.
 
-- **8 food categories (А–Ж + Алкоголь)**, each with its own 100% daily quota, expressed in grams or pieces per item.
-- **Per-user food DB scaling** via a `k_factor` derived from the profile (height/weight/age/gender/activity → TDEE) so quotas adapt to the person rather than a generic adult.
-- **Daily journal** of timestamped entries; sums roll into per-category progress (capped at 150% display) and per-macro targets (kcal/protein/carbs/fat).
-- **Activity** (steps + strength toggle) tracked alongside food, on the same daily timeline.
-- **Stats**: weekly heatmap by category + bar chart.
+For setup, scripts, deploy, and the user-facing project description, see [`README.md`](./README.md).
 
-**Animations carry meaning:** confetti when a daily macro target is hit, shake on kcal overshoot, pulseWarning when a category crosses 100%, edge-flash on the day's first crossing. All gated through a persistent `macroCrossings` store so reloads don't replay past events.
+---
 
-## Stack
-
-- **Svelte 5 (runes)**, **TypeScript**, **Vite 8**, **vite-plugin-pwa**
-- **Tailwind CSS v4** with a single set of semantic CSS-variable tokens (`--bg`, `--surface`, `--surface-2`, `--border`, `--fg`, `--muted`, `--accent`, `--on-accent`, `--danger`, `--warn`, `--ok`, `--fat`)
-- **Melt UI** (headless dialog used as the bottom sheet)
-- **Lucide** (`@lucide/svelte`) for icons
-- **`motion`** for animations, **`canvas-confetti`** for celebration bursts
-- **`localforage`** (IndexedDB) for browser storage, **Telegram CloudStorage** when inside Telegram (selected at boot in `src/lib/storage/index.ts`)
-
-## Hard project rules
+## Hard rules — non-negotiable
 
 These come from the user. Do not negotiate them.
 
-- **pnpm only.** Never `npm` or `yarn`. Never commit a `package-lock.json` or `yarn.lock`.
-- **Use `command pnpm`** (not bare `pnpm`) inside this sandbox to bypass the Aikido shell wrapper which is unreliable here.
-- **No `as` type assertions in component code.** Use `interface Props` + destructure annotation for Svelte 5 props (the `$props<{}>()` generic form has known `$bindable` inference holes). Type-annotate JSON imports rather than asserting them. Use explicit branches for state-machine narrowing instead of `as`. Allowed exceptions: `{#each ... as item}` (syntax), `[...] as const`, `import { type X as Y }`, `JSON.parse(raw) as T` at type-erased boundaries.
-- **Pre-commit hooks** run prettier + eslint + svelte-check via husky + lint-staged. Don't bypass them with `--no-verify` unless explicitly asked.
-- **GPG signing** is required. If `git commit` fails inside the sandbox with `gpg: failed to create temporary file`, retry with `dangerouslyDisableSandbox: true`. This is a known sandbox restriction, not a config issue.
-- **Conventional commits**, lowercase scope: `feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(deps|ui):`, `docs:`. Match recent history.
-- **No automated test runner.** Verification gates are `command pnpm run check` (svelte-check), `command pnpm run lint` (eslint), `command pnpm run build` (vite). Plus manual viewport pass on iPhone 14 PM (430×932), Galaxy S25 (393×852), and iPhone SE 375×667 when UI changes.
-- **Don't push** to `origin/master` unless the user explicitly asks.
+1. **pnpm only.** Never `npm` or `yarn`. Never commit `package-lock.json` or `yarn.lock`. Inside this sandbox, invoke as `command pnpm` — the bare wrapper is unreliable.
+2. **No `as` type assertions in TS code.** Use `interface Props` + destructure annotation for Svelte 5 props (the `$props<{}>()` generic form has known `$bindable()` inference holes). Type-annotate JSON imports rather than asserting. Use explicit branches for state-machine narrowing. **Allowed:** `{#each ... as item}` (template syntax), `[...] as const`, `import { type X as Y }`, `JSON.parse(raw) as T` at type-erased boundaries.
+3. **Pre-commit hooks** (Husky + lint-staged) run prettier + eslint + svelte-check on staged `*.ts` / `*.svelte` / `*.svelte.ts`. Don't bypass with `--no-verify` unless explicitly asked.
+4. **Verification gates** before claiming work done: `command pnpm run check` (svelte-check) and `command pnpm run lint`. Both 0/0. Add `command pnpm run build` for substantial changes.
+5. **GPG signing** is required. If `git commit` fails inside the sandbox with `gpg: failed to create temporary file`, retry with `dangerouslyDisableSandbox: true`. This is a known sandbox limitation, not a config bug.
+6. **Conventional commits**, lowercase scope: `feat(scope):`, `fix(scope):`, `refactor(scope):`, `chore(deps|ui):`, `docs:`. Match recent history.
+7. **Don't push** to `origin/master` unless the user explicitly asks. Never force-push to `master`.
+8. **No automated test runner.** Verification is the gates above + manual viewport pass on the target devices when UI changes.
+9. **Don't create `*.md` documentation** unless explicitly requested. Edit existing docs in `docs/` and `README.md` rather than scattering new ones.
 
-## Architecture
+---
+
+## Stack at a glance
+
+Svelte 5 (runes) · TypeScript (strict) · Vite 8 · Tailwind v4 (no config file — theme lives in `@theme` block in `src/app.css`) · Melt UI · Lucide · `motion` · `canvas-confetti` · `localforage` · `vite-plugin-pwa`. No SvelteKit. No SSR.
+
+Path aliases (in `vite.config.ts` + `tsconfig.json`):
+
+- `$lib/*` → `src/lib/*`
+- `$state/*` → `src/state/*`
+- `$types/*` → `src/types/*`
+
+Target devices for manual viewport pass: iPhone 14 Pro Max (430×932), Galaxy S25 (393×852), iPhone SE (375×667). Mobile-first; desktop is two-pane (SideNav + main + DesktopHeader at md+).
+
+---
+
+## Project layout
 
 ```
 src/
-├── App.svelte              app-shell layout: flex h-dvh, sticky DateStrip + BottomNav,
-│                           single scroll region (<main>); reads activeRoute store
-├── app.css                 :root + .dark CSS-var palette → @theme map; body lock + scroll-region utility
+├── App.svelte              app-shell: flex h-dvh, sticky chrome, single scroll <main>
+├── app.css                 :root + .dark CSS-var palette → @theme map
 ├── main.ts                 boot Telegram (ready/expand/disableVerticalSwipes), bridge palette,
 │                           apply theme mode, mount App
-├── components/             leaf UI (CategoryCard, DailyTotals, DateStrip, EntrySheet, ProfileForm, ...)
-│   └── onboarding/         multi-step onboarding wizard
-├── routes/                 top-level "tabs" — Dashboard, Journal, Activity, Stats, Profile, Onboarding.
-│                           Switched via class:hidden in App.svelte (no SvelteKit router).
-├── state/*.svelte.ts       runes-based stores. See "State store pattern" below.
-├── lib/                    pure helpers (date, macros, scaling, anim, telegram, theme, debounce)
-│   └── storage/            StorageDriver abstraction with TelegramDriver + LocalforageDriver
-├── data/                   static food DB seed (JSON)
-└── types/                  type definitions (food, profile, telegram)
+├── components/             leaf UI; onboarding/ for the wizard steps
+├── routes/                 5 tabs — Dashboard, Journal, Activity, Stats, Profile + Onboarding.
+│                           Switched via class:hidden in App.svelte (no router).
+├── state/*.svelte.ts       Svelte 5 runes stores. See "State store pattern" below.
+├── lib/                    pure helpers (date, macros, scaling, energy, anim, haptics, dialog,
+│                           theme, telegram, debounce); storage/ for the StorageDriver abstraction.
+├── data/foodDb.json        seed catalog (see docs/food-database.md)
+└── types/                  food, profile, log, telegram type definitions
 ```
 
-The mobile shell (locked viewport, single scroll region, sticky chrome) is the foundation everything sits on. Don't add new top-level scrollable containers.
+---
 
 ## State store pattern
 
-Every store is a `*.svelte.ts` file (Svelte 5 runes). Convention is a private `$state` variable and a public object exposing getters / setter methods. Do NOT use `svelte/store` writables.
+Every `*.svelte.ts` store follows this canonical shape (see `src/state/activeDate.svelte.ts`):
 
 ```ts
-// src/state/activeDate.svelte.ts (canonical example)
 let _date = $state<string>(todayKey());
 
 export const activeDate = {
@@ -78,19 +86,42 @@ export const activeDate = {
 };
 ```
 
-Why `this: void`: lets consumers pass methods as references without ESLint's `unbound-method` complaining.
+- Private `$state` at module scope; consumers never touch `_date`.
+- `this: void` on methods so consumers can pass them as references without ESLint's `unbound-method` warning.
+- Async stores load via `await store.load(date)` from `App.svelte`'s `onMount` and from the date-tracking `$effect`.
+- Do **not** use `svelte/store` writables.
 
-Existing stores: `activeDate`, `activeRoute`, `profile`, `dailyLog`, `activity`, `personalizedDb`, `macroCrossings`. All persist via `src/lib/storage` where appropriate; load on app mount and on date change.
+Existing stores: `activeDate`, `activeRoute`, `profile`, `dailyLog`, `activity`, `personalizedDb`, `macroCrossings`.
+
+---
+
+## Storage abstraction
+
+All persistence goes through `src/lib/storage`. Two drivers:
+
+- **TelegramDriver** — used when `window.Telegram?.WebApp.initData && CloudStorage` exist; wraps Telegram's callback-based CloudStorage as promises.
+- **LocalforageDriver** — IndexedDB fallback for browser dev / PWA outside Telegram.
+
+Storage keys in use:
+
+| Key                    | Shape                                                  |
+| ---------------------- | ------------------------------------------------------ |
+| `user_profile`         | `UserProfile` (single record)                          |
+| `log_YYYY-MM-DD`       | `LogEntry[]`                                           |
+| `activity_YYYY-MM-DD`  | `DayActivity`                                          |
+| `crossings:YYYY-MM-DD` | `DayCrossings` (animation gating; 7-day rolling prune) |
+
+Never call `localStorage` / `IndexedDB` directly — always use the abstraction so the data flows to Telegram CloudStorage transparently.
+
+---
 
 ## Theme system
 
-Two CSS-variable sets, one `.dark` class on `<html>` toggles between them. Mode resolves from `tg.colorScheme` first, `prefers-color-scheme` second; live-updates on Telegram's `themeChanged` event and on `prefers-color-scheme` `change`.
+Two CSS-variable sets (`:root` for light, `.dark` for dark) in `src/app.css`. `<html>` toggles the `.dark` class via `applyThemeMode`. Mode resolution: `tg.colorScheme` first, `prefers-color-scheme` as fallback. Live-updates on Telegram's `themeChanged` event and on `prefers-color-scheme` `change`.
 
-`--bg`, `--fg`, `--muted`, `--accent` reference `var(--tg-*, <Claude fallback>)`. `src/lib/theme.ts` `applyTelegramPalette()` writes `--tg-*` only when Telegram has a **custom** theme (i.e., `bg_color` is not one of the known default light/dark values for iOS / Android / Desktop). Default Telegram themes and pure browser sessions use the Claude warm palette.
+`--bg`, `--fg`, `--muted`, `--accent` reference `var(--tg-*, <Claude fallback>)`. `applyTelegramPalette()` writes the `--tg-*` vars **only when Telegram has a custom theme** — default Telegram light/dark and pure browser sessions use the Claude warm palette. Surfaces / borders / danger / warn / ok / fat are designed values that don't bridge from Telegram.
 
-Surfaces, borders, danger/warn/ok/fat are designed values that don't bridge from Telegram.
-
-When you write a chip / button with an active state, **use a ternary**, not stacked classes:
+**Tailwind class collision rule.** When a chip / button has an active state that overrides an inactive one on the same property, **use a ternary**, not stacked classes:
 
 ```svelte
 class={[
@@ -101,57 +132,68 @@ class={[
 
 Stacking `bg-surface` always-on with `bg-accent` conditional caused a real bug — Tailwind class-order ties had `bg-surface` winning, so the active state never highlighted.
 
-## Animation patterns
+---
 
-Helpers live in `src/lib/anim.ts`. All early-return on `prefers-reduced-motion: reduce`.
+## Animation + haptics
 
-- `pulseSuccess(el)` — small confirm pulse.
-- `pulseWarning(el)` — red glow + tiny scale; per-category over-quota.
-- `celebrate(el)` — bigger green halo.
-- `shakeWarning(el)` — horizontal shake + red glow; kcal overshoot.
-- `burstConfetti(originEl)` — small confetti from an element edge; macro target hit.
-- `flashEdge(el)` — one-time accent inset shadow on `<main>`; first crossing of the day.
+Helpers in `src/lib/anim.ts`. All visual animations early-return on `prefers-reduced-motion: reduce`. **Haptics fire regardless** of reduced motion — they're non-visual and serve as accessibility GAINS (replacing visual cues for users who reduce motion).
 
-Trigger them on **state transitions**, not on every render. Use the `macroCrossings` store to persist per-day flags (`under | hit | over` for macros, `under | over` for categories). Always early-return when `!macroCrossings.isLoaded(date)` — the store loads async and a stale `'under'` fallback would re-fire animations on date change.
+| Helper                    | Visual                          | Haptic                            |
+| ------------------------- | ------------------------------- | --------------------------------- |
+| `pulseSuccess(el)`        | small scale pulse               | `impactOccurred('light')`         |
+| `pulseWarning(el)`        | red glow + tiny scale           | `notificationOccurred('warning')` |
+| `celebrate(el)`           | green halo + scale              | `notificationOccurred('success')` |
+| `shakeWarning(el)`        | horizontal shake + red glow     | `notificationOccurred('warning')` |
+| `burstConfetti(originEl)` | confetti from element edge      | `notificationOccurred('success')` |
+| `flashEdge(el)`           | accent inset shadow on `<main>` | `impactOccurred('medium')`        |
 
-## Telegram integration
+**Trigger animations on state transitions, not on every render.** Use the `macroCrossings` store to persist per-day flags; always early-return when `!macroCrossings.isLoaded(date)` — the store loads async and a stale `'under'` fallback would re-fire animations on date change.
 
-- `src/types/telegram.ts` declares the `TelegramWebApp` shape we rely on.
-- `src/lib/telegram.ts` exposes `getTelegramUser()` returning `TelegramWebAppUser | null`.
-- `src/main.ts` calls `tg.ready()`, `tg.expand()`, `tg.disableVerticalSwipes?.()` at boot.
-- Theme: see "Theme system" above.
-- Storage: `src/lib/storage/index.ts` picks `TelegramDriver` when `tg.initData && tg.CloudStorage` are present, else falls back to `LocalforageDriver`.
+For interactions outside the anim helpers (tab switch, date tap, training-tile tap, category-card tap, delete confirm), call `hapticSelection()` / `hapticImpact(style)` from `$lib/haptics` directly.
 
-When running outside Telegram (`pnpm run dev` in a browser), the app shows "Одрі" + `/logo.png` as the guest user identity.
+---
 
-## Commit + PR flow
+## Native Telegram APIs
 
-- Each task is a focused commit with a Conventional Commit message.
-- Pre-commit hook runs prettier + eslint + svelte-check. If it modifies files, that's expected — re-stage if the user asked you to commit specific paths.
-- Push only when the user says "push". Never force-push to master.
-- For multi-task work: write a spec under `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, then a plan under `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`, then implement task-by-task with a fresh subagent per batch (`superpowers:subagent-driven-development`). Spec + quality review after each batch, plus a whole-implementation review before the final push.
+Three small wrapper modules give the mini app a native feel:
 
-## Known specs / plans
+- **`$lib/haptics`** — `hapticImpact(style)`, `hapticNotify(type)`, `hapticSelection()`. Optional-chained over `window.Telegram?.WebApp?.HapticFeedback`. No-ops in browser dev.
+- **`$lib/dialog`** — `confirmAsync(message)` and `alertAsync(message)`. Use Telegram's `showConfirm` / `showAlert` natively when available; fall back to `window.confirm` / `window.alert`.
+- **`$lib/theme`** — `applyThemeMode`, `applyTelegramPalette`, `resolveThemeMode`, `isDefaultTelegramTheme`.
 
-Located in `docs/superpowers/`:
+**BackButton** (top-left chevron in Telegram) is wired in `Onboarding.svelte` via a `$effect` that shows/hides per step and registers/unregisters the click handler. Pattern: `bb.onClick(handler); bb.show(); return () => { bb.offClick(handler); bb.hide(); };`.
 
-- **2026-04-27-calorie-app** — original v1 spec + plan (the foundation: 8 categories, per-user scaling, journal, stats, PWA + Telegram).
-- **2026-04-28-mobile-ui-fixes** — app-shell layout, sticky chrome, no-scrollbars, route store, date-tap-to-Dashboard, profile dirty tracking, Telegram user header, scroll-to-top on route change. Shipped.
-- **2026-04-28-light-theme-and-limit-animations** — Claude-warm light/dark palette with Telegram bridging, semantic-token sweep across 17 files, edge-triggered macro animations + per-day persistence. Shipped.
+The whole surface is graceful — every API access is optional-chained, types in `src/types/telegram.ts` are optional fields, older Telegram clients silently degrade.
 
-When taking on new work, check whether it touches an existing spec; update or supersede it rather than diverging silently.
+---
 
 ## Common gotchas
 
-- **`$effect` reading async-loaded state:** wait for `isLoaded(date)` before reading `macroCrossings` in animation effects, otherwise stale defaults fire spurious animations on date change.
-- **Tailwind class collisions:** when an active state needs to override an inactive one on the same property, use a ternary so only one set is present at a time.
-- **Pipe characters in Markdown tables:** escape with `\|` inside table cells, or restructure — Prettier will mangle unescaped pipes.
-- **`bind:this={(el) => fn(el)}` doesn't work** in Svelte 5 (must be an Identifier or MemberExpression). For per-iteration refs, prefer inlining over a snippet that needs to assign to multiple parent vars.
-- **IDE "Cannot find name '$effect'" errors** are TypeScript-language-server staleness; the authoritative gate is `command pnpm run check`.
+- **Animation `$effect` reading async-loaded state.** Wait for `macroCrossings.isLoaded(date)` before reading the store; stale defaults fire spurious animations on date change.
+- **Tailwind class collisions** — see "Tailwind class collision rule" above.
+- **Markdown table pipes.** Pipe characters inside table cells (e.g., `0|1|2|3`) get mangled by prettier. Escape with `\|`, or use prose / words.
+- **`bind:this={(el) => fn(el)}` doesn't work** in Svelte 5 — must be an Identifier or MemberExpression. For per-iteration refs, prefer inlining over a snippet that needs to assign to multiple parent vars.
+- **IDE "Cannot find name '$effect'" errors** are TypeScript-language-server staleness (the LSP doesn't always know about runes). Authoritative gate is `command pnpm run check`.
+- **Onboarding lives outside the app-shell**, so its root needs its own `h-dvh + overflow-y-auto + overscroll-contain`. Don't assume the body-locked shell is in scope when adding new "before profile exists" surfaces.
+- **`bg-bg` on the body** is set by `app.css`. Pages don't need to repeat it; chrome elements like SideNav use it explicitly because they're bordering surfaces with different fills.
 
-## When in doubt
+---
 
-- Read the relevant spec under `docs/superpowers/specs/`.
-- Match existing patterns rather than introducing new abstractions.
-- Run `command pnpm run check && command pnpm run lint` before claiming work is done.
-- Ask the user before destructive or remote-affecting operations (force-push, branch deletion, dependency removal).
+## Commit + PR flow
+
+- One focused commit per task with a Conventional Commit message.
+- Pre-commit hook may modify files (prettier reorders Tailwind classes, etc.). Let it; if you staged specific paths, re-stage if needed.
+- Push only when the user says "push". Never force-push to master.
+- For multi-task work, write a spec under `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, then a plan under `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`, then implement task-by-task. Spec + quality review per batch + a whole-implementation review before the final push.
+
+---
+
+## Deeper docs
+
+- [`README.md`](./README.md) — user-facing project description, setup, scripts, deploy, Telegram setup.
+- [`docs/formulas.md`](./docs/formulas.md) — every formula and threshold (BMR, TDEE, k_factor, macros, energy balance, animation thresholds) with plain-language summaries, code, sources, and file pointers.
+- [`docs/food-database.md`](./docs/food-database.md) — full catalog of 39 items grouped by category + an explainer on `k_factor` personalization.
+- `docs/superpowers/specs/` — design specs (chronological, dated). The original v1 is `2026-04-27-calorie-app-design.md`.
+- `docs/superpowers/plans/` — implementation plans matching the specs.
+
+When in doubt: read the relevant spec first, match existing patterns, run the gates before claiming done, ask before destructive or remote-affecting operations.
