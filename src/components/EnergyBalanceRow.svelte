@@ -14,6 +14,7 @@
   import { actualBurn, energyBalance, type BalanceState } from '$lib/energy';
   import { hydrationTarget } from '$lib/hydration';
   import { bmi, bmiClass } from '$lib/health';
+  import { bodyFatPct, type BodyFatInputs } from '$lib/bodyfat';
 
   interface Props {
     variant?: 'compact' | 'full';
@@ -35,6 +36,19 @@
 
   let bmiValue = $derived(profile.value ? bmi(profile.value.weight, profile.value.height) : null);
   let bmiCls = $derived(bmiValue !== null ? bmiClass(bmiValue) : null);
+  let bfValue = $derived.by<number | null>(() => {
+    if (!profile.value) return null;
+    const p = profile.value;
+    if (p.waist_cm === undefined || p.neck_cm === undefined) return null;
+    const inputs: BodyFatInputs = {
+      gender: p.gender,
+      heightCm: p.height,
+      waistCm: p.waist_cm,
+      neckCm: p.neck_cm,
+      ...(p.hip_cm !== undefined ? { hipCm: p.hip_cm } : {}),
+    };
+    return bodyFatPct(inputs);
+  });
 
   const STATE_CLASSES: Record<BalanceState, { wrap: string; fg: string; bar: string }> = {
     deficit: {
@@ -180,22 +194,38 @@
         </div>
       </div>
 
-      <!-- Sub-stats: BMI + Water -->
-      {#if bmiValue !== null || waterTargetMl > 0}
-        <div class="grid grid-cols-2 gap-2">
+      <!-- Sub-stats: BMI + Body Fat + Water -->
+      {#if bmiValue !== null || waterTargetMl > 0 || bfValue !== null}
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {#if bmiValue !== null && bmiCls !== null}
             <div
               class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2"
             >
               <ActivityIcon size={18} class={BMI_CLASS_FG[bmiCls]} />
               <div class="flex flex-col">
-                <span class="text-muted text-[10px] font-semibold tracking-wider uppercase">
-                  BMI
-                </span>
+                <span class="text-muted text-[10px] font-semibold tracking-wider uppercase"
+                  >BMI</span
+                >
                 <span
                   class={['text-base leading-tight font-bold tabular-nums', BMI_CLASS_FG[bmiCls]]}
                 >
                   {bmiValue.toFixed(1)}
+                </span>
+              </div>
+            </div>
+          {/if}
+
+          {#if bfValue !== null}
+            <div
+              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2"
+            >
+              <ActivityIcon size={18} class="text-warn" />
+              <div class="flex flex-col">
+                <span class="text-muted text-[10px] font-semibold tracking-wider uppercase"
+                  >Жир</span
+                >
+                <span class="text-fg text-base leading-tight font-bold tabular-nums">
+                  {bfValue.toFixed(1)} %
                 </span>
               </div>
             </div>
