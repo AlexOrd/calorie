@@ -31,18 +31,22 @@
   }
 </script>
 
-<section class="mx-auto flex min-h-screen max-w-md flex-col justify-center p-6">
-  {#if step === 0}
-    <div in:fly={{ x: 24, duration: 250 }}>
-      <StepWelcome onNext={next} />
-    </div>
-  {:else if step === 1}
-    <div in:fly={{ x: 24, duration: 250 }}>
-      <StepMeasurements onSubmit={setInput} />
-    </div>
-  {:else if step === 2 && input}
-    <div in:fly={{ x: 24, duration: 250 }}>
-      <StepConfirm {input} onConfirm={confirm} onBack={back} />
-    </div>
-  {/if}
+<section class="h-dvh overflow-y-auto overscroll-contain" style="scroll-padding-bottom: 16rem;">
+  <div
+    class="mx-auto flex min-h-full max-w-md flex-col justify-center p-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+  >
+    {#if step === 0}
+      <div in:fly={{ x: 24, duration: 250 }}>
+        <StepWelcome onNext={next} />
+      </div>
+    {:else if step === 1}
+      <div in:fly={{ x: 24, duration: 250 }}>
+        <StepMeasurements onSubmit={setInput} />
+      </div>
+    {:else if step === 2 && input}
+      <div in:fly={{ x: 24, duration: 250 }}>
+        <StepConfirm {input} onConfirm={confirm} onBack={back} />
+      </div>
+    {/if}
+  </div>
 </section>
