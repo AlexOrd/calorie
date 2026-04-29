@@ -1,282 +1,247 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fade } from 'svelte/transition';
-  import { Droplet, Salad, Footprints } from '@lucide/svelte';
   import { storage } from '$lib/storage';
-  import { addDays, todayKey } from '$lib/date';
+  import { addDays, dateFromKey, isLogKey, todayKey } from '$lib/date';
   import { profile } from '$state/profile.svelte';
   import { sumMacros } from '$lib/macros';
   import { personalizedDb } from '$state/personalizedDb';
   import { actualBurn, energyBalance, type BalanceState } from '$lib/energy';
-  import { hydrationState, hydrationTarget, type HydrationState } from '$lib/hydration';
-  import { STEP_TARGET } from '$state/activity.svelte';
+  import {
+    hydrationState,
+    hydrationTarget,
+    isHydrationSevereDeficit,
+    type HydrationState,
+  } from '$lib/hydration';
   import type { DayActivity } from '$state/activity.svelte';
   import type { LogEntry } from '$types/log';
   import type { CategoryKey } from '$types/food';
-
-  const DAYS_30 = 30;
-  const DAYS_7 = 7;
-  const DELTA_CAP = 1000;
 
   type DayVerdict = 0 | 1 | 2 | 3;
   type BalanceVerdict = BalanceState | 'none';
   type HydrationVerdict = HydrationState | 'none';
 
-  interface DayData {
-    date: string;
-    delta: number;
-    balance: BalanceVerdict;
-    waterMl: number;
-    waterTarget: number;
-    hydration: HydrationVerdict;
-    steps: number;
-    verdict: DayVerdict;
-  }
+  const DAYS = 90;
 
-  let days = $state<DayData[]>([]);
-  let loaded = $state(false);
-
-  const HYDRATION_BG: Record<HydrationVerdict, string> = {
+  const BALANCE_COLOR: Record<BalanceVerdict, string> = {
     none: 'var(--color-border)',
-    deficit: '#ef4444',
-    balanced: '#86efac',
-    surplus: '#60a5fa',
+    deficit: 'var(--color-accent)',
+    balanced: 'var(--color-muted)',
+    surplus: 'var(--color-warn)',
   };
-  const VERDICT_BG: Record<DayVerdict, string> = {
+  const BALANCE_LABEL: Record<BalanceVerdict, string> = {
+    none: 'Без даних',
+    deficit: 'Дефіцит',
+    balanced: 'Баланс',
+    surplus: 'Профіцит',
+  };
+  const LEGEND_BALANCES: BalanceVerdict[] = ['deficit', 'balanced', 'surplus'];
+
+  const VERDICT_COLOR: Record<DayVerdict, string> = {
     0: 'var(--color-border)',
     1: '#86efac',
     2: '#fbbf24',
     3: '#ef4444',
   };
   const VERDICT_LABEL: Record<DayVerdict, string> = {
-    0: 'без даних',
-    1: 'у межах норм',
+    0: 'Без даних',
+    1: 'У межах норм',
     2: '1–2 перевищення',
-    3: '3+ перевищень',
+    3: '3+ перевищення',
+  };
+  const LEGEND_VERDICTS: DayVerdict[] = [1, 2, 3];
+
+  const HYDRATION_COLOR: Record<HydrationVerdict, string> = {
+    none: 'var(--color-border)',
+    deficit: '#ef4444',
+    balanced: '#86efac',
+    surplus: '#60a5fa',
   };
   const HYDRATION_LABEL: Record<HydrationVerdict, string> = {
-    none: 'без даних',
-    deficit: 'нестача',
-    balanced: 'норма',
-    surplus: 'понад норму',
+    none: 'Без даних',
+    deficit: 'Нестача',
+    balanced: 'Норма',
+    surplus: 'Понад норму',
   };
+  const LEGEND_HYDRATION: HydrationVerdict[] = ['deficit', 'balanced', 'surplus'];
 
-  function categoryVerdict(entries: LogEntry[]): DayVerdict {
-    if (entries.length === 0) return 0;
-    const sums: Record<CategoryKey, number> = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0 };
+  let balanceByKey = $state<Record<string, BalanceVerdict>>({});
+  let verdictByKey = $state<Record<string, DayVerdict>>({});
+  let hydrationByKey = $state<Record<string, HydrationVerdict>>({});
+  let loaded = $state(false);
+
+  function dayVerdict(entries: LogEntry[], hydrationDeficitSevere: boolean): DayVerdict {
+    if (entries.length === 0 && !hydrationDeficitSevere) return 0;
+    const sums: Record<CategoryKey, number> = {
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0,
+      E: 0,
+      F: 0,
+      G: 0,
+      H: 0,
+    };
     for (const e of entries) sums[e.cat] += e.pct;
-    const overCount = Object.values(sums).filter((v) => v > 100).length;
+    let overCount = Object.values(sums).filter((v) => v > 100).length;
+    if (hydrationDeficitSevere) overCount += 1;
     if (overCount === 0) return 1;
     if (overCount <= 2) return 2;
     return 3;
   }
 
   onMount(async () => {
-    if (!profile.value) {
-      loaded = true;
-      return;
-    }
-    const today = todayKey();
-    const target = hydrationTarget(profile.value);
-    const dates = Array.from({ length: DAYS_30 }, (_, i) => addDays(today, -(DAYS_30 - 1 - i)));
-    const p = profile.value;
+    const allKeys = await storage.keys();
+    const logKeys = allKeys.filter(isLogKey);
+    const balances: Record<string, BalanceVerdict> = {};
+    const verdicts: Record<string, DayVerdict> = {};
+    const hydrations: Record<string, HydrationVerdict> = {};
 
-    const next: DayData[] = await Promise.all(
-      dates.map(async (date): Promise<DayData> => {
-        const entries = await storage.load<LogEntry[]>(`log_${date}`, []);
+    const target = profile.value ? hydrationTarget(profile.value) : 0;
+
+    await Promise.all(
+      logKeys.map(async (k) => {
+        const date = k.slice(4);
+        const entries = await storage.load<LogEntry[]>(k, []);
         const dayAct = await storage.load<DayActivity>(`activity_${date}`, {
           steps: 0,
           trainings: 0,
           waterMl: 0,
         });
 
-        let delta = 0;
-        let balance: BalanceVerdict = 'none';
-        if (entries.length > 0) {
+        const severe = target > 0 && isHydrationSevereDeficit(dayAct.waterMl, target);
+        verdicts[date] = dayVerdict(entries, severe);
+
+        if (profile.value && entries.length > 0) {
           const intake = sumMacros(entries, personalizedDb()).kcal;
-          const burn = actualBurn(p, dayAct);
-          const eb = energyBalance(intake, burn);
-          delta = eb.delta;
-          balance = eb.state;
+          const burn = actualBurn(profile.value, dayAct);
+          balances[date] = energyBalance(intake, burn).state;
+        } else {
+          balances[date] = 'none';
         }
 
-        const hydration: HydrationVerdict =
-          dayAct.waterMl > 0 ? hydrationState(dayAct.waterMl, target) : 'none';
-        const verdict = categoryVerdict(entries);
-
-        return {
-          date,
-          delta,
-          balance,
-          waterMl: dayAct.waterMl,
-          waterTarget: target,
-          hydration,
-          steps: dayAct.steps,
-          verdict,
-        };
+        if (target > 0 && dayAct.waterMl > 0) {
+          hydrations[date] = hydrationState(dayAct.waterMl, target);
+        } else {
+          hydrations[date] = 'none';
+        }
       }),
     );
 
-    days = next;
+    balanceByKey = balances;
+    verdictByKey = verdicts;
+    hydrationByKey = hydrations;
     loaded = true;
   });
 
-  let last30 = $derived(days);
-  let last7 = $derived(days.slice(-DAYS_7));
-
-  function barOffsetPct(delta: number): number {
-    return Math.min(Math.abs(delta) / DELTA_CAP, 1) * 50;
+  interface Cell {
+    key: string;
+    balance: BalanceVerdict;
   }
 
-  function fmtSigned(n: number): string {
-    if (n === 0) return '0';
-    return n > 0 ? `+${n}` : `−${Math.abs(n)}`;
-  }
+  let gridCells = $derived.by<(Cell | null)[]>(() => {
+    const today = todayKey();
+    const dates: string[] = [];
+    for (let i = DAYS - 1; i >= 0; i--) dates.push(addDays(today, -i));
+    const firstKey = dates[0] ?? today;
+    const firstDow = (dateFromKey(firstKey).getDay() + 6) % 7;
+    const out: (Cell | null)[] = [];
+    for (let i = 0; i < firstDow; i++) out.push(null);
+    for (const d of dates) {
+      out.push({ key: d, balance: balanceByKey[d] ?? 'none' });
+    }
+    return out;
+  });
 
-  function stepFillPct(steps: number): number {
-    return Math.min(100, Math.round((steps / STEP_TARGET) * 100));
-  }
+  let verdictCells = $derived.by<{ key: string; verdict: DayVerdict }[]>(() => {
+    const today = todayKey();
+    const out: { key: string; verdict: DayVerdict }[] = [];
+    for (let i = DAYS - 1; i >= 0; i--) {
+      const d = addDays(today, -i);
+      out.push({ key: d, verdict: verdictByKey[d] ?? 0 });
+    }
+    return out;
+  });
 
-  function stepColor(steps: number): string {
-    if (steps === 0) return 'var(--color-border)';
-    if (steps >= STEP_TARGET) return 'var(--color-ok)';
-    return 'var(--color-accent)';
-  }
-
-  function shortDate(iso: string): string {
-    return iso.slice(5);
-  }
+  let hydrationCells = $derived.by<{ key: string; hydration: HydrationVerdict }[]>(() => {
+    const today = todayKey();
+    const out: { key: string; hydration: HydrationVerdict }[] = [];
+    for (let i = DAYS - 1; i >= 0; i--) {
+      const d = addDays(today, -i);
+      out.push({ key: d, hydration: hydrationByKey[d] ?? 'none' });
+    }
+    return out;
+  });
 </script>
 
-<div class="border-border bg-surface-2 flex flex-col gap-4 rounded-xl border p-4">
-  <!-- Hero: 30-day energy balance -->
-  <section>
-    <header class="mb-3 flex items-baseline justify-between gap-2">
-      <h3 class="text-fg text-sm font-semibold">Енергобаланс • 30 днів</h3>
-      <div class="text-muted text-[10px] font-semibold tracking-wider uppercase">Δ ккал/день</div>
-    </header>
+<div class="border-border bg-surface-2 rounded-xl border p-4">
+  <h3 class="text-fg mb-2 text-sm font-semibold">Останні {DAYS} днів</h3>
 
-    {#if loaded}
-      <div class="relative h-24">
-        <div class="bg-border absolute inset-x-0 top-1/2 h-px"></div>
+  {#if loaded}
+    <!-- Hero: 90-day energy balance grid (GitHub contributions style) -->
+    <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-1">
+      {#each gridCells as cell, i (cell?.key ?? `pad-${i}`)}
+        {#if cell === null}
+          <div class="h-3 w-3"></div>
+        {:else}
+          <div
+            class="h-3 w-3 rounded-sm transition-colors"
+            style="background: {BALANCE_COLOR[cell.balance]};"
+            title="{cell.key}: {BALANCE_LABEL[cell.balance]}"
+          ></div>
+        {/if}
+      {/each}
+    </div>
 
-        <div class="grid h-full grid-cols-[repeat(30,minmax(0,1fr))] gap-[2px]">
-          {#each last30 as day, i (day.date)}
-            {@const isToday = i === last30.length - 1}
-            <div
-              class="group relative flex h-full items-center justify-center"
-              in:fade={{ duration: 240, delay: i * 12 }}
-              title="{shortDate(day.date)}: {fmtSigned(day.delta)} ккал"
-            >
-              {#if day.balance === 'deficit'}
-                <div
-                  class="bg-accent absolute top-1/2 left-1/2 w-full max-w-[10px] -translate-x-1/2 rounded-sm transition-all"
-                  style="height: {barOffsetPct(day.delta)}%;"
-                ></div>
-              {:else if day.balance === 'surplus'}
-                <div
-                  class="bg-warn absolute bottom-1/2 left-1/2 w-full max-w-[10px] -translate-x-1/2 rounded-sm transition-all"
-                  style="height: {barOffsetPct(day.delta)}%;"
-                ></div>
-              {:else if day.balance === 'balanced'}
-                <div
-                  class="bg-muted absolute top-1/2 left-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                ></div>
-              {:else}
-                <div
-                  class="bg-border absolute top-1/2 left-1/2 h-0.5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                ></div>
-              {/if}
+    <!-- Categories strip -->
+    <h4 class="text-muted mt-3 mb-2 text-xs font-semibold tracking-wider uppercase">Категорії</h4>
+    <div class="flex gap-1 overflow-x-auto pb-1">
+      {#each verdictCells as cell (cell.key)}
+        <div
+          class="h-3 w-3 shrink-0 rounded-sm transition-colors"
+          style="background: {VERDICT_COLOR[cell.verdict]};"
+          title="{cell.key}: {VERDICT_LABEL[cell.verdict]}"
+        ></div>
+      {/each}
+    </div>
 
-              {#if isToday}
-                <div
-                  class="ring-fg/25 pointer-events-none absolute inset-0 rounded-sm ring-1"
-                ></div>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      </div>
+    <!-- Hydration strip -->
+    <h4 class="text-muted mt-3 mb-2 text-xs font-semibold tracking-wider uppercase">Гідрація</h4>
+    <div class="flex gap-1 overflow-x-auto pb-1">
+      {#each hydrationCells as cell (cell.key)}
+        <div
+          class="h-3 w-3 shrink-0 rounded-sm transition-colors"
+          style="background: {HYDRATION_COLOR[cell.hydration]};"
+          title="{cell.key}: {HYDRATION_LABEL[cell.hydration]}"
+        ></div>
+      {/each}
+    </div>
 
-      <div class="text-muted mt-2 flex items-center justify-between text-[10px]">
-        <span>30 д тому</span>
-        <span class="flex items-center gap-3">
-          <span class="flex items-center gap-1">
-            <span class="bg-accent h-2 w-2 rounded-sm"></span>дефіцит
-          </span>
-          <span class="flex items-center gap-1">
-            <span class="bg-warn h-2 w-2 rounded-sm"></span>профіцит
-          </span>
+    <!-- Legends -->
+    <div class="text-muted mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      {#each LEGEND_BALANCES as b (b)}
+        <span class="flex items-center gap-1">
+          <span class="h-3 w-3 rounded-sm" style="background: {BALANCE_COLOR[b]};"></span>
+          {BALANCE_LABEL[b]}
         </span>
-        <span>сьогодні</span>
-      </div>
-    {:else}
-      <div class="text-muted h-24 text-xs">Завантаження…</div>
-    {/if}
-  </section>
-
-  <!-- 7-day strips: hydration / category verdict / steps -->
-  {#if loaded && last7.length > 0}
-    <section class="flex flex-col gap-2.5">
-      <!-- Hydration -->
-      <div class="flex items-center gap-3">
-        <div class="flex w-20 shrink-0 items-center gap-1.5">
-          <Droplet size={14} class="text-accent shrink-0" />
-          <span class="text-fg text-xs font-semibold">Вода</span>
-        </div>
-        <div class="grid flex-1 grid-cols-7 gap-1">
-          {#each last7 as day, i (day.date)}
-            <div
-              class="h-7 rounded-md transition-colors"
-              style="background: {HYDRATION_BG[day.hydration]};"
-              title="{shortDate(day.date)}: {day.waterMl}/{day.waterTarget} мл • {HYDRATION_LABEL[
-                day.hydration
-              ]}"
-              in:fade={{ duration: 220, delay: 200 + i * 40 }}
-            ></div>
-          {/each}
-        </div>
-      </div>
-
-      <!-- Category verdict -->
-      <div class="flex items-center gap-3">
-        <div class="flex w-20 shrink-0 items-center gap-1.5">
-          <Salad size={14} class="text-accent shrink-0" />
-          <span class="text-fg text-xs font-semibold">Категорії</span>
-        </div>
-        <div class="grid flex-1 grid-cols-7 gap-1">
-          {#each last7 as day, i (day.date)}
-            <div
-              class="h-7 rounded-md transition-colors"
-              style="background: {VERDICT_BG[day.verdict]};"
-              title="{shortDate(day.date)}: {VERDICT_LABEL[day.verdict]}"
-              in:fade={{ duration: 220, delay: 280 + i * 40 }}
-            ></div>
-          {/each}
-        </div>
-      </div>
-
-      <!-- Steps -->
-      <div class="flex items-center gap-3">
-        <div class="flex w-20 shrink-0 items-center gap-1.5">
-          <Footprints size={14} class="text-accent shrink-0" />
-          <span class="text-fg text-xs font-semibold">Кроки</span>
-        </div>
-        <div class="grid flex-1 grid-cols-7 gap-1">
-          {#each last7 as day, i (day.date)}
-            <div
-              class="bg-surface flex h-7 items-end overflow-hidden rounded-md"
-              title="{shortDate(day.date)}: {day.steps} кроків"
-              in:fade={{ duration: 220, delay: 360 + i * 40 }}
-            >
-              <div
-                class="w-full transition-all duration-500"
-                style="height: {stepFillPct(day.steps)}%; background: {stepColor(day.steps)};"
-              ></div>
-            </div>
-          {/each}
-        </div>
-      </div>
-    </section>
+      {/each}
+    </div>
+    <div class="text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      {#each LEGEND_VERDICTS as v (v)}
+        <span class="flex items-center gap-1">
+          <span class="h-3 w-3 rounded-sm" style="background: {VERDICT_COLOR[v]};"></span>
+          {VERDICT_LABEL[v]}
+        </span>
+      {/each}
+    </div>
+    <div class="text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      {#each LEGEND_HYDRATION as h (h)}
+        <span class="flex items-center gap-1">
+          <span class="h-3 w-3 rounded-sm" style="background: {HYDRATION_COLOR[h]};"></span>
+          {HYDRATION_LABEL[h]}
+        </span>
+      {/each}
+    </div>
+  {:else}
+    <p class="text-muted text-xs">Завантаження…</p>
   {/if}
 </div>
