@@ -5,6 +5,9 @@
   import { hydrationTarget, HYDRATION_QUICK_ADD_ML } from '$lib/hydration';
   import { hapticImpact } from '$lib/haptics';
 
+  const STEP_QUICK_ADDS = [1000, 3000, 5000] as const;
+  const WATER_QUICK_ADDS = [HYDRATION_QUICK_ADD_ML, 500, 1000] as const;
+
   let steps = $derived(activity.value.steps);
   let stepsPct = $derived(Math.min(150, Math.round((steps / STEP_TARGET) * 100)));
   let stepsBarWidth = $derived(Math.min(100, Math.round((steps / STEP_TARGET) * 100)));
@@ -15,6 +18,9 @@
   let waterPct = $derived(Math.min(150, Math.round((waterMl / waterTargetMl) * 100)));
   let waterBarWidth = $derived(Math.min(100, Math.round((waterMl / waterTargetMl) * 100)));
   let waterAtLeastTarget = $derived(waterMl >= waterTargetMl);
+
+  let trainings = $derived(activity.value.trainings);
+  let trainingKcal = $derived(trainings * 120);
 
   function onStepsInput(e: Event): void {
     const target = e.currentTarget;
@@ -30,15 +36,28 @@
     if (Number.isFinite(value)) activity.setWater(value);
   }
 
-  function quickAddWater(): void {
+  function quickAddSteps(n: number): void {
     hapticImpact('light');
-    activity.addWater(HYDRATION_QUICK_ADD_ML);
+    activity.setSteps(steps + n);
+  }
+
+  function quickAddWater(n: number): void {
+    hapticImpact('light');
+    activity.addWater(n);
   }
 
   const SLOTS: readonly [0, 1, 2] = [0, 1, 2] as const;
 
   function fmtLitres(ml: number): string {
     return (ml / 1000).toFixed(ml % 1000 === 0 ? 1 : 2);
+  }
+
+  function fmtMl(ml: number): string {
+    return ml >= 1000 ? `${ml / 1000} л` : `${ml} мл`;
+  }
+
+  function fmtSteps(n: number): string {
+    return n.toLocaleString('uk-UA');
   }
 </script>
 
@@ -47,27 +66,29 @@
 >
   <h2 class="text-xl font-semibold md:col-span-2">Активність</h2>
 
-  <!-- Steps card -->
-  <div class="border-border bg-surface-2 rounded-xl border p-5">
-    <div class="text-muted mb-3 flex items-center gap-2 text-sm">
-      <Footprints size={18} />
-      Кроки
-    </div>
+  <!-- Steps -->
+  <div class="border-border bg-surface-2 flex flex-col gap-3 rounded-xl border p-5">
+    <header class="flex items-center justify-between">
+      <div class="text-muted flex items-center gap-2 text-sm">
+        <Footprints size={18} class="text-accent" />
+        <span class="font-semibold">Кроки</span>
+      </div>
+      <span class="text-accent text-lg font-bold tabular-nums">{stepsPct}%</span>
+    </header>
 
-    <div class="flex items-baseline gap-3">
+    <div class="flex items-baseline gap-2">
       <input
         type="number"
         min="0"
         step="100"
         value={steps}
         oninput={onStepsInput}
-        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-4 py-3 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
+        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-3 py-2.5 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
       />
-      <span class="text-muted text-base">/ {STEP_TARGET}</span>
-      <span class="text-accent ml-auto text-2xl font-bold tabular-nums">{stepsPct}%</span>
+      <span class="text-muted text-sm tabular-nums">/ {fmtSteps(STEP_TARGET)}</span>
     </div>
 
-    <div class="bg-surface-2 mt-4 h-3 w-full overflow-hidden rounded-full">
+    <div class="bg-surface h-2 w-full overflow-hidden rounded-full">
       <div
         class={[
           'h-full rounded-full transition-[width] duration-300',
@@ -77,32 +98,47 @@
       ></div>
     </div>
 
-    <p class="text-muted mt-3 text-xs">
-      Норма {STEP_TARGET} кроків на день — рівень "активний спосіб життя" за рекомендаціями ВООЗ.
+    <div class="grid grid-cols-3 gap-2">
+      {#each STEP_QUICK_ADDS as n (n)}
+        <button
+          type="button"
+          onclick={() => quickAddSteps(n)}
+          class="border-border bg-surface text-fg hover:bg-surface-2 inline-flex items-center justify-center gap-1 rounded-lg border py-2 text-sm font-semibold tabular-nums transition-colors"
+        >
+          <Plus size={14} />
+          {fmtSteps(n)}
+        </button>
+      {/each}
+    </div>
+
+    <p class="text-muted text-xs leading-relaxed">
+      Норма {fmtSteps(STEP_TARGET)} кроків — рівень "активний спосіб життя" за ВООЗ.
     </p>
   </div>
 
-  <!-- Water card -->
-  <div class="border-border bg-surface-2 rounded-xl border p-5">
-    <div class="text-muted mb-3 flex items-center gap-2 text-sm">
-      <Droplet size={18} />
-      Вода
-    </div>
+  <!-- Water -->
+  <div class="border-border bg-surface-2 flex flex-col gap-3 rounded-xl border p-5">
+    <header class="flex items-center justify-between">
+      <div class="text-muted flex items-center gap-2 text-sm">
+        <Droplet size={18} class="text-accent" />
+        <span class="font-semibold">Вода</span>
+      </div>
+      <span class="text-accent text-lg font-bold tabular-nums">{waterPct}%</span>
+    </header>
 
-    <div class="flex items-baseline gap-3">
+    <div class="flex items-baseline gap-2">
       <input
         type="number"
         min="0"
         step="50"
         value={waterMl}
         oninput={onWaterInput}
-        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-4 py-3 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
+        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-3 py-2.5 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
       />
-      <span class="text-muted text-base">/ {waterTargetMl} мл</span>
-      <span class="text-accent ml-auto text-2xl font-bold tabular-nums">{waterPct}%</span>
+      <span class="text-muted text-sm tabular-nums">/ {waterTargetMl} мл</span>
     </div>
 
-    <div class="bg-surface-2 mt-4 h-3 w-full overflow-hidden rounded-full">
+    <div class="bg-surface h-2 w-full overflow-hidden rounded-full">
       <div
         class={[
           'h-full rounded-full transition-[width] duration-300',
@@ -112,36 +148,46 @@
       ></div>
     </div>
 
-    <button
-      type="button"
-      onclick={quickAddWater}
-      class="border-border bg-surface text-fg hover:bg-surface-2 mt-3 inline-flex items-center gap-1 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors"
-    >
-      <Plus size={16} />
-      +{HYDRATION_QUICK_ADD_ML} мл
-    </button>
+    <div class="grid grid-cols-3 gap-2">
+      {#each WATER_QUICK_ADDS as n (n)}
+        <button
+          type="button"
+          onclick={() => quickAddWater(n)}
+          class="border-border bg-surface text-fg hover:bg-surface-2 inline-flex items-center justify-center gap-1 rounded-lg border py-2 text-sm font-semibold tabular-nums transition-colors"
+        >
+          <Plus size={14} />
+          {fmtMl(n)}
+        </button>
+      {/each}
+    </div>
 
-    <p class="text-muted mt-3 text-xs">
-      Ціль: 30 мл × вага, мінімум 2.0 / 2.5 л. Зараз: {fmtLitres(waterMl)} / {fmtLitres(
+    <p class="text-muted text-xs leading-relaxed">
+      Ціль: 30 мл × вага, мінімум 2.0 л (♀) / 2.5 л (♂). Зараз: {fmtLitres(waterMl)} / {fmtLitres(
         waterTargetMl,
       )} л.
     </p>
   </div>
 
-  <!-- Trainings (3 light sessions) -->
-  <div class="border-border bg-surface-2 rounded-xl border p-5 md:col-span-2">
-    <div class="text-muted mb-3 flex items-center gap-2 text-sm">
-      <Dumbbell size={18} />
-      Тренування
-    </div>
+  <!-- Trainings -->
+  <div class="border-border bg-surface-2 flex flex-col gap-3 rounded-xl border p-5 md:col-span-2">
+    <header class="flex items-center justify-between">
+      <div class="text-muted flex items-center gap-2 text-sm">
+        <Dumbbell size={18} class="text-accent" />
+        <span class="font-semibold">Тренування</span>
+      </div>
+      <span class="text-accent text-lg font-bold tabular-nums">
+        {#if trainings > 0}+{trainingKcal} ккал{:else}0 ккал{/if}
+      </span>
+    </header>
+
     <div class="grid grid-cols-3 gap-3">
       {#each SLOTS as slot (slot)}
         {@const slotNum = slot + 1}
-        {@const ticked = activity.value.trainings >= slotNum}
+        {@const ticked = trainings >= slotNum}
         <button
           type="button"
           class={[
-            'flex min-h-16 flex-col items-center justify-center rounded-lg border transition-colors',
+            'flex min-h-16 flex-col items-center justify-center gap-1 rounded-lg border transition-colors',
             ticked
               ? 'border-ok bg-ok/10 text-ok'
               : 'border-border bg-surface text-muted hover:bg-surface-2',
@@ -153,12 +199,14 @@
           }}
         >
           <Dumbbell size={20} />
-          <span class="mt-1 text-xs font-semibold tabular-nums">{slotNum}</span>
+          <span class="text-xs font-semibold tabular-nums">{slotNum}</span>
         </button>
       {/each}
     </div>
-    {#if activity.value.trainings > 0}
-      <p class="text-muted mt-3 text-xs">+{activity.value.trainings * 120} ккал сьогодні</p>
-    {/if}
+
+    <p class="text-muted text-xs leading-relaxed">
+      Натисни — зараховуй кожне легке тренування (~30 хв йоги, мобільності або силового): +120 ккал
+      за слот.
+    </p>
   </div>
 </section>
