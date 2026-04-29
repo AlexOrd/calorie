@@ -1,0 +1,41 @@
+import { storage } from '$lib/storage';
+import type { MealTemplate, MealTemplateItem } from '$types/template';
+import type { LogEntry } from '$types/log';
+
+const KEY = 'meal_templates';
+
+export async function loadTemplates(): Promise<MealTemplate[]> {
+  const raw = await storage.load<MealTemplate[]>(KEY, []);
+  return Array.isArray(raw) ? raw : [];
+}
+
+export async function saveTemplate(
+  name: string,
+  items: readonly MealTemplateItem[],
+): Promise<MealTemplate> {
+  const list = await loadTemplates();
+  const next: MealTemplate = {
+    id: crypto.randomUUID(),
+    name: name.trim() || 'Без назви',
+    items: items.map((i) => ({ cat: i.cat, id: i.id, pct: i.pct })),
+  };
+  const updated = [next, ...list];
+  await storage.save(KEY, updated);
+  return next;
+}
+
+export async function deleteTemplate(id: string): Promise<MealTemplate[]> {
+  const list = await loadTemplates();
+  const updated = list.filter((t) => t.id !== id);
+  await storage.save(KEY, updated);
+  return updated;
+}
+
+export function templateToEntries(template: MealTemplate, baseTs: number): LogEntry[] {
+  return template.items.map((item, idx) => ({
+    cat: item.cat,
+    id: item.id,
+    pct: item.pct,
+    ts: baseTs + idx,
+  }));
+}
