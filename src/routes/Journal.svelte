@@ -1,9 +1,12 @@
 <script lang="ts">
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
+  import { Bookmark } from '@lucide/svelte';
   import { dailyLog } from '$state/dailyLog.svelte';
   import { personalizedDb } from '$state/personalizedDb';
+  import { hapticSelection } from '$lib/haptics';
   import JournalRow from '../components/JournalRow.svelte';
+  import MealTemplatesSheet from '../components/MealTemplatesSheet.svelte';
   import type { LogEntry } from '$types/log';
   import type { CategoryKey, FoodItem } from '$types/food';
 
@@ -25,10 +28,27 @@
       .filter((x): x is VisibleEntry => x !== null)
       .sort((a, b) => b.entry.ts - a.entry.ts),
   );
+
+  let templatesOpen = $state(false);
+
+  function openTemplates(): void {
+    hapticSelection();
+    templatesOpen = true;
+  }
 </script>
 
 <section class="mx-auto max-w-2xl p-2 md:p-4">
-  <h2 class="mb-3 text-xl font-semibold">Журнал</h2>
+  <header class="mb-3 flex items-center justify-between">
+    <h2 class="text-xl font-semibold">Журнал</h2>
+    <button
+      type="button"
+      class="text-muted hover:text-fg border-border bg-surface-2 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors"
+      onclick={openTemplates}
+    >
+      <Bookmark size={14} />
+      Шаблони
+    </button>
+  </header>
 
   {#if visible.length === 0}
     <p class="text-muted text-sm">Поки що нічого не додано.</p>
@@ -46,3 +66,5 @@
     </ul>
   {/if}
 </section>
+
+<MealTemplatesSheet open={templatesOpen} onClose={() => (templatesOpen = false)} />
