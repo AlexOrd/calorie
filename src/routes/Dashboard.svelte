@@ -37,64 +37,20 @@
     sheetOpen = true;
   }
 
-  // Tomohiko Sakamoto lookup table — index 0..11 maps month 1..12
-  const DOW_T: readonly number[] = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
-
-  /** ISO week string (e.g. "2026-W17") from a YYYY-MM-DD key, no Date objects. */
   function isoWeekId(iso: string): string {
-    const [y, mo, d] = iso.split('-').map(Number) as [number, number, number];
-    // Tomohiko Sakamoto — day of week (0=Sun,1=Mon,…6=Sat)
-    const yy = mo < 3 ? y - 1 : y;
-    const dow =
-      (yy +
-        Math.floor(yy / 4) -
-        Math.floor(yy / 100) +
-        Math.floor(yy / 400) +
-        (DOW_T[mo - 1] ?? 0) +
-        d) %
-      7;
-    // ISO week: move to Thursday of the same week (isoDay 1=Mon,…4=Thu)
-    const isoDow = dow === 0 ? 7 : dow; // 1=Mon…7=Sun
-    // Days since Monday of this week
-    const monOffset = isoDow - 1;
-    // Julian Day Number of this date (Gregorian)
-    function jdn(yr: number, m: number, dd: number): number {
-      return (
-        Math.floor((1461 * (yr + 4800 + Math.floor((m - 14) / 12))) / 4) +
-        Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
-        Math.floor((3 * Math.floor((yr + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
-        dd -
-        32075
-      );
-    }
-    const thuJdn = jdn(y, mo, d) - monOffset + 3; // Thursday JDN
-    // Year of Thursday
-    // Reverse JDN → Gregorian year (approximate: find year whose Jan 4 JDN ≤ thuJdn)
-    const thuApproxYear = Math.floor((thuJdn - 1721119.5) / 365.2425);
-    const thuYear = jdn(thuApproxYear + 1, 1, 4) <= thuJdn ? thuApproxYear + 1 : thuApproxYear;
-    // Week number = (thuJdn - JDN of Jan 4 of thuYear's week-1 Monday) / 7 + 1
-    const jan4Jdn = jdn(thuYear, 1, 4);
-    const jan4Dow = (jan4Jdn + 1) % 7 || 7; // 1=Mon…7=Sun (JDN 0 = Monday)
-    const w1MonJdn = jan4Jdn - (jan4Dow - 1);
-    const weekNum = Math.floor((thuJdn - w1MonJdn) / 7) + 1;
-    return `${thuYear}-W${weekNum.toString().padStart(2, '0')}`;
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
+    const d = new Date(`${iso}T00:00:00Z`);
+    const day = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - day);
+    const yearStart = Date.UTC(d.getUTCFullYear(), 0, 1);
+    const weekNum = Math.ceil(((d.getTime() - yearStart) / 86400000 + 1) / 7);
+    return `${d.getUTCFullYear()}-W${weekNum.toString().padStart(2, '0')}`;
   }
 
   async function maybeFireMilestone(): Promise<void> {
     if (!profile.value) return;
-    const today = todayKey();
-    // Day of week without new Date(): Tomohiko Sakamoto
-    const [y, mo, d] = today.split('-').map(Number) as [number, number, number];
-    const yy = mo < 3 ? y - 1 : y;
-    const jsDay =
-      (yy +
-        Math.floor(yy / 4) -
-        Math.floor(yy / 100) +
-        Math.floor(yy / 400) +
-        (DOW_T[mo - 1] ?? 0) +
-        d) %
-      7;
-    if (jsDay !== 1) return; // only on Monday after the just-completed week
+    const todayDate = new Date(`${todayKey()}T00:00:00Z`);
+    if (todayDate.getUTCDay() !== 1) return; // only on Monday after the just-completed week
     const weekId = isoWeekId(addDays(todayKey(), -1));
     const stored = await storage.load<string | null>('last_celebrated_week', null);
     if (stored === weekId) return;

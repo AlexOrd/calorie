@@ -75,7 +75,7 @@
       {/if}
       <span class="text-muted text-xs tabular-nums">
         {entryCount}
-        {entryCount === 1 ? 'запис' : 'записів'}
+        {#if entryCount === 1}запис{:else if entryCount >= 2 && entryCount <= 4}записи{:else}записів{/if}
       </span>
     </div>
 
