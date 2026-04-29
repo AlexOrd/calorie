@@ -40,6 +40,26 @@ export interface TelegramHapticFeedback {
   selectionChanged(): TelegramHapticFeedback;
 }
 
+export interface TelegramBiometricManager {
+  isInited: boolean;
+  isBiometricAvailable: boolean;
+  isAccessGranted: boolean;
+  isBiometricTokenSaved: boolean;
+  init(callback?: () => void): TelegramBiometricManager;
+  requestAccess(
+    params: { reason?: string },
+    callback?: (granted: boolean) => void,
+  ): TelegramBiometricManager;
+  authenticate(
+    params: { reason?: string },
+    callback?: (success: boolean, token?: string) => void,
+  ): TelegramBiometricManager;
+  updateBiometricToken(
+    token: string,
+    callback?: (saved: boolean) => void,
+  ): TelegramBiometricManager;
+}
+
 export interface TelegramBackButton {
   isVisible: boolean;
   show(): TelegramBackButton;
@@ -77,4 +97,5 @@ export interface TelegramWebApp {
   showPopup?(params: TelegramPopupParams, callback?: (buttonId: string) => void): void;
   addToHomeScreen?(): void;
   checkHomeScreenStatus?(callback: (status: string) => void): void;
+  BiometricManager?: TelegramBiometricManager;
 }
