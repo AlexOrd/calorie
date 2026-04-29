@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { ChevronDown } from '@lucide/svelte';
   import type { ProfileInput, ActivityLevel } from '$types/profile';
 
   interface Props {
@@ -10,14 +11,17 @@
   }
   let { initial = null, submitLabel, dirtyLabel, onSubmit }: Props = $props();
 
-  // Seed the form from `initial` once on mount; subsequent prop updates
-  // shouldn't clobber the user's in-progress edits. untrack() makes that
-  // intent explicit and silences svelte/valid-compile.
   let height = $state(untrack(() => initial?.height ?? 168));
   let weight = $state(untrack(() => initial?.weight ?? 74));
   let age = $state(untrack(() => initial?.age ?? 30));
   let gender = $state<'male' | 'female'>(untrack(() => initial?.gender ?? 'female'));
   let activity = $state<ActivityLevel>(untrack(() => initial?.activity ?? 1.2));
+
+  let targetWeight = $state<number | undefined>(untrack(() => initial?.target_weight_kg));
+  let waist = $state<number | undefined>(untrack(() => initial?.waist_cm));
+  let neck = $state<number | undefined>(untrack(() => initial?.neck_cm));
+  let hip = $state<number | undefined>(untrack(() => initial?.hip_cm));
+  let advancedOpen = $state(false);
 
   const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
     { value: 1.2, label: 'Сидячий' },
@@ -36,6 +40,10 @@
     age: untrack(() => initial?.age ?? 30),
     gender: untrack(() => initial?.gender ?? 'female'),
     activity: untrack(() => initial?.activity ?? 1.2),
+    targetWeight: untrack(() => initial?.target_weight_kg),
+    waist: untrack(() => initial?.waist_cm),
+    neck: untrack(() => initial?.neck_cm),
+    hip: untrack(() => initial?.hip_cm),
   };
   let snapshot = $state({ ...initialSnapshot });
 
@@ -44,20 +52,43 @@
       weight !== snapshot.weight ||
       age !== snapshot.age ||
       gender !== snapshot.gender ||
-      activity !== snapshot.activity,
+      activity !== snapshot.activity ||
+      targetWeight !== snapshot.targetWeight ||
+      waist !== snapshot.waist ||
+      neck !== snapshot.neck ||
+      hip !== snapshot.hip,
   );
 
-  // Onboarding (no `initial`) treats every submission as dirty.
   let canSubmit = $derived(valid && (initial === null || isDirty));
 
   let saving = $state(false);
+
+  function trim(value: number | undefined): number | undefined {
+    if (value === undefined) return undefined;
+    if (!Number.isFinite(value) || value <= 0) return undefined;
+    return value;
+  }
 
   async function submit(): Promise<void> {
     if (!canSubmit || saving) return;
     saving = true;
     try {
-      await onSubmit({ height, weight, gender, age, activity });
-      snapshot = { height, weight, age, gender, activity };
+      const trimmedTarget = trim(targetWeight);
+      const trimmedWaist = trim(waist);
+      const trimmedNeck = trim(neck);
+      const trimmedHip = gender === 'female' ? trim(hip) : undefined;
+      await onSubmit({
+        height,
+        weight,
+        gender,
+        age,
+        activity,
+        ...(trimmedTarget !== undefined ? { target_weight_kg: trimmedTarget } : {}),
+        ...(trimmedWaist !== undefined ? { waist_cm: trimmedWaist } : {}),
+        ...(trimmedNeck !== undefined ? { neck_cm: trimmedNeck } : {}),
+        ...(trimmedHip !== undefined ? { hip_cm: trimmedHip } : {}),
+      });
+      snapshot = { height, weight, age, gender, activity, targetWeight, waist, neck, hip };
     } finally {
       saving = false;
     }
@@ -97,6 +128,21 @@
       max="250"
       step="0.1"
       bind:value={weight}
+    />
+  </label>
+
+  <label class="text-muted flex flex-col gap-2 text-sm">
+    Цільова вага, кг (необов'язково)
+    <input
+      type="number"
+      inputmode="decimal"
+      enterkeyhint="next"
+      autocomplete="off"
+      class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-4 py-4 text-lg focus:ring-2 focus:outline-none"
+      min="30"
+      max="250"
+      step="0.1"
+      bind:value={targetWeight}
     />
   </label>
 
@@ -156,6 +202,61 @@
       {/each}
     </div>
   </fieldset>
+
+  <details class="border-border bg-surface group rounded-lg border" bind:open={advancedOpen}>
+    <summary
+      class="text-muted hover:text-fg flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm font-semibold tracking-wide uppercase select-none"
+    >
+      <ChevronDown size={14} class="transition-transform group-open:rotate-180" />
+      Антропометрія
+    </summary>
+    <div class="flex flex-col gap-4 px-4 pb-4 text-sm">
+      <p class="text-muted text-xs">
+        Заповни талію, шию (та стегна, якщо стать ♀), щоб побачити % жиру за US Navy.
+      </p>
+      <label class="text-muted flex flex-col gap-1.5">
+        Талія, см
+        <input
+          type="number"
+          inputmode="decimal"
+          autocomplete="off"
+          class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+          min="40"
+          max="200"
+          step="0.5"
+          bind:value={waist}
+        />
+      </label>
+      <label class="text-muted flex flex-col gap-1.5">
+        Шия, см
+        <input
+          type="number"
+          inputmode="decimal"
+          autocomplete="off"
+          class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+          min="20"
+          max="80"
+          step="0.5"
+          bind:value={neck}
+        />
+      </label>
+      {#if gender === 'female'}
+        <label class="text-muted flex flex-col gap-1.5">
+          Стегна, см
+          <input
+            type="number"
+            inputmode="decimal"
+            autocomplete="off"
+            class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 rounded-lg border px-3 py-2 focus:ring-2 focus:outline-none"
+            min="60"
+            max="200"
+            step="0.5"
+            bind:value={hip}
+          />
+        </label>
+      {/if}
+    </div>
+  </details>
 
   <button
     type="submit"
