@@ -21,6 +21,7 @@
   type HydrationVerdict = HydrationState | 'none';
 
   const DAYS = 90;
+  const STRIP_DAYS = 13;
 
   const BALANCE_COLOR: Record<BalanceVerdict, string> = {
     none: 'var(--color-border)',
@@ -155,7 +156,7 @@
   let verdictCells = $derived.by<{ key: string; verdict: DayVerdict }[]>(() => {
     const today = todayKey();
     const out: { key: string; verdict: DayVerdict }[] = [];
-    for (let i = DAYS - 1; i >= 0; i--) {
+    for (let i = STRIP_DAYS - 1; i >= 0; i--) {
       const d = addDays(today, -i);
       out.push({ key: d, verdict: verdictByKey[d] ?? 0 });
     }
@@ -165,7 +166,7 @@
   let hydrationCells = $derived.by<{ key: string; hydration: HydrationVerdict }[]>(() => {
     const today = todayKey();
     const out: { key: string; hydration: HydrationVerdict }[] = [];
-    for (let i = DAYS - 1; i >= 0; i--) {
+    for (let i = STRIP_DAYS - 1; i >= 0; i--) {
       const d = addDays(today, -i);
       out.push({ key: d, hydration: hydrationByKey[d] ?? 'none' });
     }
@@ -202,13 +203,15 @@
       </div>
     </div>
 
-    <!-- Section 2: Categories strip -->
+    <!-- Section 2: Categories strip (last 13 days) -->
     <div class="flex flex-col gap-1.5">
-      <h4 class="text-muted text-[11px] font-semibold tracking-wider uppercase">Категорії</h4>
-      <div class="flex gap-1 overflow-x-auto pb-1">
+      <h4 class="text-muted text-[11px] font-semibold tracking-wider uppercase">
+        Категорії · {STRIP_DAYS} днів
+      </h4>
+      <div class="grid grid-cols-[repeat(13,minmax(0,1fr))] gap-1">
         {#each verdictCells as cell (cell.key)}
           <div
-            class="h-3 w-3 shrink-0 rounded-sm transition-colors"
+            class="aspect-square rounded-sm transition-colors"
             style="background: {VERDICT_COLOR[cell.verdict]};"
             title="{cell.key}: {VERDICT_LABEL[cell.verdict]}"
           ></div>
@@ -224,13 +227,15 @@
       </div>
     </div>
 
-    <!-- Section 3: Hydration strip -->
+    <!-- Section 3: Hydration strip (last 13 days) -->
     <div class="flex flex-col gap-1.5">
-      <h4 class="text-muted text-[11px] font-semibold tracking-wider uppercase">Гідрація</h4>
-      <div class="flex gap-1 overflow-x-auto pb-1">
+      <h4 class="text-muted text-[11px] font-semibold tracking-wider uppercase">
+        Гідрація · {STRIP_DAYS} днів
+      </h4>
+      <div class="grid grid-cols-[repeat(13,minmax(0,1fr))] gap-1">
         {#each hydrationCells as cell (cell.key)}
           <div
-            class="h-3 w-3 shrink-0 rounded-sm transition-colors"
+            class="aspect-square rounded-sm transition-colors"
             style="background: {HYDRATION_COLOR[cell.hydration]};"
             title="{cell.key}: {HYDRATION_LABEL[cell.hydration]}"
           ></div>
