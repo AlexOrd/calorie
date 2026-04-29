@@ -76,22 +76,18 @@
   {#if loaded}
     <svg viewBox="0 0 {W} {H}" class="h-auto w-full" role="img" aria-label="7-day bar chart">
       <!-- y-axis line -->
-      <line x1={PAD_L} y1={PAD_T} x2={PAD_L} y2={H - PAD_B} stroke="rgba(255,255,255,0.15)" />
+      <line x1={PAD_L} y1={PAD_T} x2={PAD_L} y2={H - PAD_B} stroke="var(--color-border)" />
       <!-- 100% reference line -->
       <line
         x1={PAD_L}
         y1={yHundred}
         x2={W - PAD_R}
         y2={yHundred}
-        stroke="rgba(255,255,255,0.25)"
+        stroke="var(--color-border-strong)"
         stroke-dasharray="3 3"
       />
-      <text
-        x={PAD_L - 4}
-        y={yHundred + 3}
-        text-anchor="end"
-        font-size="9"
-        fill="rgba(255,255,255,0.5)">100</text
+      <text x={PAD_L - 4} y={yHundred + 3} text-anchor="end" font-size="9" fill="var(--color-muted)"
+        >100</text
       >
 
       {#each series as point, i (point.label)}
@@ -109,7 +105,7 @@
           y={H - PAD_B + 12}
           text-anchor="middle"
           font-size="9"
-          fill="rgba(255,255,255,0.5)"
+          fill="var(--color-muted)"
         >
           {point.label}
         </text>
@@ -118,7 +114,7 @@
           y={barY(point.value) - 3}
           text-anchor="middle"
           font-size="9"
-          fill="rgba(255,255,255,0.7)"
+          fill="var(--color-fg)"
         >
           {point.value}
         </text>

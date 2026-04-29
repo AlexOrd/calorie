@@ -22,7 +22,7 @@
   type HydrationVerdict = 'none' | HydrationState;
 
   const VERDICT_COLOR: Record<DayVerdict, string> = {
-    0: 'rgba(255,255,255,0.06)',
+    0: 'var(--color-border)',
     1: '#86efac',
     2: '#fbbf24',
     3: '#ef4444',
@@ -36,7 +36,7 @@
   const LEGEND_VERDICTS: DayVerdict[] = [1, 2, 3];
 
   const BALANCE_COLOR: Record<BalanceVerdict, string> = {
-    none: 'rgba(255,255,255,0.06)',
+    none: 'var(--color-border)',
     deficit: 'var(--color-accent)',
     balanced: 'var(--color-muted)',
     surplus: 'var(--color-warn)',
@@ -50,7 +50,7 @@
   const LEGEND_BALANCES: BalanceVerdict[] = ['deficit', 'balanced', 'surplus'];
 
   const HYDRATION_COLOR: Record<HydrationVerdict, string> = {
-    none: 'rgba(255,255,255,0.06)',
+    none: 'var(--color-border)',
     deficit: '#ef4444',
     balanced: '#86efac',
     surplus: '#60a5fa',
