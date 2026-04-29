@@ -38,23 +38,23 @@
 
   const VERDICT_COLOR: Record<DayVerdict, string> = {
     0: 'var(--color-border)',
-    1: '#86efac',
-    2: '#fbbf24',
-    3: '#ef4444',
+    1: 'var(--color-ok)',
+    2: 'var(--color-warn)',
+    3: 'var(--color-danger)',
   };
   const VERDICT_LABEL: Record<DayVerdict, string> = {
     0: 'Без даних',
     1: 'У межах норм',
     2: '1–2 перевищення',
-    3: '3+ перевищення',
+    3: '3+ перевищень',
   };
   const LEGEND_VERDICTS: DayVerdict[] = [1, 2, 3];
 
   const HYDRATION_COLOR: Record<HydrationVerdict, string> = {
     none: 'var(--color-border)',
-    deficit: '#ef4444',
-    balanced: '#86efac',
-    surplus: '#60a5fa',
+    deficit: 'var(--color-danger)',
+    balanced: 'var(--color-ok)',
+    surplus: 'var(--color-fat)',
   };
   const HYDRATION_LABEL: Record<HydrationVerdict, string> = {
     none: 'Без даних',
@@ -173,73 +173,77 @@
   });
 </script>
 
-<div class="border-border bg-surface-2 rounded-xl border p-4">
-  <h3 class="text-fg mb-2 text-sm font-semibold">Останні {DAYS} днів</h3>
+<div class="border-border bg-surface-2 flex flex-col gap-3 rounded-xl border p-4">
+  <h3 class="text-fg text-sm font-semibold">Останні {DAYS} днів</h3>
 
   {#if loaded}
-    <!-- Hero: 90-day energy balance grid (GitHub contributions style) -->
-    <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-1">
-      {#each gridCells as cell, i (cell?.key ?? `pad-${i}`)}
-        {#if cell === null}
-          <div class="h-3 w-3"></div>
-        {:else}
+    <!-- Section 1: 90-day energy balance grid -->
+    <div class="flex flex-col gap-1.5">
+      <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-1">
+        {#each gridCells as cell, i (cell?.key ?? `pad-${i}`)}
+          {#if cell === null}
+            <div class="h-3 w-3"></div>
+          {:else}
+            <div
+              class="h-3 w-3 rounded-sm transition-colors"
+              style="background: {BALANCE_COLOR[cell.balance]};"
+              title="{cell.key}: {BALANCE_LABEL[cell.balance]}"
+            ></div>
+          {/if}
+        {/each}
+      </div>
+      <div class="text-muted flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+        {#each LEGEND_BALANCES as b (b)}
+          <span class="flex items-center gap-1">
+            <span class="h-2.5 w-2.5 rounded-sm" style="background: {BALANCE_COLOR[b]};"></span>
+            {BALANCE_LABEL[b]}
+          </span>
+        {/each}
+      </div>
+    </div>
+
+    <!-- Section 2: Categories strip -->
+    <div class="flex flex-col gap-1.5">
+      <h4 class="text-muted text-[11px] font-semibold tracking-wider uppercase">Категорії</h4>
+      <div class="flex gap-1 overflow-x-auto pb-1">
+        {#each verdictCells as cell (cell.key)}
           <div
-            class="h-3 w-3 rounded-sm transition-colors"
-            style="background: {BALANCE_COLOR[cell.balance]};"
-            title="{cell.key}: {BALANCE_LABEL[cell.balance]}"
+            class="h-3 w-3 shrink-0 rounded-sm transition-colors"
+            style="background: {VERDICT_COLOR[cell.verdict]};"
+            title="{cell.key}: {VERDICT_LABEL[cell.verdict]}"
           ></div>
-        {/if}
-      {/each}
+        {/each}
+      </div>
+      <div class="text-muted flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+        {#each LEGEND_VERDICTS as v (v)}
+          <span class="flex items-center gap-1">
+            <span class="h-2.5 w-2.5 rounded-sm" style="background: {VERDICT_COLOR[v]};"></span>
+            {VERDICT_LABEL[v]}
+          </span>
+        {/each}
+      </div>
     </div>
 
-    <!-- Categories strip -->
-    <h4 class="text-muted mt-3 mb-2 text-xs font-semibold tracking-wider uppercase">Категорії</h4>
-    <div class="flex gap-1 overflow-x-auto pb-1">
-      {#each verdictCells as cell (cell.key)}
-        <div
-          class="h-3 w-3 shrink-0 rounded-sm transition-colors"
-          style="background: {VERDICT_COLOR[cell.verdict]};"
-          title="{cell.key}: {VERDICT_LABEL[cell.verdict]}"
-        ></div>
-      {/each}
-    </div>
-
-    <!-- Hydration strip -->
-    <h4 class="text-muted mt-3 mb-2 text-xs font-semibold tracking-wider uppercase">Гідрація</h4>
-    <div class="flex gap-1 overflow-x-auto pb-1">
-      {#each hydrationCells as cell (cell.key)}
-        <div
-          class="h-3 w-3 shrink-0 rounded-sm transition-colors"
-          style="background: {HYDRATION_COLOR[cell.hydration]};"
-          title="{cell.key}: {HYDRATION_LABEL[cell.hydration]}"
-        ></div>
-      {/each}
-    </div>
-
-    <!-- Legends -->
-    <div class="text-muted mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-      {#each LEGEND_BALANCES as b (b)}
-        <span class="flex items-center gap-1">
-          <span class="h-3 w-3 rounded-sm" style="background: {BALANCE_COLOR[b]};"></span>
-          {BALANCE_LABEL[b]}
-        </span>
-      {/each}
-    </div>
-    <div class="text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-      {#each LEGEND_VERDICTS as v (v)}
-        <span class="flex items-center gap-1">
-          <span class="h-3 w-3 rounded-sm" style="background: {VERDICT_COLOR[v]};"></span>
-          {VERDICT_LABEL[v]}
-        </span>
-      {/each}
-    </div>
-    <div class="text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-      {#each LEGEND_HYDRATION as h (h)}
-        <span class="flex items-center gap-1">
-          <span class="h-3 w-3 rounded-sm" style="background: {HYDRATION_COLOR[h]};"></span>
-          {HYDRATION_LABEL[h]}
-        </span>
-      {/each}
+    <!-- Section 3: Hydration strip -->
+    <div class="flex flex-col gap-1.5">
+      <h4 class="text-muted text-[11px] font-semibold tracking-wider uppercase">Гідрація</h4>
+      <div class="flex gap-1 overflow-x-auto pb-1">
+        {#each hydrationCells as cell (cell.key)}
+          <div
+            class="h-3 w-3 shrink-0 rounded-sm transition-colors"
+            style="background: {HYDRATION_COLOR[cell.hydration]};"
+            title="{cell.key}: {HYDRATION_LABEL[cell.hydration]}"
+          ></div>
+        {/each}
+      </div>
+      <div class="text-muted flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+        {#each LEGEND_HYDRATION as h (h)}
+          <span class="flex items-center gap-1">
+            <span class="h-2.5 w-2.5 rounded-sm" style="background: {HYDRATION_COLOR[h]};"></span>
+            {HYDRATION_LABEL[h]}
+          </span>
+        {/each}
+      </div>
     </div>
   {:else}
     <p class="text-muted text-xs">Завантаження…</p>
