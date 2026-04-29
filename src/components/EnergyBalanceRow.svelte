@@ -87,19 +87,20 @@
     balance.state === 'deficit' ? TrendingDown : balance.state === 'surplus' ? TrendingUp : Equal}
 
   {#if variant === 'compact'}
-    <div class="flex flex-wrap items-center gap-2">
-      <div
-        class={[
-          'flex min-h-12 flex-1 items-center gap-3 rounded-lg border px-3 py-2 transition-colors',
-          cls.wrap,
-        ]}
-      >
-        <Icon size={20} class={cls.fg} />
-        <span class={['text-2xl font-bold tabular-nums', cls.fg]}>
+    <div class="grid grid-cols-2 gap-2">
+      <!-- Calories card -->
+      <div class={['flex flex-col gap-1.5 rounded-xl border p-3 transition-colors', cls.wrap]}>
+        <div class="flex items-center gap-1.5">
+          <Icon size={14} class={cls.fg} />
+          <span class={['text-[10px] font-semibold tracking-wider uppercase', cls.fg]}>
+            {STATE_LABEL[balance.state]}
+          </span>
+        </div>
+        <div class={['text-xl leading-tight font-bold tabular-nums', cls.fg]}>
           {fmtSigned(balance.delta)}
-        </span>
-        <span class="text-muted text-xs">ккал</span>
-        <div class="bg-surface-2/60 ml-auto flex h-1.5 w-24 overflow-hidden rounded-full">
+          <span class="text-muted text-xs font-normal">ккал</span>
+        </div>
+        <div class="bg-surface/60 mt-auto flex h-1.5 w-full overflow-hidden rounded-full">
           <div class="flex w-1/2 justify-end">
             {#if balance.delta < 0}
               <div
@@ -119,12 +120,25 @@
         </div>
       </div>
 
+      <!-- Water card -->
       {#if waterTargetMl > 0}
-        <div
-          class="bg-surface-2 border-border text-muted flex min-h-12 items-center gap-2 rounded-lg border px-3 py-2 text-sm tabular-nums"
-        >
-          <Droplet size={16} class="text-accent" />
-          {fmtLitres(waterMl)} / {fmtLitres(waterTargetMl)} л
+        <div class="bg-surface-2 border-border flex flex-col gap-1.5 rounded-xl border p-3">
+          <div class="flex items-center gap-1.5">
+            <Droplet size={14} class="text-accent" />
+            <span class="text-muted text-[10px] font-semibold tracking-wider uppercase">
+              Вода {waterPct}%
+            </span>
+          </div>
+          <div class="text-fg text-xl leading-tight font-bold tabular-nums">
+            {fmtLitres(waterMl)}
+            <span class="text-muted text-xs font-normal">/ {fmtLitres(waterTargetMl)} л</span>
+          </div>
+          <div class="bg-surface/60 mt-auto h-1.5 w-full overflow-hidden rounded-full">
+            <div
+              class="bg-accent h-full rounded-full transition-[width] duration-300"
+              style="width: {Math.min(100, waterPct)}%;"
+            ></div>
+          </div>
         </div>
       {/if}
     </div>

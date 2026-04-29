@@ -14,6 +14,8 @@ export const changelog: readonly ChangelogEntry[] = [
       { type: 'feature', text: 'BMI-показник на сторінці статистики' },
       { type: 'feature', text: 'Оновлений вигляд статистики на мобільному' },
       { type: 'feature', text: 'Підказки до формул у модальному вікні' },
+      { type: 'feature', text: 'Розбивка спалених калорій за день: BMR / кроки / тренування' },
+      { type: 'feature', text: 'Калорії та вода в одному рядку на дашборді' },
     ],
   },
 ] as const;

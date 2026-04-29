@@ -86,6 +86,18 @@
       </section>
 
       <section class="flex flex-col gap-2">
+        <h3 class="text-accent text-xs font-semibold tracking-wider uppercase">Спалено за день</h3>
+        <p class="text-fg/90 text-sm">
+          Сума трьох частин: базовий обмін (постійний, залежить від профілю), калорії від кроків
+          (залежать від ваги) та фіксовані 120 ккал за кожне тренування. Активність зсуває цю суму
+          вгору — і твій дефіцит зростає.
+        </p>
+        <code class="bg-surface-2 block rounded px-2 py-1 text-xs">
+          burn = BMR + кроки × вага × 0.0005 + тренування × 120
+        </code>
+      </section>
+
+      <section class="flex flex-col gap-2">
         <h3 class="text-accent text-xs font-semibold tracking-wider uppercase">Енергобаланс</h3>
         <p class="text-fg/90 text-sm">
           Спожито мінус спалено. Зелена зона ±100 ккал. Дефіцит → схуднення, профіцит → набір.

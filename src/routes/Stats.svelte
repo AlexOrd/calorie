@@ -2,6 +2,7 @@
   import { HelpCircle } from '@lucide/svelte';
   import DailyTotals from '../components/DailyTotals.svelte';
   import EnergyBalanceRow from '../components/EnergyBalanceRow.svelte';
+  import BurnBreakdown from '../components/BurnBreakdown.svelte';
   import Heatmap from '../components/Heatmap.svelte';
   import CategoryBarChart from '../components/CategoryBarChart.svelte';
   import StatsHelpModal from '../components/StatsHelpModal.svelte';
@@ -17,6 +18,8 @@
 
 <section class="flex flex-col gap-4 p-2 md:p-4">
   <EnergyBalanceRow variant="full" />
+
+  <BurnBreakdown />
 
   <DailyTotals />
 
