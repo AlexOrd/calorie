@@ -54,6 +54,7 @@
     "@lucide/svelte": "^1.11.0",
     "@melt-ui/svelte": "^0.86.6",
     "canvas-confetti": "^1.9.4",
+    "html-to-image": "^1.11.13",
     "localforage": "^1.10.0",
     "motion": "^12.38.0"
   }
