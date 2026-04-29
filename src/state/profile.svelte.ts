@@ -19,9 +19,6 @@ export const profile = {
     return _profile !== null;
   },
 
-  // `this: void` — methods don't use `this`; they touch module-level
-  // closures. Lets consumers pass them as references without
-  // ESLint's unbound-method warning.
   async load(this: void): Promise<void> {
     _profile = await storage.load<UserProfile | null>(KEY, null);
     _loaded = true;
@@ -33,7 +30,15 @@ export const profile = {
       ...input,
       k_factor,
       last_updated: nowIso(),
+      biometric_lock: _profile?.biometric_lock ?? false,
     };
+    _profile = next;
+    await storage.save(KEY, next);
+  },
+
+  async setBiometricLock(this: void, enabled: boolean): Promise<void> {
+    if (!_profile) return;
+    const next: UserProfile = { ..._profile, biometric_lock: enabled };
     _profile = next;
     await storage.save(KEY, next);
   },

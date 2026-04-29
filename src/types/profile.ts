@@ -8,9 +8,14 @@ export interface ProfileInput {
   gender: Gender;
   age: number;
   activity: ActivityLevel;
+  target_weight_kg?: number;
+  waist_cm?: number;
+  neck_cm?: number;
+  hip_cm?: number;
 }
 
 export interface UserProfile extends ProfileInput {
   k_factor: number;
   last_updated: string;
+  biometric_lock?: boolean;
 }
