@@ -1,6 +1,13 @@
 <script lang="ts">
-  import { NAV_ITEMS } from '$lib/nav';
+  import { NAV_ITEMS, type TabKey } from '$lib/nav';
   import { activeRoute } from '$state/route.svelte';
+  import { hapticSelection } from '$lib/haptics';
+
+  function go(key: TabKey): void {
+    if (activeRoute.value === key) return;
+    hapticSelection();
+    activeRoute.set(key);
+  }
 </script>
 
 <nav
@@ -16,7 +23,7 @@
         activeRoute.value === item.key ? 'text-accent' : 'text-muted',
       ]}
       aria-current={activeRoute.value === item.key ? 'page' : undefined}
-      onclick={() => activeRoute.set(item.key)}
+      onclick={() => go(item.key)}
     >
       <span
         class={[

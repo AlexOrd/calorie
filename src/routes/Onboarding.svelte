@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import { profile } from '$state/profile.svelte';
+  import { hapticSelection } from '$lib/haptics';
   import StepWelcome from '../components/onboarding/StepWelcome.svelte';
   import StepMeasurements from '../components/onboarding/StepMeasurements.svelte';
   import StepConfirm from '../components/onboarding/StepConfirm.svelte';
@@ -16,6 +17,7 @@
   }
 
   function back(): void {
+    hapticSelection();
     if (step === 2) step = 1;
     else if (step === 1) step = 0;
   }
@@ -29,6 +31,23 @@
     if (!input) return;
     await profile.save(input);
   }
+
+  // Wire Telegram's native BackButton (top-left chevron) to the wizard's
+  // back() function while we're past Step 0. Hide on Step 0 / unmount.
+  $effect(() => {
+    const bb = window.Telegram?.WebApp?.BackButton;
+    if (!bb) return;
+
+    if (step > 0) {
+      bb.onClick(back);
+      bb.show();
+      return () => {
+        bb.offClick(back);
+        bb.hide();
+      };
+    }
+    bb.hide();
+  });
 </script>
 
 <section class="h-dvh overflow-y-auto overscroll-contain" style="scroll-padding-bottom: 16rem;">

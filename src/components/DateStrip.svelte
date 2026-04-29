@@ -2,6 +2,7 @@
   import { activeDate } from '$state/activeDate.svelte';
   import { addDays, dateFromKey, todayKey } from '$lib/date';
   import { activeRoute } from '$state/route.svelte';
+  import { hapticSelection } from '$lib/haptics';
 
   interface Props {
     compact?: boolean;
@@ -67,6 +68,7 @@
               : 'text-muted',
         ]}
         onclick={() => {
+          if (activeDate.value !== key) hapticSelection();
           activeDate.set(key);
           activeRoute.set('dashboard');
         }}

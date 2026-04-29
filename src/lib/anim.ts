@@ -1,5 +1,6 @@
 import { animate } from 'motion';
 import confetti from 'canvas-confetti';
+import { hapticImpact, hapticNotify } from '$lib/haptics';
 
 function getCSSVar(name: string): string {
   if (typeof document === 'undefined') return '';
@@ -11,12 +12,18 @@ function reducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+// Haptics fire regardless of prefers-reduced-motion — they are non-visual
+// and often serve as accessibility GAINS (replacing visual cues for users
+// who reduce visual motion). Reduced motion gates only the visual animate().
+
 export function pulseSuccess(el: HTMLElement): void {
+  hapticImpact('light');
   if (reducedMotion()) return;
   void animate(el, { scale: [1, 1.04, 1] }, { duration: 0.35, ease: 'easeOut' });
 }
 
 export function pulseWarning(el: HTMLElement): void {
+  hapticNotify('warning');
   if (reducedMotion()) return;
   void animate(
     el,
@@ -33,6 +40,7 @@ export function pulseWarning(el: HTMLElement): void {
 }
 
 export function celebrate(el: HTMLElement): void {
+  hapticNotify('success');
   if (reducedMotion()) return;
   void animate(
     el,
@@ -49,6 +57,7 @@ export function celebrate(el: HTMLElement): void {
 }
 
 export function shakeWarning(el: HTMLElement): void {
+  hapticNotify('warning');
   if (reducedMotion()) return;
   void animate(el, { x: [0, -6, 6, -4, 4, 0] }, { duration: 0.45, ease: 'easeOut' });
   void animate(
@@ -65,6 +74,7 @@ export function shakeWarning(el: HTMLElement): void {
 }
 
 export function burstConfetti(originEl: HTMLElement): void {
+  hapticNotify('success');
   const rect = originEl.getBoundingClientRect();
   if (rect.width === 0 || rect.height === 0) return;
   const x = Math.min(1, Math.max(0, (rect.right - 12) / window.innerWidth));
@@ -86,6 +96,7 @@ export function burstConfetti(originEl: HTMLElement): void {
 }
 
 export function flashEdge(el: HTMLElement): void {
+  hapticImpact('medium');
   if (reducedMotion()) return;
   const accent = (getCSSVar('--accent') || '#c96442') + '66';
   void animate(

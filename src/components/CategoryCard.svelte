@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Spring } from 'svelte/motion';
   import { pulseWarning } from '$lib/anim';
+  import { hapticImpact } from '$lib/haptics';
   import { activeDate } from '$state/activeDate.svelte';
   import { macroCrossings } from '$state/macroCrossings.svelte';
   import type { CategoryKey } from '$types/food';
@@ -44,7 +45,10 @@
   bind:this={cardEl}
   type="button"
   class="border-border bg-surface-2 hover:bg-surface active:bg-surface flex min-h-20 w-full flex-col items-start justify-center gap-2.5 rounded-xl border p-5 text-left transition-colors"
-  onclick={() => onClick(categoryKey)}
+  onclick={() => {
+    hapticImpact('light');
+    onClick(categoryKey);
+  }}
 >
   <div class="flex w-full items-center justify-between gap-2">
     <span class="text-lg font-semibold">{categoryKey} — {title}</span>

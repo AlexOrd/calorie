@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Footprints, Dumbbell } from '@lucide/svelte';
   import { activity, STEP_TARGET } from '$state/activity.svelte';
+  import { hapticImpact } from '$lib/haptics';
 
   let steps = $derived(activity.value.steps);
   let stepsPct = $derived(Math.min(150, Math.round((steps / STEP_TARGET) * 100)));
@@ -76,7 +77,10 @@
               : 'border-border bg-surface text-muted hover:bg-surface-2',
           ]}
           aria-pressed={ticked}
-          onclick={() => activity.tickTraining(slot)}
+          onclick={() => {
+            hapticImpact('light');
+            activity.tickTraining(slot);
+          }}
         >
           <Dumbbell size={20} />
           <span class="mt-1 text-xs font-semibold tabular-nums">{slotNum}</span>

@@ -31,6 +31,35 @@ export interface TelegramInitDataUnsafe {
   hash?: string;
 }
 
+export type HapticImpactStyle = 'light' | 'medium' | 'heavy' | 'rigid' | 'soft';
+export type HapticNotificationType = 'error' | 'success' | 'warning';
+
+export interface TelegramHapticFeedback {
+  impactOccurred(style: HapticImpactStyle): TelegramHapticFeedback;
+  notificationOccurred(type: HapticNotificationType): TelegramHapticFeedback;
+  selectionChanged(): TelegramHapticFeedback;
+}
+
+export interface TelegramBackButton {
+  isVisible: boolean;
+  show(): TelegramBackButton;
+  hide(): TelegramBackButton;
+  onClick(callback: () => void): TelegramBackButton;
+  offClick(callback: () => void): TelegramBackButton;
+}
+
+export interface TelegramPopupButton {
+  id?: string;
+  type?: 'default' | 'ok' | 'close' | 'cancel' | 'destructive';
+  text?: string;
+}
+
+export interface TelegramPopupParams {
+  title?: string;
+  message: string;
+  buttons?: TelegramPopupButton[];
+}
+
 export interface TelegramWebApp {
   initData: string;
   initDataUnsafe: TelegramInitDataUnsafe;
@@ -39,6 +68,11 @@ export interface TelegramWebApp {
   themeParams: TelegramThemeParams;
   colorScheme: 'light' | 'dark';
   CloudStorage: TelegramCloudStorage;
+  HapticFeedback?: TelegramHapticFeedback;
+  BackButton?: TelegramBackButton;
   disableVerticalSwipes?(): void;
   onEvent?(name: string, callback: () => void): void;
+  showAlert?(message: string, callback?: () => void): void;
+  showConfirm?(message: string, callback?: (ok: boolean) => void): void;
+  showPopup?(params: TelegramPopupParams, callback?: (buttonId: string) => void): void;
 }

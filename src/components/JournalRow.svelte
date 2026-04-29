@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { Trash2, X, Check } from '@lucide/svelte';
+  import { Trash2 } from '@lucide/svelte';
   import { formatTime } from '$lib/date';
+  import { confirmAsync } from '$lib/dialog';
+  import { hapticImpact } from '$lib/haptics';
   import type { LogEntry } from '$types/log';
   import type { FoodItem } from '$types/food';
 
@@ -11,13 +13,14 @@
   }
   let { entry, item, onDelete }: Props = $props();
 
-  let confirming = $state(false);
-
   let unit = $derived(item.unit ?? 'г');
   let amount = $derived(Math.round((item.max_g * entry.pct) / 100));
   let time = $derived(formatTime(entry.ts));
 
-  function commitDelete(): void {
+  async function handleDelete(): Promise<void> {
+    const ok = await confirmAsync(`Видалити «${item.name}» (${amount} ${unit})?`);
+    if (!ok) return;
+    hapticImpact('medium');
     onDelete(entry.ts);
   }
 </script>
@@ -33,33 +36,12 @@
     </span>
   </div>
 
-  {#if confirming}
-    <div class="flex items-center gap-1.5">
-      <button
-        type="button"
-        class="bg-danger text-on-accent flex min-h-10 min-w-10 items-center justify-center rounded-md px-2"
-        onclick={commitDelete}
-        aria-label="Підтвердити видалення"
-      >
-        <Check size={20} />
-      </button>
-      <button
-        type="button"
-        class="text-muted border-border flex min-h-10 min-w-10 items-center justify-center rounded-md border px-2"
-        onclick={() => (confirming = false)}
-        aria-label="Скасувати"
-      >
-        <X size={20} />
-      </button>
-    </div>
-  {:else}
-    <button
-      type="button"
-      class="text-muted hover:text-danger border-border flex min-h-10 min-w-10 items-center justify-center rounded-md border px-2 transition-colors"
-      onclick={() => (confirming = true)}
-      aria-label="Видалити запис"
-    >
-      <Trash2 size={20} />
-    </button>
-  {/if}
+  <button
+    type="button"
+    class="text-muted hover:text-danger border-border flex min-h-10 min-w-10 items-center justify-center rounded-md border px-2 transition-colors"
+    onclick={() => void handleDelete()}
+    aria-label="Видалити запис"
+  >
+    <Trash2 size={20} />
+  </button>
 </li>
