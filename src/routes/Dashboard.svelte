@@ -14,6 +14,7 @@
   import CategoryCard from '../components/CategoryCard.svelte';
   import EnergyBalanceRow from '../components/EnergyBalanceRow.svelte';
   import EntrySheet from '../components/EntrySheet.svelte';
+  import InstallBanner from '../components/InstallBanner.svelte';
   import StreaksRow from '../components/StreaksRow.svelte';
   import DailySummaryCard from '../components/DailySummaryCard.svelte';
   import WhatsNewModal from '../components/WhatsNewModal.svelte';
@@ -122,6 +123,7 @@
 </script>
 
 <section class="flex flex-col gap-3 p-2 md:p-4">
+  <InstallBanner />
   <StreaksRow />
 
   <EnergyBalanceRow />
