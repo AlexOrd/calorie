@@ -2,7 +2,9 @@
 
 **Date:** 2026-04-29
 **Driver:** `reserch.md` (Scientific Validation of Anthropometric, Metabolic, and Nutritional Algorithms)
-**Status:** spec
+**Status:** **superseded** by [`2026-04-29-v0.2.0-release-design.md`](./2026-04-29-v0.2.0-release-design.md)
+
+> This spec is preserved for history only. Its contents (hydration tracking, BMI tile, Stats tips, documentation pass) were merged with a parallel changelog-system design into a single combined v0.2.0 release spec. Read the combined spec for the implementable design.
 
 ---
 
