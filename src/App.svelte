@@ -18,6 +18,7 @@
   import Stats from './routes/Stats.svelte';
   import Profile from './routes/Profile.svelte';
   import Onboarding from './routes/Onboarding.svelte';
+  import BiometricLockOverlay from './components/BiometricLockOverlay.svelte';
 
   let mainEl = $state<HTMLElement | undefined>(undefined);
 
@@ -71,4 +72,5 @@
       <BottomNav />
     </div>
   </div>
+  <BiometricLockOverlay />
 {/if}
