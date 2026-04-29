@@ -1,13 +1,18 @@
 <script lang="ts">
+  import { Sparkles } from '@lucide/svelte';
   import { profile } from '$state/profile.svelte';
+  import { changelogState } from '$state/changelog.svelte';
   import ProfileForm from '../components/ProfileForm.svelte';
   import TelegramUserHeader from '../components/TelegramUserHeader.svelte';
+  import ChangelogModal from '../components/ChangelogModal.svelte';
   import { celebrate } from '$lib/anim';
+  import { hapticSelection } from '$lib/haptics';
   import { dailyTargets } from '$lib/scaling';
   import type { ProfileInput } from '$types/profile';
 
   let targetsEl = $state<HTMLDivElement | undefined>(undefined);
   let savedAt = $state<number | null>(null);
+  let changelogOpen = $state(false);
 
   async function save(input: ProfileInput): Promise<void> {
     await profile.save(input);
@@ -25,11 +30,33 @@
     return () => clearTimeout(id);
   });
   let targets = $derived(profile.value ? dailyTargets(profile.value) : null);
+
+  async function openChangelog(): Promise<void> {
+    hapticSelection();
+    changelogOpen = true;
+    await changelogState.markSeen();
+  }
 </script>
 
 <section class="mx-auto max-w-md p-3 md:grid md:max-w-5xl md:grid-cols-2 md:gap-6 md:p-6">
   <div class="md:sticky md:top-4 md:flex md:flex-col md:gap-5 md:self-start">
-    <TelegramUserHeader />
+    <div class="flex items-center justify-between">
+      <TelegramUserHeader />
+      <button
+        type="button"
+        aria-label="Журнал змін"
+        class="text-muted hover:text-fg relative ml-2 rounded-md p-2 transition-colors"
+        onclick={openChangelog}
+      >
+        <Sparkles size={20} />
+        {#if changelogState.hasUnseenChanges}
+          <span
+            class="bg-accent absolute top-1 right-1 inline-block h-2 w-2 rounded-full"
+            aria-hidden="true"
+          ></span>
+        {/if}
+      </button>
+    </div>
 
     <div class="mb-5 flex items-baseline justify-between md:mb-0">
       <h2 class="text-xl font-semibold">Профіль</h2>
@@ -81,3 +108,5 @@
     {/if}
   </div>
 </section>
+
+<ChangelogModal open={changelogOpen} onClose={() => (changelogOpen = false)} />
