@@ -199,7 +199,7 @@
         <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {#if bmiValue !== null && bmiCls !== null}
             <div
-              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2"
+              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2 last:[&:nth-child(odd)]:col-span-2 sm:last:[&:nth-child(odd)]:col-span-1"
             >
               <ActivityIcon size={18} class={BMI_CLASS_FG[bmiCls]} />
               <div class="flex flex-col">
@@ -217,7 +217,7 @@
 
           {#if bfValue !== null}
             <div
-              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2"
+              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2 last:[&:nth-child(odd)]:col-span-2 sm:last:[&:nth-child(odd)]:col-span-1"
             >
               <ActivityIcon size={18} class="text-warn" />
               <div class="flex flex-col">
@@ -233,7 +233,7 @@
 
           {#if waterTargetMl > 0}
             <div
-              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2"
+              class="bg-surface-2 border-border flex items-center gap-2 rounded-xl border px-3 py-2 last:[&:nth-child(odd)]:col-span-2 sm:last:[&:nth-child(odd)]:col-span-1"
             >
               <Droplet size={18} class="text-accent" />
               <div class="flex min-w-0 flex-1 flex-col">
