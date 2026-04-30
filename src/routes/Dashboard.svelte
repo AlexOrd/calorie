@@ -16,7 +16,6 @@
   import EntrySheet from '../components/EntrySheet.svelte';
   import InstallBanner from '../components/InstallBanner.svelte';
   import StreaksRow from '../components/StreaksRow.svelte';
-  import DailySummaryCard from '../components/DailySummaryCard.svelte';
   import WhatsNewModal from '../components/WhatsNewModal.svelte';
   import WeeklyMilestoneModal, {
     type MilestoneBadge,
@@ -139,8 +138,6 @@
       />
     {/each}
   </div>
-
-  <DailySummaryCard />
 </section>
 
 <EntrySheet bind:open={sheetOpen} categoryKey={activeCat} />
