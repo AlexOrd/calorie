@@ -179,7 +179,7 @@
   {#if loaded}
     <!-- Section 1: 90-day energy balance grid -->
     <div class="flex flex-col gap-1.5">
-      <div class="mx-auto grid w-full max-w-[180px] grid-flow-row grid-cols-7 gap-1">
+      <div class="grid grid-flow-col grid-cols-[repeat(13,minmax(0,1fr))] grid-rows-7 gap-1">
         {#each gridCells as cell, i (cell?.key ?? `pad-${i}`)}
           {#if cell === null}
             <div class="aspect-square"></div>
