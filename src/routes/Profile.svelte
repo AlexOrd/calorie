@@ -7,7 +7,6 @@
   import TelegramUserHeader from '../components/TelegramUserHeader.svelte';
   import ChangelogModal from '../components/ChangelogModal.svelte';
   import ProjectionCard from '../components/ProjectionCard.svelte';
-  import WeightHistoryChart from '../components/WeightHistoryChart.svelte';
   import { celebrate } from '$lib/anim';
   import { hapticImpact, hapticSelection } from '$lib/haptics';
   import { dailyTargets } from '$lib/scaling';
@@ -181,7 +180,6 @@
 
     {#if profile.value}
       <ProjectionCard />
-      <WeightHistoryChart />
     {/if}
   </div>
 </section>

@@ -3,6 +3,7 @@
   import DailyTotals from '../components/DailyTotals.svelte';
   import EnergyBalanceRow from '../components/EnergyBalanceRow.svelte';
   import BurnBreakdown from '../components/BurnBreakdown.svelte';
+  import WeightHistoryChart from '../components/WeightHistoryChart.svelte';
   import Heatmap from '../components/Heatmap.svelte';
   import CategoryBarChart from '../components/CategoryBarChart.svelte';
   import StatsHelpModal from '../components/StatsHelpModal.svelte';
@@ -20,6 +21,8 @@
   <EnergyBalanceRow variant="full" />
 
   <BurnBreakdown />
+
+  <WeightHistoryChart />
 
   <DailyTotals />
 
