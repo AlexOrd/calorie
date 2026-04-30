@@ -10,26 +10,53 @@ The food catalog (per-item macros, max grams, units) lives separately in [`food-
 
 **Plain language.** Roughly how many calories the body burns at complete rest over 24 h — the floor of energy expenditure. The standard "you'd burn this much lying still all day" figure.
 
+The app uses two formulas and switches between them automatically:
+
+- **Katch–McArdle** when the profile has waist + neck (♀ also hip) — these let the app compute body fat % via the US Navy formula and from there derive lean body mass, which is a stronger signal than weight alone.
+- **Mifflin-St Jeor** otherwise — the standard ACSM-recommended formula for adults; used as the fallback whenever body fat can't be derived.
+
+The active formula for the current profile is reported in the Stats → "Як рахуються показники" modal so the user always knows which one drives their numbers.
+
 **Code.**
 
 ```ts
-function bmr(p: ProfileInput): number {
+export function bmrMifflin(p: ProfileInput): number {
   const base = 10 * p.weight + 6.25 * p.height - 5 * p.age;
   return p.gender === 'male' ? base + 5 : base - 161;
 }
+
+export function bmrKatch(weightKg: number, bfPct: number): number {
+  const lbm = weightKg * (1 - bfPct / 100);
+  return 370 + 21.6 * lbm;
+}
+
+export function bmr(p: ProfileInput): number {
+  const bf = profileBodyFat(p); // null if waist/neck (or hip ♀) missing
+  if (bf !== null) return bmrKatch(p.weight, bf);
+  return bmrMifflin(p);
+}
 ```
 
-**Math.** Mifflin-St Jeor:
+**Math.**
 
 ```
-BMR = 10·W + 6.25·H − 5·A + s
+Mifflin: BMR = 10·W + 6.25·H − 5·A + s
   W = weight (kg), H = height (cm), A = age (years)
   s = +5 for males, −161 for females
+
+Katch:   BMR = 370 + 21.6 × LBM
+  LBM (lean body mass) = W × (1 − BF/100)
+  BF derived from US Navy circumference formula (see Body Fat below)
 ```
 
-**Source.** Mifflin MD, St Jeor ST, et al. _A new predictive equation for resting energy expenditure in healthy individuals._ Am J Clin Nutr 1990; 51(2):241–7. Standard ACSM-recommended formula for adults.
+**Behavioural note.** A user who fills in waist + neck (+ hip ♀) and saves their profile will switch from Mifflin to Katch on the next save. Their kcal target shifts accordingly (typically a few percent for healthy-range body composition). The k-factor _denominator_ uses Mifflin (BASELINE has no circumferences), so existing k-factor stays comparable across users — only the numerator shifts.
 
-**Used in.** `src/lib/energy.ts` (public), `src/lib/scaling.ts` (private, for TDEE).
+**Sources.**
+
+- Mifflin MD, St Jeor ST, et al. _A new predictive equation for resting energy expenditure in healthy individuals._ Am J Clin Nutr 1990; 51(2):241–7.
+- Katch FI, McArdle WD. _Nutrition, Weight Control, and Exercise._ Lea & Febiger, 1977. Equation refined in subsequent editions; widely used when body composition is known.
+
+**Used in.** `src/lib/energy.ts` (single source of truth — `bmrMifflin`, `bmrKatch`, and the resolving `bmr` are exported). `src/lib/scaling.ts` imports `bmr` from there for TDEE, k-factor, and macro targets.
 
 ---
 
@@ -59,7 +86,7 @@ activity_factor:
 
 **Source.** Harris-Benedict / Katch-McArdle activity multipliers, widely accepted in nutrition apps. Values originated in Harris JA, Benedict FG (1919) and refined in Mifflin et al. (1990).
 
-**Used in.** `src/lib/scaling.ts` (private, only used to derive macro targets and `k_factor`).
+**Used in.** `src/lib/scaling.ts` (private — only used to derive macro targets and `k_factor`; the `bmr` it consumes comes from `src/lib/energy.ts`).
 
 ---
 
