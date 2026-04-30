@@ -143,13 +143,12 @@
     const today = todayKey();
     const dates: string[] = [];
     for (let i = DAYS - 1; i >= 0; i--) dates.push(addDays(today, -i));
-    const firstKey = dates[0] ?? today;
-    const firstDow = (dateFromKey(firstKey).getDay() + 6) % 7;
     const out: (Cell | null)[] = [];
-    for (let i = 0; i < firstDow; i++) out.push(null);
     for (const d of dates) {
       out.push({ key: d, balance: balanceByKey[d] ?? 'none' });
     }
+    const trailingPad = (7 - (dates.length % 7)) % 7;
+    for (let i = 0; i < trailingPad; i++) out.push(null);
     return out;
   });
 
@@ -180,15 +179,21 @@
   {#if loaded}
     <!-- Section 1: 90-day energy balance grid -->
     <div class="flex flex-col gap-1.5">
-      <div class="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-1">
+      <div class="grid grid-flow-row grid-cols-7 gap-1">
         {#each gridCells as cell, i (cell?.key ?? `pad-${i}`)}
           {#if cell === null}
-            <div class="h-3 w-3"></div>
+            <div class="aspect-square"></div>
           {:else}
+            {@const isFirstOfMonth = dateFromKey(cell.key).getDate() === 1}
             <div
-              class="h-3 w-3 rounded-sm transition-colors"
+              class={[
+                'aspect-square rounded-sm transition-colors',
+                isFirstOfMonth && 'ring-fg/40 ring-1 ring-inset',
+              ]}
               style="background: {BALANCE_COLOR[cell.balance]};"
-              title="{cell.key}: {BALANCE_LABEL[cell.balance]}"
+              title={isFirstOfMonth
+                ? `${cell.key} (1-е) — ${BALANCE_LABEL[cell.balance]}`
+                : `${cell.key}: ${BALANCE_LABEL[cell.balance]}`}
             ></div>
           {/if}
         {/each}
