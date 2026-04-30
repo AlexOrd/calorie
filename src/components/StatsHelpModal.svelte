@@ -210,13 +210,13 @@
         </p>
         <ul class="text-fg/90 ml-4 list-none space-y-1 text-sm">
           <li class="flex items-center gap-2">
-            {@render swatch('danger')}<span>Нестача — менше цілі</span>
+            {@render swatch('danger')}<span>Нестача — менше 70 % цілі</span>
           </li>
           <li class="flex items-center gap-2">
-            {@render swatch('ok')}<span>Норма — від цілі до подвійної</span>
+            {@render swatch('ok')}<span>Норма — 70–120 % цілі</span>
           </li>
           <li class="flex items-center gap-2">
-            {@render swatch('fat')}<span>Понад норму — більше подвійної</span>
+            {@render swatch('fat')}<span>Понад норму — більше 120 %</span>
           </li>
         </ul>
       {/snippet}
