@@ -65,10 +65,14 @@
     changelogOpen = true;
     await changelogState.markSeen();
   }
+
+  let showActionsCard = $derived(profile.value !== null);
 </script>
 
-<section class="mx-auto max-w-md p-3 md:grid md:max-w-5xl md:grid-cols-2 md:gap-6 md:p-6">
-  <div class="md:sticky md:top-4 md:flex md:flex-col md:gap-5 md:self-start">
+<section
+  class="mx-auto flex max-w-md flex-col gap-4 p-3 md:grid md:max-w-5xl md:grid-cols-2 md:gap-6 md:p-6"
+>
+  <div class="flex flex-col gap-4 md:sticky md:top-4 md:gap-5 md:self-start">
     <div class="flex items-center justify-between">
       <TelegramUserHeader />
       <button
@@ -87,86 +91,104 @@
       </button>
     </div>
 
-    <div class="mb-5 flex items-baseline justify-between md:mb-0">
+    <div class="flex items-baseline justify-between">
       <h2 class="text-xl font-semibold">Профіль</h2>
-      {#if profile.value}
-        <span class="text-muted text-sm tabular-nums">k = {profile.value.k_factor.toFixed(2)}</span>
-      {/if}
     </div>
 
     {#if targets}
       <div
         bind:this={targetsEl}
-        class="border-border bg-surface mb-5 grid grid-cols-4 gap-2 rounded-lg border p-3 text-center md:mb-0"
+        class="border-border bg-surface flex flex-col gap-2 rounded-lg border p-3"
       >
-        <div>
-          <div class="text-accent text-lg font-semibold tabular-nums">{targets.kcal}</div>
-          <div class="text-muted text-[11px]">ккал</div>
+        <div class="flex items-baseline justify-between">
+          <h3 class="text-fg text-sm font-semibold">Денні цілі</h3>
+          {#if profile.value}
+            <span class="text-muted text-xs tabular-nums"
+              >k = {profile.value.k_factor.toFixed(2)}</span
+            >
+          {/if}
         </div>
-        <div>
-          <div class="text-fg text-lg font-semibold tabular-nums">{targets.protein}</div>
-          <div class="text-muted text-[11px]">білок, г</div>
-        </div>
-        <div>
-          <div class="text-fg text-lg font-semibold tabular-nums">{targets.carbs}</div>
-          <div class="text-muted text-[11px]">вугл., г</div>
-        </div>
-        <div>
-          <div class="text-fg text-lg font-semibold tabular-nums">{targets.fat}</div>
-          <div class="text-muted text-[11px]">жири, г</div>
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div>
+            <div class="text-accent text-lg font-semibold tabular-nums">{targets.kcal}</div>
+            <div class="text-muted text-[11px]">ккал</div>
+          </div>
+          <div>
+            <div class="text-fg text-lg font-semibold tabular-nums">{targets.protein}</div>
+            <div class="text-muted text-[11px]">білок, г</div>
+          </div>
+          <div>
+            <div class="text-fg text-lg font-semibold tabular-nums">{targets.carbs}</div>
+            <div class="text-muted text-[11px]">вугл., г</div>
+          </div>
+          <div>
+            <div class="text-fg text-lg font-semibold tabular-nums">{targets.fat}</div>
+            <div class="text-muted text-[11px]">жири, г</div>
+          </div>
         </div>
       </div>
     {/if}
 
-    <button
-      type="button"
-      class="border-border bg-surface text-fg hover:bg-surface-2 mb-4 inline-flex items-center justify-center gap-1.5 self-start rounded-lg border px-3 py-2 text-sm font-semibold transition-colors md:mb-0"
-      onclick={() => {
-        hapticImpact('light');
-        if (profile.value) void weightLog.setToday(profile.value.weight);
-      }}
-    >
-      <Plus size={14} />
-      Зафіксувати вагу сьогодні
-      {#if weightLog.today !== null}
-        <span class="text-muted text-xs tabular-nums">· {weightLog.today.toFixed(1)} кг</span>
-      {/if}
-    </button>
-
-    {#if bioSupported && profile.value}
-      <button
-        type="button"
-        class={[
-          'mb-4 inline-flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm transition-colors md:mb-0',
-          profile.value.biometric_lock
-            ? 'border-accent bg-accent/10 text-accent'
-            : 'border-border bg-surface text-fg',
-        ]}
-        disabled={bioPending}
-        onclick={() => void toggleBio()}
+    {#if showActionsCard}
+      <div
+        class="border-border bg-surface-2 divide-border flex flex-col divide-y rounded-xl border"
       >
-        <span class="flex items-center gap-2">
-          <Fingerprint size={14} />
-          Захист Face ID / Touch ID
-        </span>
-        <span class="text-xs">
-          {#if bioPending}
-            …
-          {:else if profile.value.biometric_lock}
-            ON
-          {:else}
-            OFF
-          {/if}
-        </span>
-      </button>
+        {#if profile.value}
+          <button
+            type="button"
+            class="text-fg hover:bg-surface flex w-full items-center gap-2 px-3 py-3 text-sm font-semibold transition-colors"
+            onclick={() => {
+              hapticImpact('light');
+              if (profile.value) void weightLog.setToday(profile.value.weight);
+            }}
+          >
+            <Plus size={14} class="shrink-0" />
+            <span>Зафіксувати вагу сьогодні</span>
+            {#if weightLog.today !== null}
+              <span class="text-muted ml-auto text-xs tabular-nums"
+                >{weightLog.today.toFixed(1)} кг</span
+              >
+            {/if}
+          </button>
+        {/if}
+
+        {#if bioSupported && profile.value}
+          <button
+            type="button"
+            class={[
+              'flex w-full items-center justify-between gap-2 px-3 py-3 text-sm transition-colors',
+              profile.value.biometric_lock
+                ? 'text-accent bg-accent/10'
+                : 'text-fg hover:bg-surface',
+            ]}
+            disabled={bioPending}
+            onclick={() => void toggleBio()}
+          >
+            <span class="flex items-center gap-2">
+              <Fingerprint size={14} class="shrink-0" />
+              Захист Face ID / Touch ID
+            </span>
+            <span class="text-xs">
+              {#if bioPending}
+                …
+              {:else if profile.value.biometric_lock}
+                ON
+              {:else}
+                OFF
+              {/if}
+            </span>
+          </button>
+        {/if}
+      </div>
     {/if}
-    <p class="text-muted mb-4 text-sm md:mb-0">
+
+    <p class="text-muted text-sm">
       Зміна параметрів перерахує норми для всіх майбутніх днів. Існуючі записи журналу не
       змінюються.
     </p>
   </div>
 
-  <div class="md:flex md:flex-col md:gap-5">
+  <div class="flex flex-col gap-4 md:gap-5">
     <ProfileForm
       initial={profile.value}
       submitLabel="Зберегти"
@@ -175,7 +197,7 @@
     />
 
     {#if savedRecently}
-      <p class="text-ok mt-3 text-center text-sm">Цілі оновлено за новим профілем</p>
+      <p class="text-ok text-center text-sm">Цілі оновлено за новим профілем</p>
     {/if}
 
     {#if profile.value}
