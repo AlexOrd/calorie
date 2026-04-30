@@ -33,9 +33,12 @@ function migrate(raw: LegacyActivity | null): DayActivity {
 
 let _activity = $state<DayActivity>({ ...EMPTY });
 let _date = $state<string>('');
+let _loadedFor = $state<string>('');
 
-const persist = debounce(() => {
-  void storage.save(`activity_${_date}`, _activity);
+// Persist captures (date, value) at queue time so a date switch between
+// queue and fire can't write the previous day's data into the new day's key.
+const persist = debounce((date: string, value: DayActivity) => {
+  void storage.save(`activity_${date}`, value);
 }, 500);
 
 export const activity = {
@@ -45,21 +48,28 @@ export const activity = {
   get date(): string {
     return _date;
   },
+  // True iff `_activity` reflects storage for the currently active date.
+  // App.svelte gates UI on this so writes can't race with a pending load.
+  get isReady(): boolean {
+    return _loadedFor !== '' && _loadedFor === _date;
+  },
 
   async load(this: void, date: string): Promise<void> {
     _date = date;
     const raw = await storage.load<LegacyActivity | null>(`activity_${date}`, null);
+    if (_date !== date) return;
     _activity = migrate(raw);
+    _loadedFor = date;
   },
 
   setSteps(this: void, steps: number): void {
     _activity = { ..._activity, steps: Math.max(0, Math.round(steps)) };
-    persist();
+    persist(_date, _activity);
   },
 
   setTrainings(this: void, trainings: 0 | 1 | 2 | 3): void {
     _activity = { ..._activity, trainings };
-    persist();
+    persist(_date, _activity);
   },
 
   tickTraining(this: void, slot: 0 | 1 | 2): void {
@@ -77,18 +87,18 @@ export const activity = {
         break;
     }
     _activity = { ..._activity, trainings: next };
-    persist();
+    persist(_date, _activity);
   },
 
   setWater(this: void, ml: number): void {
     _activity = { ..._activity, waterMl: Math.max(0, Math.round(ml)) };
-    persist();
+    persist(_date, _activity);
   },
 
   addWater(this: void, deltaMl: number): void {
     const next = Math.max(0, Math.round(_activity.waterMl + deltaMl));
     _activity = { ..._activity, waterMl: next };
-    persist();
+    persist(_date, _activity);
   },
 };
 

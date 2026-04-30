@@ -2,6 +2,16 @@ import type { ChangelogEntry } from '$types/changelog';
 
 export const changelog: readonly ChangelogEntry[] = [
   {
+    version: '0.4.1',
+    date: '2026-04-30',
+    items: [
+      {
+        type: 'fix',
+        text: 'Журнал: усунено гонку між завантаженням даних і записом — раніше додавання після обіду могло перетертися старим станом дня',
+      },
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2026-04-30',
     items: [

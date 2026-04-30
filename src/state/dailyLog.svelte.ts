@@ -8,10 +8,13 @@ const QUOTA_BYTES = 3800;
 
 let _entries = $state<LogEntry[]>([]);
 let _date = $state<string>('');
+let _loadedFor = $state<string>('');
 let _quotaWarning = $state(false);
 
-const persist = debounce(() => {
-  void storage.save(`log_${_date}`, _entries);
+// Persist captures (date, entries) at queue time so a date switch between
+// queue and fire can't write the previous day's data into the new day's key.
+const persist = debounce((date: string, entries: LogEntry[]) => {
+  void storage.save(`log_${date}`, entries);
 }, 500);
 
 function checkQuota(): void {
@@ -28,6 +31,12 @@ export const dailyLog = {
   get quotaWarning(): boolean {
     return _quotaWarning;
   },
+  // True iff `_entries` reflects storage for the currently active date.
+  // Consumers (App.svelte) gate user interaction on this so writes can't
+  // race with a pending async load and get overwritten on resolution.
+  get isReady(): boolean {
+    return _loadedFor !== '' && _loadedFor === _date;
+  },
 
   // `this: void` — these methods don't use `this`; they read/write
   // module-level closures. Marking them lets consumers pass them as
@@ -35,20 +44,25 @@ export const dailyLog = {
   // unbound-method warning.
   async load(this: void, date: string): Promise<void> {
     _date = date;
-    _entries = await storage.load<LogEntry[]>(`log_${date}`, []);
+    const data = await storage.load<LogEntry[]>(`log_${date}`, []);
+    // If the active date changed during the await (rapid date switch),
+    // a later load call has authority — discard this stale result.
+    if (_date !== date) return;
+    _entries = data;
+    _loadedFor = date;
     checkQuota();
   },
 
   add(this: void, entry: Omit<LogEntry, 'ts'>): void {
     _entries = [..._entries, { ...entry, ts: Date.now() }];
     checkQuota();
-    persist();
+    persist(_date, _entries);
   },
 
   remove(this: void, ts: number): void {
     _entries = _entries.filter((e) => e.ts !== ts);
     checkQuota();
-    persist();
+    persist(_date, _entries);
   },
 
   /**
@@ -60,7 +74,7 @@ export const dailyLog = {
     const filtered = _entries.filter((e) => !(e.id === id && e.cat === cat));
     _entries = [...filtered, { id, cat, pct, ts: Date.now() }];
     checkQuota();
-    persist();
+    persist(_date, _entries);
   },
 };
 

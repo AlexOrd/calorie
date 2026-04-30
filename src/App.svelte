@@ -46,6 +46,13 @@
     void activeRoute.value;
     mainEl?.scrollTo({ top: 0, behavior: 'instant' });
   });
+
+  // True only when storage for the active date is fully loaded. Gates the
+  // routes so user writes can't race with an in-flight load and get
+  // overwritten when storage resolves (boot race + date-switch race).
+  let dataReady = $derived(
+    dailyLog.isReady && activity.isReady && macroCrossings.isLoaded(activeDate.value),
+  );
 </script>
 
 {#if !profile.loaded || !changelogState.isLoaded}
@@ -63,11 +70,15 @@
         class="scroll-region mx-auto w-full max-w-6xl flex-1 overflow-x-clip overflow-y-auto overscroll-contain px-2 md:px-6 md:py-6"
         style="scroll-padding-bottom: 16rem;"
       >
-        <div class:hidden={activeRoute.value !== 'dashboard'}><Dashboard /></div>
-        <div class:hidden={activeRoute.value !== 'journal'}><Journal /></div>
-        <div class:hidden={activeRoute.value !== 'activity'}><Activity /></div>
-        <div class:hidden={activeRoute.value !== 'stats'}><Stats /></div>
-        <div class:hidden={activeRoute.value !== 'profile'}><Profile /></div>
+        {#if !dataReady}
+          <div class="text-muted flex h-full items-center justify-center">Завантаження…</div>
+        {:else}
+          <div class:hidden={activeRoute.value !== 'dashboard'}><Dashboard /></div>
+          <div class:hidden={activeRoute.value !== 'journal'}><Journal /></div>
+          <div class:hidden={activeRoute.value !== 'activity'}><Activity /></div>
+          <div class:hidden={activeRoute.value !== 'stats'}><Stats /></div>
+          <div class:hidden={activeRoute.value !== 'profile'}><Profile /></div>
+        {/if}
       </main>
       <BottomNav />
     </div>
