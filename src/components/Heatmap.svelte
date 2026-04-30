@@ -179,15 +179,15 @@
   {#if loaded}
     <!-- Section 1: 90-day energy balance grid -->
     <div class="flex flex-col gap-1.5">
-      <div class="grid grid-flow-row grid-cols-7 gap-1">
+      <div class="grid grid-flow-row grid-cols-[repeat(7,12px)] gap-1">
         {#each gridCells as cell, i (cell?.key ?? `pad-${i}`)}
           {#if cell === null}
-            <div class="aspect-square"></div>
+            <div class="h-3 w-3"></div>
           {:else}
             {@const isFirstOfMonth = dateFromKey(cell.key).getDate() === 1}
             <div
               class={[
-                'aspect-square rounded-sm transition-colors',
+                'h-3 w-3 rounded-sm transition-colors',
                 isFirstOfMonth && 'ring-fg/40 ring-1 ring-inset',
               ]}
               style="background: {BALANCE_COLOR[cell.balance]};"

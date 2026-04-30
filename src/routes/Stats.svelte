@@ -22,14 +22,14 @@
 
   <BurnBreakdown />
 
-  <WeightHistoryChart />
-
   <DailyTotals />
 
   <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
     <Heatmap />
     <CategoryBarChart />
   </div>
+
+  <WeightHistoryChart />
 
   <div class="flex flex-col items-center gap-2 pt-2">
     <button
