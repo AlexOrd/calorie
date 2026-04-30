@@ -1,5 +1,6 @@
 import type { FoodDb, Macros } from '$types/food';
 import type { ProfileInput } from '$types/profile';
+import { bmr } from '$lib/energy';
 
 const BASELINE: ProfileInput = {
   height: 168,
@@ -11,11 +12,6 @@ const BASELINE: ProfileInput = {
 
 const K_MIN = 0.6;
 const K_MAX = 1.6;
-
-function bmr(p: ProfileInput): number {
-  const base = 10 * p.weight + 6.25 * p.height - 5 * p.age;
-  return p.gender === 'male' ? base + 5 : base - 161;
-}
 
 function tdee(p: ProfileInput): number {
   return bmr(p) * p.activity;
@@ -29,7 +25,8 @@ export function computeKFactor(p: ProfileInput): number {
 
 /**
  * Recommended daily macro targets for a profile.
- * - kcal: TDEE (maintenance) via Mifflin-St Jeor × activity factor.
+ * - kcal: TDEE (maintenance) via BMR (Mifflin or Katch–McArdle when
+ *   body-fat is computable from waist/neck/hip) × activity factor.
  * - protein: 1.6 g/kg for active profiles (activity ≥ 1.55), 1.2 g/kg otherwise.
  * - carbs: 50% of kcal at 4 kcal/g.
  * - fat: 30% of kcal at 9 kcal/g.
