@@ -1,5 +1,5 @@
 import type { ProfileInput } from '$types/profile';
-import type { DayActivity } from '$state/activity.svelte';
+import type { DayActivity } from '$types/activity';
 import { bodyFatPct } from '$lib/bodyfat';
 
 export const KCAL_PER_TRAINING = 120;

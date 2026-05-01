@@ -1,9 +1,6 @@
 import { storage } from '$lib/storage';
-import { repairActivity } from '$lib/storage/repair';
 import { debounce } from '$lib/debounce';
 import type { DayActivity } from '$types/activity';
-
-export type { DayActivity } from '$types/activity';
 
 const EMPTY: DayActivity = { steps: 0, trainings: 0, waterMl: 0 };
 
@@ -32,15 +29,10 @@ export const activity = {
 
   async load(this: void, date: string): Promise<void> {
     _date = date;
-    const raw = await storage.load<unknown>(`activity_${date}`, null);
+    const data = await storage.load<DayActivity>(`activity_${date}`, { ...EMPTY });
     if (_date !== date) return;
-    const { value, changed } = repairActivity(raw);
-    _activity = value;
+    _activity = data;
     _loadedFor = date;
-    // Heal corrupt/legacy shapes back to disk in the background. The save
-    // is fire-and-forget — UI sees the cleaned value immediately, and any
-    // user write that lands first will simply overwrite it via persist().
-    if (changed) void storage.save(`activity_${date}`, value);
   },
 
   setSteps(this: void, steps: number): void {

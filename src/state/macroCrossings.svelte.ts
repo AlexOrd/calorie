@@ -1,9 +1,6 @@
 import { storage } from '$lib/storage';
-import { repairCrossings } from '$lib/storage/repair';
 import { todayKey, addDays } from '$lib/date';
 import type { DayCrossings, Macro, MacroState } from '$types/crossings';
-
-export type { Macro, MacroState } from '$types/crossings';
 
 const KEY_PREFIX = 'crossings:';
 
@@ -21,10 +18,8 @@ const _byDate = $state<Record<string, DayCrossings>>({});
 
 export const macroCrossings = {
   async load(this: void, date: string): Promise<void> {
-    const raw = await storage.load<unknown>(KEY_PREFIX + date, null);
-    const { value, changed } = repairCrossings(raw);
-    _byDate[date] = value;
-    if (changed) void storage.save(KEY_PREFIX + date, value);
+    const stored = await storage.load<DayCrossings | null>(KEY_PREFIX + date, null);
+    _byDate[date] = stored ?? emptyDay();
   },
 
   isLoaded(this: void, date: string): boolean {

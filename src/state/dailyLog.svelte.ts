@@ -1,5 +1,4 @@
 import { storage } from '$lib/storage';
-import { repairLog } from '$lib/storage/repair';
 import { debounce } from '$lib/debounce';
 import type { CategoryKey } from '$types/food';
 import { CATEGORY_KEYS } from '$types/food';
@@ -45,17 +44,13 @@ export const dailyLog = {
   // unbound-method warning.
   async load(this: void, date: string): Promise<void> {
     _date = date;
-    const raw = await storage.load<unknown>(`log_${date}`, null);
+    const data = await storage.load<LogEntry[]>(`log_${date}`, []);
     // If the active date changed during the await (rapid date switch),
     // a later load call has authority — discard this stale result.
     if (_date !== date) return;
-    const { value, changed } = repairLog(raw, date);
-    _entries = value;
+    _entries = data;
     _loadedFor = date;
     checkQuota();
-    // Heal corrupt entries back to disk asynchronously. A user-initiated
-    // write that lands first overrides this via persist().
-    if (changed) void storage.save(`log_${date}`, value);
   },
 
   add(this: void, entry: Omit<LogEntry, 'ts'>): void {

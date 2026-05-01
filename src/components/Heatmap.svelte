@@ -12,7 +12,7 @@
     isHydrationSevereDeficit,
     type HydrationState,
   } from '$lib/hydration';
-  import type { DayActivity } from '$state/activity.svelte';
+  import type { DayActivity } from '$types/activity';
   import type { LogEntry } from '$types/log';
   import type { CategoryKey } from '$types/food';
 

@@ -4,7 +4,8 @@
   import { profile } from '$state/profile.svelte';
   import { personalizedDb } from '$state/personalizedDb';
   import { activeDate } from '$state/activeDate.svelte';
-  import { macroCrossings, type Macro, type MacroState } from '$state/macroCrossings.svelte';
+  import { macroCrossings } from '$state/macroCrossings.svelte';
+  import type { Macro, MacroState } from '$types/crossings';
   import { dailyTargets } from '$lib/scaling';
   import { sumMacros, ZERO_MACROS } from '$lib/macros';
   import { burstConfetti, shakeWarning, flashEdge } from '$lib/anim';

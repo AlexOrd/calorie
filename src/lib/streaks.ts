@@ -5,7 +5,7 @@ import { actualBurn, NEUTRAL_BAND_KCAL } from '$lib/energy';
 import { hydrationTarget, isHydrationSevereDeficit } from '$lib/hydration';
 import { personalizedDb } from '$state/personalizedDb';
 import type { LogEntry } from '$types/log';
-import type { DayActivity } from '$state/activity.svelte';
+import type { DayActivity } from '$types/activity';
 import type { UserProfile } from '$types/profile';
 import type { CategoryKey } from '$types/food';
 

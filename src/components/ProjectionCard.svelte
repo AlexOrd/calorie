@@ -9,7 +9,7 @@
   import { actualBurn } from '$lib/energy';
   import { projectGoalDate, type ProjectionResult } from '$lib/projection';
   import type { LogEntry } from '$types/log';
-  import type { DayActivity } from '$state/activity.svelte';
+  import type { DayActivity } from '$types/activity';
 
   let projection = $state<ProjectionResult | null>(null);
   let reason = $state<'no-target' | 'no-data' | 'wrong-direction' | null>('no-target');
