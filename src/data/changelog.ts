@@ -2,6 +2,16 @@ import type { ChangelogEntry } from '$types/changelog';
 
 export const changelog: readonly ChangelogEntry[] = [
   {
+    version: '0.5.1',
+    date: '2026-05-01',
+    items: [
+      {
+        type: 'fix',
+        text: 'Усунено помилку CloudStorage у Telegram: ключ для днів-перетинів містив двокрапку, яку Telegram відхиляє',
+      },
+    ],
+  },
+  {
     version: '0.5.0',
     date: '2026-05-01',
     items: [

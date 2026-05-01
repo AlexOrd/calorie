@@ -2,7 +2,9 @@ import { storage } from '$lib/storage';
 import { todayKey, addDays } from '$lib/date';
 import type { DayCrossings, Macro, MacroState } from '$types/crossings';
 
-const KEY_PREFIX = 'crossings:';
+// Telegram CloudStorage rejects keys with characters outside [A-Za-z0-9_-],
+// so the per-day prefix uses '_' rather than ':'.
+const KEY_PREFIX = 'crossings_';
 
 function emptyDay(): DayCrossings {
   return {

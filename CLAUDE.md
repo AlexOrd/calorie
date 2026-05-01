@@ -110,7 +110,7 @@ Storage keys in use:
 | `user_profile`         | `UserProfile` (single record)                          |
 | `log_YYYY-MM-DD`       | `LogEntry[]`                                           |
 | `activity_YYYY-MM-DD`  | `DayActivity`                                          |
-| `crossings:YYYY-MM-DD` | `DayCrossings` (animation gating; 7-day rolling prune) |
+| `crossings_YYYY-MM-DD` | `DayCrossings` (animation gating; 7-day rolling prune) |
 
 Never call `localStorage` / `IndexedDB` directly — always use the abstraction so the data flows to Telegram CloudStorage transparently.
 
