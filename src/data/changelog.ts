@@ -2,6 +2,16 @@ import type { ChangelogEntry } from '$types/changelog';
 
 export const changelog: readonly ChangelogEntry[] = [
   {
+    version: '0.4.2',
+    date: '2026-05-01',
+    items: [
+      {
+        type: 'fix',
+        text: 'Захист від зіпсованих даних: при старті застосунок валідує журнал, активність, профіль, вагу, шаблони — некоректні значення безпечно очищаються або переміщуються на коректний день',
+      },
+    ],
+  },
+  {
     version: '0.4.1',
     date: '2026-04-30',
     items: [

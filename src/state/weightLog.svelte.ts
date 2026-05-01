@@ -1,4 +1,5 @@
 import { storage } from '$lib/storage';
+import { repairWeightLog } from '$lib/storage/repair';
 import { addDays, todayKey } from '$lib/date';
 
 const KEY = 'weight_log';
@@ -30,9 +31,11 @@ export const weightLog = {
   },
 
   async load(this: void): Promise<void> {
-    const raw = await storage.load<Record<string, number>>(KEY, {});
-    _log = raw && typeof raw === 'object' ? raw : {};
+    const raw = await storage.load<unknown>(KEY, null);
+    const { value, changed } = repairWeightLog(raw);
+    _log = value;
     _loaded = true;
+    if (changed) void storage.save(KEY, value);
   },
 
   async setForDate(this: void, dateIso: string, kg: number): Promise<void> {

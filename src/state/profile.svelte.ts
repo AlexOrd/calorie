@@ -1,4 +1,5 @@
 import { storage } from '$lib/storage';
+import { repairProfile } from '$lib/storage/repair';
 import { nowIso } from '$lib/date';
 import { computeKFactor } from '$lib/scaling';
 import type { ProfileInput, UserProfile } from '$types/profile';
@@ -20,8 +21,16 @@ export const profile = {
   },
 
   async load(this: void): Promise<void> {
-    _profile = await storage.load<UserProfile | null>(KEY, null);
+    const raw = await storage.load<unknown>(KEY, null);
+    const { value, changed } = repairProfile(raw);
+    _profile = value;
     _loaded = true;
+    // If repair dropped the profile (out-of-bounds fields, wrong shape),
+    // remove the unusable record so the user falls into onboarding cleanly.
+    if (changed) {
+      if (value === null) await storage.remove(KEY);
+      else await storage.save(KEY, value);
+    }
   },
 
   async save(this: void, input: ProfileInput): Promise<void> {

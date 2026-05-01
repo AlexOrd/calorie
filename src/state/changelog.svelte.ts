@@ -1,4 +1,5 @@
 import { storage } from '$lib/storage';
+import { repairChangelogVersion } from '$lib/storage/repair';
 import { APP_VERSION } from '../data/changelog';
 import { cmpVersion } from '$lib/version';
 
@@ -21,8 +22,14 @@ export const changelogState = {
   },
 
   async load(this: void): Promise<void> {
-    _lastShown = await storage.load<string | null>(KEY, null);
+    const raw = await storage.load<unknown>(KEY, null);
+    const { value, changed } = repairChangelogVersion(raw);
+    _lastShown = value;
     _loaded = true;
+    if (changed) {
+      if (value === null) await storage.remove(KEY);
+      else await storage.save(KEY, value);
+    }
   },
 
   async markSeen(this: void): Promise<void> {

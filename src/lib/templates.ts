@@ -1,4 +1,5 @@
 import { storage } from '$lib/storage';
+import { repairTemplates } from '$lib/storage/repair';
 import type { MealTemplate, MealTemplateItem } from '$types/template';
 import type { LogEntry } from '$types/log';
 
@@ -8,8 +9,10 @@ const KEY = 'meal_templates';
 export const MAX_TEMPLATES = 10;
 
 export async function loadTemplates(): Promise<MealTemplate[]> {
-  const raw = await storage.load<MealTemplate[]>(KEY, []);
-  return Array.isArray(raw) ? raw : [];
+  const raw = await storage.load<unknown>(KEY, null);
+  const { value, changed } = repairTemplates(raw);
+  if (changed) void storage.save(KEY, value);
+  return value;
 }
 
 export async function saveTemplate(
