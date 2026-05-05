@@ -43,4 +43,11 @@ export const weightLog = {
   async setToday(this: void, kg: number): Promise<void> {
     await weightLog.setForDate(todayKey(), kg);
   },
+
+  async removeForDate(this: void, dateIso: string): Promise<void> {
+    const next = { ..._log };
+    delete next[dateIso];
+    _log = next;
+    await storage.save(KEY, _log);
+  },
 };

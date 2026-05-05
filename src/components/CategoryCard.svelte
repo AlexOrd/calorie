@@ -89,10 +89,12 @@
 
     <div class="bg-surface h-1.5 w-full overflow-hidden rounded-full">
       <div
-        class="h-full rounded-full transition-[background] duration-200"
-        style="width: {Math.min(displayPct, 100)}%; background: {over
+        class="h-full rounded-full transition-[background,width] duration-200"
+        style="width: {Math.min(displayPct, 100)}%; background: {consumed > 100
           ? 'var(--color-danger)'
-          : color};"
+          : consumed > 70
+            ? 'var(--color-warn)'
+            : color};"
       ></div>
     </div>
   </div>

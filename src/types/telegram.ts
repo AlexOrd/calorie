@@ -81,6 +81,8 @@ export interface TelegramPopupParams {
 }
 
 export interface TelegramWebApp {
+  version?: string;
+  isVersionAtLeast?(version: string): boolean;
   initData: string;
   initDataUnsafe: TelegramInitDataUnsafe;
   ready(): void;

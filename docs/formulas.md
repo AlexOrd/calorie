@@ -476,6 +476,64 @@ const verdict = energyBalance(intake, burn).state; // 'deficit' | 'balanced' | '
 
 ---
 
+## Weight Projection (Goal ETA)
+
+**Plain language.** The goal-date prediction combines two signals:
+
+- **Calorie trend** from recent journal days (`intake - burn`), converted to kg/day with the common approximation $7700\,\text{kcal} \approx 1\,\text{kg}$.
+- **Observed scale trend** from recent weight entries (linear slope of kg over days).
+
+To reduce noise, the app blends them into one daily trend and uses that to project the dotted line and ETA.
+
+**Code.**
+
+```ts
+const kcalTrendKgPerDay = -avgDailyDeltaKcal / 7700;
+const observedTrendKgPerDay = linearRegressionSlope(recentWeights); // kg/day
+
+const blendedTrendKgPerDay =
+  observedTrendKgPerDay === null
+    ? kcalTrendKgPerDay
+    : observedTrendKgPerDay * 0.6 + kcalTrendKgPerDay * 0.4;
+
+const daysToTarget = (targetWeightKg - currentWeightKg) / blendedTrendKgPerDay;
+```
+
+**Math.**
+
+$$
+	ext{kcalTrend}_{kg/day} = -\frac{\overline{(intake - burn)}}{7700}
+$$
+
+$$
+	ext{blend}_{kg/day} =
+\begin{cases}
+	ext{kcalTrend}, & \text{if not enough weight samples} \\
+0.6 \cdot \text{observedTrend} + 0.4 \cdot \text{kcalTrend}, & \text{otherwise}
+\end{cases}
+$$
+
+$$
+	ext{daysToTarget} = \frac{targetWeight - currentWeight}{\text{blend}_{kg/day}}
+$$
+
+Direction check:
+
+- If user needs to lose weight (`current > target`), valid trend is negative (`kg/day < 0`).
+- If user needs to gain weight (`current < target`), valid trend is positive (`kg/day > 0`).
+
+When direction is wrong, ETA is hidden and the chart shows a **red** dotted trend line; when direction is correct, it shows **green**.
+
+**Sources.**
+
+- Hall KD et al. (NIDDK / Lancet obesity series, 2011): dynamic body-weight modeling from energy imbalance and adaptation.
+- NIDDK Body Weight Planner research page (updated 2025), including model references and equations appendix.
+- The $7700\,\text{kcal} \approx 1\,\text{kg}$ conversion is retained as the practical calorie-to-mass approximation used by many planning tools.
+
+**Used in.** `src/lib/projection.ts` (`estimateDailyWeightTrend`, `projectGoalDate`) and `src/components/WeightHistoryChart.svelte`.
+
+---
+
 ## Animation gating thresholds
 
 The animations on Dashboard / Stats fire only on **state transitions**, computed against the per-day `macroCrossings` store.

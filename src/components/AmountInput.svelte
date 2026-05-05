@@ -35,11 +35,14 @@
   function onAmountInput(): void {
     lastEdited = 'amount';
   }
+
+  let sliderColor = $derived(
+    pct > 100 ? 'var(--color-danger)' : pct > 70 ? 'var(--color-warn)' : 'var(--color-ok)',
+  );
+  let sliderPct = $derived(Math.min(100, (pct / 150) * 100));
 </script>
 
-<div class="flex flex-col gap-5">
-  <input type="range" min="0" max="150" step="1" bind:value={pct} oninput={onPctInput} />
-
+<div class="flex flex-col gap-4">
   <div class="flex items-center gap-3">
     <input
       type="number"
@@ -48,9 +51,46 @@
       bind:value={amount}
       oninput={onAmountInput}
       onfocus={clearZeroOnFocus}
-      class="border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-4 py-3 text-lg focus:ring-2 focus:outline-none"
+      class="border-border bg-surface focus:border-accent focus:ring-accent/20 min-w-0 flex-1 rounded-lg border px-4 py-3 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
     />
-    <span class="text-muted text-lg">{unit}</span>
-    <span class="text-accent ml-auto text-2xl font-bold tabular-nums">{Math.round(pct)}%</span>
+    <span class="text-muted shrink-0 text-lg">{unit}</span>
+    <span class="shrink-0 text-2xl font-bold tabular-nums" style="color: {sliderColor};"
+      >{Math.round(pct)}%</span
+    >
+  </div>
+
+  <div style="--slider-color: {sliderColor};">
+    <input
+      type="range"
+      min="0"
+      max="150"
+      step="1"
+      bind:value={pct}
+      oninput={onPctInput}
+      class="amount-slider h-1 w-full cursor-pointer appearance-none rounded-full"
+      style="background: linear-gradient(to right, {sliderColor} {sliderPct.toFixed(
+        1,
+      )}%, var(--color-border) {sliderPct.toFixed(1)}%);"
+    />
   </div>
 </div>
+
+<style>
+  .amount-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--slider-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: none;
+  }
+  .amount-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--slider-color);
+    border: none;
+  }
+</style>

@@ -1,14 +1,12 @@
 <script lang="ts">
-  import { Fingerprint, Plus, Sparkles } from '@lucide/svelte';
+  import { Fingerprint, Sparkles } from '@lucide/svelte';
   import { profile } from '$state/profile.svelte';
   import { changelogState } from '$state/changelog.svelte';
-  import { weightLog } from '$state/weightLog.svelte';
   import ProfileForm from '../components/ProfileForm.svelte';
   import TelegramUserHeader from '../components/TelegramUserHeader.svelte';
   import ChangelogModal from '../components/ChangelogModal.svelte';
-  import ProjectionCard from '../components/ProjectionCard.svelte';
   import { celebrate } from '$lib/anim';
-  import { hapticImpact, hapticSelection } from '$lib/haptics';
+  import { hapticSelection } from '$lib/haptics';
   import { dailyTargets } from '$lib/scaling';
   import { biometricSupport, enrol, clearEnrolment } from '$lib/biometric';
   import type { ProfileInput } from '$types/profile';
@@ -44,7 +42,6 @@
 
   async function save(input: ProfileInput): Promise<void> {
     await profile.save(input);
-    await weightLog.setToday(input.weight);
     savedAt = Date.now();
     if (targetsEl) celebrate(targetsEl);
   }
@@ -130,28 +127,7 @@
     {/if}
 
     {#if showActionsCard}
-      <div
-        class="border-border bg-surface-2 divide-border flex flex-col divide-y rounded-xl border"
-      >
-        {#if profile.value}
-          <button
-            type="button"
-            class="text-fg hover:bg-surface flex w-full items-center gap-2 px-3 py-3 text-sm font-semibold transition-colors"
-            onclick={() => {
-              hapticImpact('light');
-              if (profile.value) void weightLog.setToday(profile.value.weight);
-            }}
-          >
-            <Plus size={14} class="shrink-0" />
-            <span>Зафіксувати вагу сьогодні</span>
-            {#if weightLog.today !== null}
-              <span class="text-muted ml-auto text-xs tabular-nums"
-                >{weightLog.today.toFixed(1)} кг</span
-              >
-            {/if}
-          </button>
-        {/if}
-
+      <div class="border-border bg-surface-2 flex flex-col rounded-xl border">
         {#if bioSupported && profile.value}
           <button
             type="button"
@@ -198,10 +174,6 @@
 
     {#if savedRecently}
       <p class="text-ok text-center text-sm">Цілі оновлено за новим профілем</p>
-    {/if}
-
-    {#if profile.value}
-      <ProjectionCard />
     {/if}
   </div>
 </section>
