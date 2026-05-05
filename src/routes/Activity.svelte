@@ -4,6 +4,7 @@
   import { profile } from '$state/profile.svelte';
   import { hydrationTarget, HYDRATION_QUICK_ADD_ML } from '$lib/hydration';
   import { hapticImpact } from '$lib/haptics';
+  import { clearZeroOnFocus } from '$lib/input';
 
   const STEP_QUICK_ADDS = [1000, 3000, 5000] as const;
   const WATER_QUICK_ADDS = [HYDRATION_QUICK_ADD_ML, 500, 1000] as const;
@@ -83,6 +84,7 @@
         step="100"
         value={steps}
         oninput={onStepsInput}
+        onfocus={clearZeroOnFocus}
         class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-3 py-2.5 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
       />
       <span class="text-muted text-sm tabular-nums">/ {fmtSteps(STEP_TARGET)}</span>
@@ -133,6 +135,7 @@
         step="50"
         value={waterMl}
         oninput={onWaterInput}
+        onfocus={clearZeroOnFocus}
         class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-3 py-2.5 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
       />
       <span class="text-muted text-sm tabular-nums">/ {waterTargetMl} мл</span>

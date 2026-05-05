@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { clearZeroOnFocus } from '$lib/input';
   import type { FoodItem } from '$types/food';
 
   interface Props {
@@ -46,6 +47,7 @@
       {step}
       bind:value={amount}
       oninput={onAmountInput}
+      onfocus={clearZeroOnFocus}
       class="border-border bg-surface focus:border-accent focus:ring-accent/20 w-32 rounded-lg border px-4 py-3 text-lg focus:ring-2 focus:outline-none"
     />
     <span class="text-muted text-lg">{unit}</span>

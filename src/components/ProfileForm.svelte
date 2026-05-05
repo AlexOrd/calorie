@@ -2,6 +2,7 @@
   import { untrack } from 'svelte';
   import { ChevronDown } from '@lucide/svelte';
   import type { ProfileInput, ActivityLevel } from '$types/profile';
+  import { clearZeroOnFocus } from '$lib/input';
 
   interface Props {
     initial?: ProfileInput | null;
@@ -120,6 +121,7 @@
       min="120"
       max="230"
       bind:value={height}
+      onfocus={clearZeroOnFocus}
     />
   </label>
 
@@ -135,6 +137,7 @@
       max="250"
       step="0.1"
       bind:value={weight}
+      onfocus={clearZeroOnFocus}
     />
   </label>
 
@@ -150,6 +153,7 @@
       max="250"
       step="0.1"
       bind:value={targetWeight}
+      onfocus={clearZeroOnFocus}
     />
   </label>
 
@@ -164,6 +168,7 @@
       min="12"
       max="100"
       bind:value={age}
+      onfocus={clearZeroOnFocus}
     />
   </label>
 
@@ -232,6 +237,7 @@
           max="200"
           step="0.5"
           bind:value={waist}
+          onfocus={clearZeroOnFocus}
         />
       </label>
       <label class="text-muted flex flex-col gap-1.5">
@@ -245,6 +251,7 @@
           max="80"
           step="0.5"
           bind:value={neck}
+          onfocus={clearZeroOnFocus}
         />
       </label>
       {#if gender === 'female'}
@@ -259,6 +266,7 @@
             max="200"
             step="0.5"
             bind:value={hip}
+            onfocus={clearZeroOnFocus}
           />
         </label>
       {/if}
