@@ -173,7 +173,7 @@
         <button
           type="button"
           onclick={() => quickAddSteps(n)}
-          class="border-border bg-surface text-fg hover:bg-surface-2 inline-flex items-center justify-center gap-1 rounded-lg border py-2 text-sm font-semibold tabular-nums transition-colors"
+          class="border-border bg-surface text-fg hover:bg-surface-2 inline-flex min-h-11 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-sm font-semibold tabular-nums shadow-sm transition-colors"
         >
           <Plus size={14} />
           {fmtSteps(n)}
@@ -214,7 +214,7 @@
         <button
           type="button"
           onclick={() => quickAddWater(n)}
-          class="border-border bg-surface text-fg hover:bg-surface-2 inline-flex items-center justify-center gap-1 rounded-lg border py-2 text-sm font-semibold tabular-nums transition-colors"
+          class="border-border bg-surface text-fg hover:bg-surface-2 inline-flex min-h-11 items-center justify-center gap-1 rounded-lg border px-2 py-2 text-sm font-semibold tabular-nums shadow-sm transition-colors"
         >
           <Plus size={14} />
           {fmtMl(n)}
@@ -250,8 +250,8 @@
           class={[
             'flex min-h-16 flex-col items-center justify-center gap-1 rounded-lg border transition-colors',
             ticked
-              ? 'border-ok bg-ok/10 text-ok'
-              : 'border-border bg-surface text-muted hover:bg-surface-2',
+              ? 'border-ok bg-ok/10 text-ok shadow-sm'
+              : 'border-border bg-surface text-muted hover:bg-surface-2 shadow-sm',
           ]}
           aria-pressed={ticked}
           onclick={() => {
@@ -301,7 +301,7 @@
         value={draftWeightKg}
         oninput={onWeightInput}
         onfocus={clearZeroOnFocus}
-        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 w-full rounded-lg border px-3 py-2.5 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
+        class="text-fg border-border bg-surface focus:border-accent focus:ring-accent/20 min-w-0 flex-1 rounded-lg border px-3 py-2.5 text-2xl font-bold tabular-nums focus:ring-2 focus:outline-none"
       />
 
       <button
